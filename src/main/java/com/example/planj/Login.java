@@ -25,6 +25,11 @@ public class Login extends JFrame {
         contentPane.add(id);
         id.setColumns(10);
 
+        JTextField password = new JTextField("비밀번호");
+        password.setBounds(450,130,100,20);
+        contentPane.add(password);
+        password.setColumns(10);
+
         setVisible(true);
     }
 
