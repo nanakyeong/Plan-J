@@ -2,9 +2,11 @@ package com.example.planj;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-public class joinFrame extends JFrame {
-    public joinFrame() {
+public class JoinFrame extends JFrame {
+    public JoinFrame() {
         setTitle("Plan J");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 600);
@@ -54,11 +56,43 @@ public class joinFrame extends JFrame {
         check.setBounds(430, 450, 120, 30);
         contentPane.add(check);
 
+        JLabel myplan = link("myplan", 710, 55, () -> openMyPlan());
+        JLabel login = link("로그인", 762, 55, () -> openLogin());
+
+        contentPane.add(myplan);
+        contentPane.add(login);
+
         MyPanel panel1 = new MyPanel();
         panel1.setBounds(100, 60, 800, 50);
         contentPane.add(panel1);
 
         setVisible(true);
+    }
+
+    private void openMyPlan() {
+        // Optionally implement functionality here
+    }
+
+    private void openLogin() {
+        SwingUtilities.invokeLater(() -> {
+            dispose();
+            new LoginFrame().setVisible(true);
+        });
+    }
+
+    private JLabel link(String text, int x, int y, Runnable action) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("돋움", Font.PLAIN, 15));
+        label.setBounds(x, y, 50, 20);
+        label.setForeground(Color.black);
+        label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        label.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                action.run();
+            }
+        });
+        return label;
     }
 
     class MyPanel extends JPanel {
@@ -69,14 +103,12 @@ public class joinFrame extends JFrame {
             g2.setStroke(new BasicStroke(4));
             g2.drawLine(20, 20, 780, 20);
 
-            g2.setFont(new Font("돋움", Font.PLAIN, 16));
-            g2.drawString("myplan", 600, 15);
-            g2.drawString("로그인", 660, 15);
-            g2.drawString("회원가입", 720, 15);
+            g2.setFont(new Font("돋움", Font.PLAIN, 15));
+            g2.drawString("회원가입", 720, 10);
         }
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new joinFrame());
+        SwingUtilities.invokeLater(() -> new JoinFrame());
     }
 }

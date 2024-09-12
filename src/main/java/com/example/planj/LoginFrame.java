@@ -2,9 +2,11 @@ package com.example.planj;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-public class loginFrame extends JFrame {
-    public loginFrame() {
+public class LoginFrame extends JFrame {
+    public LoginFrame() {
         setTitle("Plan J");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 600);
@@ -22,7 +24,7 @@ public class loginFrame extends JFrame {
         logo2.setBounds(460, 180, 180, 30);
         contentPane.add(logo2);
 
-        MyPanel line = new MyPanel();
+        LoginFrame.MyPanel line = new LoginFrame.MyPanel();
         line.setBounds(370, 200, 220, 20);
         contentPane.add(line);
 
@@ -38,11 +40,41 @@ public class loginFrame extends JFrame {
         check.setBounds(430, 350, 120, 30);
         contentPane.add(check);
 
+        JLabel myplan = link("myplan", 710, 55, () -> openMyPlan());
+        JLabel join = link("회원가입", 820, 55, () -> openJoin());
+
+        contentPane.add(myplan);
+        contentPane.add(join);
+
         MyPanel panel1 = new MyPanel();
         panel1.setBounds(100, 60, 800, 50);
         contentPane.add(panel1);
 
         setVisible(true);
+    }
+
+    private void openMyPlan() {
+
+    }
+
+    private void openJoin() {
+        dispose();
+        SwingUtilities.invokeLater(() -> new JoinFrame().setVisible(true));
+    }
+
+    private JLabel link(String text, int x, int y, Runnable action) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("돋움", Font.PLAIN, 15));
+        label.setBounds(x, y, 100, 20);
+        label.setForeground(Color.black);
+        label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        label.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                action.run();
+            }
+        });
+        return label;
     }
 
     class MyPanel extends JPanel {
@@ -53,14 +85,12 @@ public class loginFrame extends JFrame {
             g2.setStroke(new BasicStroke(4));
             g2.drawLine(20, 20, 780, 20);
 
-            g2.setFont(new Font("돋움", Font.PLAIN, 16));
-            g2.drawString("myplan", 600, 15);
-            g2.drawString("로그인", 660, 15);
-            g2.drawString("회원가입", 720, 15);
+            g2.setFont(new Font("돋움", Font.PLAIN, 15));
+            g2.drawString("로그인", 665, 10);
         }
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new loginFrame());
+        SwingUtilities.invokeLater(() -> new LoginFrame());
     }
 }
