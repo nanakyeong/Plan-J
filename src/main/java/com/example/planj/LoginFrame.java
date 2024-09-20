@@ -4,8 +4,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class LoginFrame extends JFrame {
+    private JLabel loginLabel;
+
     public LoginFrame() {
         setTitle("Plan J");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -24,23 +30,36 @@ public class LoginFrame extends JFrame {
         logo2.setBounds(460, 180, 180, 30);
         contentPane.add(logo2);
 
-        LoginFrame.MyPanel line = new LoginFrame.MyPanel();
+        MyPanel line = new MyPanel();
         line.setBounds(370, 200, 220, 20);
         contentPane.add(line);
 
-        RoundTextField id = new RoundTextField("아이디");
-        id.setBounds(400, 250, 180, 20);
-        contentPane.add(id);
+        RoundTextField username = new RoundTextField("아이디");
+        username.setBounds(400, 250, 180, 20);
+        contentPane.add(username);
 
-        RoundTextField password = new RoundTextField("비밀번호");
+        PasswordField password = new PasswordField("비밀번호");
         password.setBounds(400, 290, 180, 20);
         contentPane.add(password);
 
-        RoundButton check = new RoundButton("확인");
+        RoundButton check = new RoundButton("로그인");
         check.setBounds(430, 350, 120, 30);
         contentPane.add(check);
 
-        JLabel myplan = link("myplan", 710, 55, () -> openMyPlan());
+        loginLabel = link("로그인", 755, 55, () -> openJoin());
+        contentPane.add(loginLabel);
+
+        check.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // 로그인 시도
+                String user = username.getText();
+                String pass = password.getText();
+                login(user, pass);
+            }
+        });
+
+        JLabel myplan = link("myplan", 700, 55, () -> openMyPlan());
         JLabel join = link("회원가입", 820, 55, () -> openJoin());
 
         contentPane.add(myplan);
@@ -53,8 +72,59 @@ public class LoginFrame extends JFrame {
         setVisible(true);
     }
 
-    private void openMyPlan() {
+    private void login(String username, String password) {
+        try {
+            URL url = new URL("http://localhost:8080/api/users/login");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json; utf-8");
+            connection.setDoOutput(true);
 
+            String jsonInputString = String.format("{\"username\": \"%s\", \"password\": \"%s\"}", username, password);
+
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == 200) {
+                JOptionPane.showMessageDialog(this, "로그인 성공!");
+                updateLoginLabel();
+            } else {
+                JOptionPane.showMessageDialog(this, "로그인 실패! 아이디나 비밀번호를 확인하세요.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "로그인 중 오류 발생!");
+        }
+    }
+
+    private void updateLoginLabel() {
+        loginLabel.setText("로그아웃");
+        loginLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        loginLabel.removeMouseListener(loginLabel.getMouseListeners()[0]);
+        loginLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                logout();
+            }
+        });
+    }
+
+    private void logout() {
+        JOptionPane.showMessageDialog(this, "로그아웃 되었습니다.");
+        loginLabel.setText("로그인");
+        loginLabel.removeMouseListener(loginLabel.getMouseListeners()[0]);
+        loginLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                openJoin();
+            }
+        });
+    }
+
+    private void openMyPlan() {
     }
 
     private void openJoin() {
@@ -86,7 +156,6 @@ public class LoginFrame extends JFrame {
             g2.drawLine(20, 20, 780, 20);
 
             g2.setFont(new Font("돋움", Font.PLAIN, 15));
-            g2.drawString("로그인", 665, 10);
         }
     }
 
