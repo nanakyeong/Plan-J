@@ -1,4 +1,4 @@
-package com.example.planj;
+package com.example.planj.frame;
 
 import javax.swing.*;
 import java.awt.*;

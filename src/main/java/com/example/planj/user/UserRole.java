@@ -1,4 +1,4 @@
-package com.example.planj;
+package com.example.planj.user;
 
 
 public enum UserRole {
