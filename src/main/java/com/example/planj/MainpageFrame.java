@@ -15,7 +15,7 @@ public class MainpageFrame extends JFrame {
 
         JLabel logo1 = new JLabel("Plan J");
         logo1.setFont(new Font("돋움", Font.BOLD, 35));
-        logo1.setBounds(123, 120, 150, 30);
+        logo1.setBounds(123, 135, 150, 30);
         contentPane.add(logo1);
 
         JLabel ai = new JLabel("AI");
@@ -31,19 +31,22 @@ public class MainpageFrame extends JFrame {
         contentPane.add(login);
         contentPane.add(join);
 
+        JTextField search = new JTextField();
+        search.setBounds(653, 142, 210,23);
+        contentPane.add(search);
+
+
         //1줄
 
         JButton btn_newplan = new JButton("+");	//+ 버튼
-        btn_newplan.setFont(new Font("돋움", Font.BOLD, 45));
         btn_newplan.setBounds(123, 230, 120, 120);
-        JLabel newplan = new JLabel("plan 불러오기");
+        JLabel newplan = new JLabel("plan 업로드");
         newplan.setBounds(143, 350, 100, 20);
 
         contentPane.add(btn_newplan);
         contentPane.add(newplan);
 
         JButton btn_plan1 = new JButton();	//게시물1
-        btn_plan1.setFont(new Font("돋움", Font.BOLD, 45));
         btn_plan1.setBounds(323, 230, 120, 120);
         JLabel plan1 = new JLabel("- plan_name");
         plan1.setBounds(343, 350, 100, 20);
@@ -52,7 +55,6 @@ public class MainpageFrame extends JFrame {
         contentPane.add(plan1);
 
         JButton btn_plan2 = new JButton();	//게시물2
-        btn_plan2.setFont(new Font("돋움", Font.BOLD, 45));
         btn_plan2.setBounds(533, 230, 120, 120);
         JLabel plan2 = new JLabel("- plan_name");
         plan2.setBounds(563, 350, 100, 20);
@@ -61,7 +63,6 @@ public class MainpageFrame extends JFrame {
         contentPane.add(plan2);
 
         JButton btn_plan3 = new JButton();	//게시물3
-        btn_plan3.setFont(new Font("돋움", Font.BOLD, 45));
         btn_plan3.setBounds(743, 230, 120, 120);
         JLabel plan3 = new JLabel("- plan_name");
         plan3.setBounds(763, 350, 100, 20);
@@ -72,7 +73,6 @@ public class MainpageFrame extends JFrame {
         //2줄
 
         JButton btn_plan4 = new JButton();	//게시물4
-        btn_plan4.setFont(new Font("돋움", Font.BOLD, 45));
         btn_plan4.setBounds(123, 400, 120, 120);
         JLabel plan4 = new JLabel("- plan_name");
         plan4.setBounds(143, 520, 100, 20);
@@ -81,7 +81,6 @@ public class MainpageFrame extends JFrame {
         contentPane.add(plan4);
 
         JButton btn_plan5 = new JButton();	//게시물5
-        btn_plan5.setFont(new Font("돋움", Font.BOLD, 45));
         btn_plan5.setBounds(323, 400, 120, 120);
         JLabel plan5 = new JLabel("- plan_name");
         plan5.setBounds(343, 520, 100, 20);
@@ -90,7 +89,6 @@ public class MainpageFrame extends JFrame {
         contentPane.add(plan5);
 
         JButton btn_plan6 = new JButton();	//게시물6
-        btn_plan6.setFont(new Font("돋움", Font.BOLD, 45));
         btn_plan6.setBounds(533, 400, 120, 120);
         JLabel plan6 = new JLabel("- plan_name");
         plan6.setBounds(563, 520, 100, 20);
@@ -99,7 +97,6 @@ public class MainpageFrame extends JFrame {
         contentPane.add(plan6);
 
         JButton btn_plan7 = new JButton();	//게시물7
-        btn_plan7.setFont(new Font("돋움", Font.BOLD, 45));
         btn_plan7.setBounds(743, 400, 120, 120);
         JLabel plan7 = new JLabel("- plan_name");
         plan7.setBounds(763, 520, 100, 20);
