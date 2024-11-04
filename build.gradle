@@ -2,8 +2,9 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.18'
     id 'io.spring.dependency-management' version '1.1.5'
+
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.1.0'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
 }
 
 group = 'com.example'
@@ -38,11 +39,13 @@ dependencies {
 
 javafx {
     version = "17"
-    modules = ['javafx.controls', 'javafx.fxml', 'javafx.graphics', 'javafx.web', 'javafx.swing']
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.web', 'javafx.swing']
 }
 
-application {
-    mainClass = 'com.example.planj.PlanwritepageFrame' // 메인 클래스 지정
+mainClassName = 'PlanwritepageFrame'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
 }
 
 tasks.named('test') {
