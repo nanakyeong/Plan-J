@@ -3,10 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title>Kakao Map</title>
+    <style>
+        /* 전체 화면에 스크롤바 제거 */
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* 스크롤바 제거 */
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center; /* 가로 가운데 정렬 */
+            align-items: center;     /* 세로 가운데 정렬 */
+        }
+
+        /* 지도 컨테이너 크기 고정 */
+        #map {
+            width: 285px; /* 필요한 크기로 설정 */
+            height: 290px; /* 필요한 크기로 설정 */
+        }
+    </style>
     <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=717bb0e96399df26123f9decca5a9795"></script>
 </head>
 <body>
-<div id="map" style="width:100%; height:100vh;"></div>
+<div id="map"></div>
 <script>
     var mapContainer = document.getElementById('map');
     var mapOption = {

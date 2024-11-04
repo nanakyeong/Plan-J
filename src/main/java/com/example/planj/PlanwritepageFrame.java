@@ -2,12 +2,12 @@ package com.example.planj;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.net.URI;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Scene;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import java.net.URL;
-import java.nio.file.Paths;
-
 
 public class PlanwritepageFrame extends JFrame {
 
@@ -62,19 +62,16 @@ public class PlanwritepageFrame extends JFrame {
         day2.setBounds(530, 220, 30, 20);
         contentPane.add(day2);
 
-        section1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int selected = (Integer) section1.getSelectedItem();
-                section2.removeAllItems();
-                for (int i = selected; i <= selected + 1; i++) {
-                    section2.addItem(i + 1);
-                }
+        section1.addActionListener(e -> {
+            int selected = (Integer) section1.getSelectedItem();
+            section2.removeAllItems();
+            for (int i = selected; i <= selected + 1; i++) {
+                section2.addItem(i + 1);
             }
         });
 
         JTextField plan_write = new JTextField();
-        plan_write.setBounds(138, 280, 410, 230);
+        plan_write.setBounds(138, 280, 408, 228);
         contentPane.add(plan_write);
 
         section1.setSelectedIndex(0);
@@ -87,18 +84,46 @@ public class PlanwritepageFrame extends JFrame {
     }
 
     class MyPanel extends JPanel {
-        public void paintComponent(Graphics g) {
+        private JFXPanel jfxPanel;
+
+        public MyPanel() {
+            setLayout(null);
+
+            // JFXPanel을 생성하여 JavaFX WebView 포함
+            jfxPanel = new JFXPanel();
+            jfxPanel.setBounds(566, 221, 284, 288); // 지도 위치 지정
+            add(jfxPanel);
+
+            // JavaFX 스레드에서 WebView 초기화
+            Platform.runLater(() -> {
+                WebView webView = new WebView();
+                WebEngine webEngine = webView.getEngine();
+
+                // resources 폴더에 있는 map.html 파일을 로드
+                URL url = getClass().getResource("/map.html");
+                if (url != null) {
+                    webEngine.load(url.toExternalForm());
+                } else {
+                    webEngine.loadContent("<html><body><h1>파일을 찾을 수 없습니다.</h1></body></html>");
+                }
+
+                // WebView를 JFXPanel에 설정
+                jfxPanel.setScene(new Scene(webView));
+            });
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
             g2.setStroke(new BasicStroke(2));
             g2.setColor(Color.black);
             g2.drawLine(123, 85, 866, 85);
 
-            Graphics2D g3 = (Graphics2D) g;
-            g3.setStroke(new BasicStroke(1));
+            g2.setStroke(new BasicStroke(1));
             g2.setColor(Color.gray);
-            g3.drawRect(123, 200, 743, 330); // 전체
-            g2.drawRect(565, 220, 285, 290); // 지도
+            g2.drawRect(123, 200, 743, 330); // 전체
+            g2.drawRect(565, 220, 285, 290); // 지도 위치
         }
     }
 
