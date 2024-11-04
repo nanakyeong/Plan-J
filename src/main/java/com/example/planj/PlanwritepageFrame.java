@@ -5,6 +5,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Scene;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+
 public class PlanwritepageFrame extends JFrame {
 
     public PlanwritepageFrame() {
@@ -79,6 +85,21 @@ public class PlanwritepageFrame extends JFrame {
         panel1.setBounds(0, 0, 1000, 600);
         contentPane.add(panel1);
 
+        // JavaFX WebView를 포함할 JFXPanel 생성
+        JFXPanel jfxPanel = new JFXPanel();
+        jfxPanel.setBounds(565, 220, 285, 290); // 지도의 위치와 크기 설정
+        contentPane.add(jfxPanel);
+
+        // JavaFX WebView를 JFXPanel에 추가
+        Platform.runLater(() -> {
+            WebView webView = new WebView();
+            WebEngine webEngine = webView.getEngine();
+            // classpath 기준으로 파일을 불러오는 방법
+            String mapPath = getClass().getResource("/map.html").toExternalForm();
+            webEngine.load(mapPath);
+            jfxPanel.setScene(new Scene(webView));
+        });
+
         setVisible(true);
     }
 
@@ -94,7 +115,6 @@ public class PlanwritepageFrame extends JFrame {
             g3.setStroke(new BasicStroke(1));
             g2.setColor(Color.gray);
             g3.drawRect(123, 200, 743, 330); // 전체
-
             g2.drawRect(565, 220, 285, 290); // 지도
         }
     }
