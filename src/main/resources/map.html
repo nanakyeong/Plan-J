@@ -30,7 +30,7 @@
     var mapContainer = document.getElementById('map');
     var mapOption = {
         center: new kakao.maps.LatLng(37.5665, 126.9780), // 서울 좌표
-        level: 3
+        level: 9
     };
     var map = new kakao.maps.Map(mapContainer, mapOption);
 
@@ -38,6 +38,14 @@
         position: new kakao.maps.LatLng(37.5665, 126.9780) // 마커 위치
     });
     marker.setMap(map);
+
+    function setMapPosition(latitude, longitude) {
+    var position = new kakao.maps.LatLng(latitude, longitude);
+    marker.setPosition(position);
+    map.setCenter(position);
+    map.setLevel(9); // 여기에 원하는 줌 레벨을 설정
+
+}
 </script>
 </body>
 </html>
