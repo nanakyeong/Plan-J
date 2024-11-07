@@ -134,7 +134,6 @@ public class PopupDialog extends JDialog {
         foodDialog.setVisible(true);
     }
 
-
     private JPanel createCategoryPanel(String categoryName, String contentTypeId) {
         JPanel panel = new JPanel(new BorderLayout());
         DefaultListModel<String> listModel = new DefaultListModel<>();
