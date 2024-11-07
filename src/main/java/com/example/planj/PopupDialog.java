@@ -173,7 +173,6 @@ public class PopupDialog extends JDialog {
         return panel;
     }
 
-
     private void loadCategoryData(JPanel mainPanel, String category, JPanel targetPanel, String contentTypeId, String cat1, String cat2, String cat3) {
         CardLayout cl = (CardLayout) mainPanel.getLayout();
         cl.show(mainPanel, category);
