@@ -8,10 +8,27 @@ import javafx.scene.Scene;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import java.net.URL;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class PlanwritepageFrame extends JFrame {
 
     private JPanel planPanel;
+    private MyPanel myPanel; // MyPanel 참조 변수 추가
+
+    private static final String SERVICE_KEY = "pRHMKrAJfJJZTC104XWkGvOIvKtKcO6zFysOGGDrH3Bo%2FktklWp6urJAiA5DoWSY3rf7LEKeb2NU5aDiAfDhlw%3D%3D"; // TourAPI 서비스 키를 입력하세요
+
+    private JComboBox<String> areaCodeComboBox;
+    private JComboBox<String> sigunguComboBox;
+    private Map<String, Integer> areaCodeMap = new HashMap<>(); // 지역 이름과 코드 매핑을 위한 HashMap 추가
 
     public PlanwritepageFrame() {
         setTitle("Plan J");
@@ -64,6 +81,20 @@ public class PlanwritepageFrame extends JFrame {
         day2.setBounds(530, 220, 30, 20);
         contentPane.add(day2);
 
+        // 지역 선택 드롭다운
+        areaCodeComboBox = new JComboBox<>();
+        areaCodeComboBox.setBounds(138, 250, 120, 23);
+        areaCodeComboBox.addActionListener(e -> updateSigunguComboBox());
+        contentPane.add(areaCodeComboBox);
+
+        // 시군구 선택 드롭다운
+        sigunguComboBox = new JComboBox<>();
+        sigunguComboBox.setBounds(268, 250, 120, 23);
+        contentPane.add(sigunguComboBox);
+
+        // 지역 데이터를 초기화
+        populateAreaCodeComboBox();
+
         section1.addActionListener(e -> updateDays(section1, section2));
         section2.addActionListener(e -> updatePlanPanel(section2));
 
@@ -79,11 +110,12 @@ public class PlanwritepageFrame extends JFrame {
 
         section1.setSelectedIndex(0);
 
-        MyPanel panel1 = new MyPanel();
-        panel1.setBounds(0, 0, 1000, 600);
-        contentPane.add(panel1);
+        myPanel = new MyPanel();
+        myPanel.setBounds(0, 0, 1000, 600);
+        contentPane.add(myPanel);
 
         setVisible(true);
+
     }
 
     private void updateDays(JComboBox<Integer> section1, JComboBox<Integer> section2) {
@@ -163,8 +195,16 @@ public class PlanwritepageFrame extends JFrame {
         JLabel placeLabel = new JLabel(placeName);
         placeLabel.setFont(new Font("돋움", Font.PLAIN, 12));
         placeLabel.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 0));
-        placeLabel.setAlignmentY(Component.CENTER_ALIGNMENT); // 세로 중앙 정렬
+        placeLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
         placePanel.add(placeLabel);
+
+        // 클릭 시 지도의 위치를 업데이트하는 리스너 추가
+        placeLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                // 예제 좌표 (실제 좌표로 대체 필요)
+                updateMapWithPlace(placeName);// MyPanel 참조를 이용해 지도 업데이트
+            }
+        });
 
         // 위로 이동 버튼
         JButton upButton = new JButton("▲");
@@ -252,6 +292,7 @@ public class PlanwritepageFrame extends JFrame {
 
     class MyPanel extends JPanel {
         private JFXPanel jfxPanel;
+        private WebEngine webEngine;
 
         public MyPanel() {
             setLayout(null);
@@ -262,7 +303,7 @@ public class PlanwritepageFrame extends JFrame {
 
             Platform.runLater(() -> {
                 WebView webView = new WebView();
-                WebEngine webEngine = webView.getEngine();
+                webEngine = webView.getEngine();
 
                 URL url = getClass().getResource("/map.html");
                 if (url != null) {
@@ -275,10 +316,21 @@ public class PlanwritepageFrame extends JFrame {
             });
         }
 
+        // 마커 위치 업데이트 메서드
+        public void updateMapMarker(double latitude, double longitude) {
+            Platform.runLater(() -> {
+                if (webEngine != null) {
+                    webEngine.executeScript("setMapPosition(" + latitude + ", " + longitude + ");");
+                }
+            });
+        }
+
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
+
+            // 테두리 설정
             g2.setStroke(new BasicStroke(2));
             g2.setColor(Color.black);
             g2.drawLine(123, 85, 866, 85);
@@ -287,6 +339,136 @@ public class PlanwritepageFrame extends JFrame {
             g2.setColor(Color.gray);
             g2.drawRect(123, 200, 743, 330);
             g2.drawRect(565, 220, 285, 290);
+        }
+
+    }
+
+    private JSONObject searchPlaceByKeyword(String keyword) {
+        // 제주도 (areaCode=39)로 지역 필터 추가
+        String urlString = "http://apis.data.go.kr/B551011/KorService1/searchKeyword1?serviceKey=" + SERVICE_KEY
+                + "&numOfRows=1&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json&listYN=Y&arrange=A&keyword="
+                + URLEncoder.encode(keyword, StandardCharsets.UTF_8)
+                + "&areaCode=39"; // 제주도 지역 코드 추가
+
+        try {
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode != 200) {
+                System.out.println("HTTP 응답 코드: " + responseCode);
+                System.out.println("오류: API 요청이 실패했습니다.");
+                return null;
+            }
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            reader.close();
+
+            System.out.println("API 응답 내용: " + response.toString());
+
+            // JSON 파싱
+            JSONObject jsonObject = new JSONObject(response.toString());
+            JSONObject body = jsonObject.getJSONObject("response").getJSONObject("body");
+            JSONArray items = body.getJSONObject("items").getJSONArray("item");
+
+            if (items.length() > 0) {
+                return items.getJSONObject(0); // 첫 번째 장소 정보를 반환
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // 지도에서 위치를 업데이트하는 메서드
+    private void updateMapWithPlace(String placeName) {
+        JSONObject placeInfo = searchPlaceByKeyword(placeName);
+        if (placeInfo != null) {
+            double latitude = placeInfo.getDouble("mapy"); // 위도
+            double longitude = placeInfo.getDouble("mapx"); // 경도
+
+            myPanel.updateMapMarker(latitude, longitude); // MyPanel의 마커 업데이트 메서드 호출
+        } else {
+            JOptionPane.showMessageDialog(this, "장소 정보를 찾을 수 없습니다.");
+        }
+    }
+
+    private void populateAreaCodeComboBox() {
+        String urlString = "https://apis.data.go.kr/B551011/KorService1/areaCode1?serviceKey=" + SERVICE_KEY +
+                "&numOfRows=100&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json";
+        try {
+            JSONObject areaData = fetchData(urlString);
+            if (areaData != null) {
+                JSONArray areaArray = areaData.getJSONArray("item");
+                areaCodeComboBox.addItem("지역 선택");
+                for (int i = 0; i < areaArray.length(); i++) {
+                    JSONObject area = areaArray.getJSONObject(i);
+                    String areaName = area.getString("name");
+                    int areaCode = area.getInt("code"); // 코드 값을 가져옴
+                    areaCodeComboBox.addItem(areaName);
+                    areaCodeMap.put(areaName, areaCode); // 지역 이름과 코드 매핑
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 지역 이름을 코드와 매핑하여 반환하는 메서드
+    private int getAreaCode(String areaName) {
+        return areaCodeMap.getOrDefault(areaName, 1); // 존재하지 않으면 기본값 1 반환
+    }
+
+    // 선택한 지역에 따라 시군구 코드를 조회하여 드롭다운에 추가하는 메서드
+    private void updateSigunguComboBox() {
+        String selectedArea = (String) areaCodeComboBox.getSelectedItem();
+        if (selectedArea == null || selectedArea.equals("지역 선택")) return;
+
+        int selectedAreaCode = getAreaCode(selectedArea);
+        String urlString = "https://apis.data.go.kr/B551011/KorService1/areaCode1?serviceKey=" + SERVICE_KEY +
+                "&numOfRows=100&pageNo=1&MobileOS=ETC&MobileApp=AppTest&areaCode=" + selectedAreaCode + "&_type=json";
+        try {
+            JSONObject sigunguData = fetchData(urlString);
+            if (sigunguData != null) {
+                JSONArray sigunguArray = sigunguData.getJSONArray("item");
+                sigunguComboBox.removeAllItems();
+                sigunguComboBox.addItem("시군구 선택");
+                for (int i = 0; i < sigunguArray.length(); i++) {
+                    JSONObject sigungu = sigunguArray.getJSONObject(i);
+                    String sigunguName = sigungu.getString("name");
+                    sigunguComboBox.addItem(sigunguName);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private JSONObject fetchData(String urlString) {
+        try {
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            reader.close();
+
+            return new JSONObject(response.toString()).getJSONObject("response").getJSONObject("body").getJSONObject("items");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
