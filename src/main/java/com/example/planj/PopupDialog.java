@@ -27,7 +27,6 @@ public class PopupDialog extends JDialog {
     private double longitude;
     private WebView webView; // WebView를 인스턴스 변수로 설정하여 다른 메서드에서 접근 가능
 
-
     public PopupDialog(JFrame parent, JPanel dayPanel) {
         super(parent, "장소 추가", true);
         setSize(900, 400);
@@ -177,7 +176,11 @@ public class PopupDialog extends JDialog {
         CardLayout cl = (CardLayout) mainPanel.getLayout();
         cl.show(mainPanel, category);
 
-        String url = generateAPIUrl(contentTypeId, cat1, cat2, cat3);
+        PlanwritepageFrame parentFrame = (PlanwritepageFrame) getParent();
+        int areaCode = parentFrame.getSelectedAreaCode(); // 선택한 areaCode 가져오기
+        String sigunguCode = parentFrame.getSelectedSigunguCode(); // 선택한 sigunguCode 가져오기
+
+        String url = generateAPIUrl(contentTypeId, cat1, cat2, cat3, areaCode, sigunguCode);
         String jsonResponse = requestAPIData(url);
 
         if (jsonResponse != null) {
@@ -185,11 +188,20 @@ public class PopupDialog extends JDialog {
         }
     }
 
-    private static String generateAPIUrl(String contentTypeId, String cat1, String cat2, String cat3) {
-        return "http://apis.data.go.kr/B551011/KorService1/areaBasedList1?serviceKey=" + SERVICE_KEY
-                + "&numOfRows=1000&pageNo=1&MobileOS=ETC&MobileApp=TestApp&_type=json&contentTypeId=" + contentTypeId
-                + "&areaCode=39&cat1=" + cat1 + "&cat2=" + cat2 + "&cat3=" + cat3;
+    private static String generateAPIUrl(String contentTypeId, String cat1, String cat2, String cat3, int areaCode, String sigunguCode) {
+        String url = "http://apis.data.go.kr/B551011/KorService1/areaBasedList1?serviceKey=" + SERVICE_KEY
+                + "&numOfRows=500&pageNo=1&MobileOS=ETC&MobileApp=TestApp&_type=json&contentTypeId=" + contentTypeId
+                + "&areaCode=" + areaCode
+                + "&cat1=" + cat1 + "&cat2=" + cat2 + "&cat3=" + cat3;
+
+        if (!sigunguCode.isEmpty()) {
+            url += "&sigunguCode=" + sigunguCode;
+        }
+
+        System.out.println("Generated URL: " + url); // URL 확인용 로그
+        return url;
     }
+
 
     private static String requestAPIData(String urlString) {
         try {
@@ -214,7 +226,6 @@ public class PopupDialog extends JDialog {
 
     private static void updateListWithAPIData(JPanel targetPanel, String jsonResponse) {
         DefaultListModel<String> listModel = new DefaultListModel<>();
-        JList<String> placeList = new JList<>(listModel);
 
         try {
             JSONObject jsonObject = new JSONObject(jsonResponse);

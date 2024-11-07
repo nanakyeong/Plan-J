@@ -29,6 +29,7 @@ public class PlanwritepageFrame extends JFrame {
     private JComboBox<String> areaCodeComboBox;
     private JComboBox<String> sigunguComboBox;
     private Map<String, Integer> areaCodeMap = new HashMap<>(); // 지역 이름과 코드 매핑을 위한 HashMap 추가
+    private Map<String, Integer> sigunguCodeMap = new HashMap<>();
 
     public PlanwritepageFrame() {
         setTitle("Plan J");
@@ -343,12 +344,18 @@ public class PlanwritepageFrame extends JFrame {
 
     }
 
-    private JSONObject searchPlaceByKeyword(String keyword) {
-        // 제주도 (areaCode=39)로 지역 필터 추가
+    private JSONObject searchPlaceByKeyword(PlanwritepageFrame parentFrame, String keyword) {
+        int areaCode = parentFrame.getSelectedAreaCode();
+        String sigunguCode = parentFrame.getSelectedSigunguCode();
+
         String urlString = "http://apis.data.go.kr/B551011/KorService1/searchKeyword1?serviceKey=" + SERVICE_KEY
                 + "&numOfRows=1&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json&listYN=Y&arrange=A&keyword="
                 + URLEncoder.encode(keyword, StandardCharsets.UTF_8)
-                + "&areaCode=39"; // 제주도 지역 코드 추가
+                + "&areaCode=" + areaCode;
+
+        if (!sigunguCode.isEmpty()) {
+            urlString += "&sigunguCode=" + sigunguCode;
+        }
 
         try {
             URL url = new URL(urlString);
@@ -372,7 +379,6 @@ public class PlanwritepageFrame extends JFrame {
 
             System.out.println("API 응답 내용: " + response.toString());
 
-            // JSON 파싱
             JSONObject jsonObject = new JSONObject(response.toString());
             JSONObject body = jsonObject.getJSONObject("response").getJSONObject("body");
             JSONArray items = body.getJSONObject("items").getJSONArray("item");
@@ -389,16 +395,16 @@ public class PlanwritepageFrame extends JFrame {
 
     // 지도에서 위치를 업데이트하는 메서드
     private void updateMapWithPlace(String placeName) {
-        JSONObject placeInfo = searchPlaceByKeyword(placeName);
+        JSONObject placeInfo = searchPlaceByKeyword(this, placeName);
         if (placeInfo != null) {
-            double latitude = placeInfo.getDouble("mapy"); // 위도
-            double longitude = placeInfo.getDouble("mapx"); // 경도
-
-            myPanel.updateMapMarker(latitude, longitude); // MyPanel의 마커 업데이트 메서드 호출
+            double latitude = placeInfo.getDouble("mapy");
+            double longitude = placeInfo.getDouble("mapx");
+            myPanel.updateMapMarker(latitude, longitude);
         } else {
             JOptionPane.showMessageDialog(this, "장소 정보를 찾을 수 없습니다.");
         }
     }
+
 
     private void populateAreaCodeComboBox() {
         String urlString = "https://apis.data.go.kr/B551011/KorService1/areaCode1?serviceKey=" + SERVICE_KEY +
@@ -440,10 +446,13 @@ public class PlanwritepageFrame extends JFrame {
                 JSONArray sigunguArray = sigunguData.getJSONArray("item");
                 sigunguComboBox.removeAllItems();
                 sigunguComboBox.addItem("시군구 선택");
+                sigunguCodeMap.clear();  // 기존 시군구 코드 매핑을 초기화
                 for (int i = 0; i < sigunguArray.length(); i++) {
                     JSONObject sigungu = sigunguArray.getJSONObject(i);
                     String sigunguName = sigungu.getString("name");
+                    int sigunguCode = sigungu.getInt("code"); // 시군구 코드 값을 가져옴
                     sigunguComboBox.addItem(sigunguName);
+                    sigunguCodeMap.put(sigunguName, sigunguCode); // 시군구 이름과 코드 매핑
                 }
             }
         } catch (Exception e) {
@@ -471,6 +480,27 @@ public class PlanwritepageFrame extends JFrame {
             return null;
         }
     }
+
+    public int getSelectedAreaCode() {
+        String selectedArea = (String) areaCodeComboBox.getSelectedItem();
+        int areaCode = getAreaCode(selectedArea);
+        System.out.println("Selected Area: " + selectedArea + " | Area Code: " + areaCode); // 테스트 출력
+        return areaCode; // 선택된 지역의 코드 반환
+    }
+
+    // 선택한 시군구의 코드를 반환하는 메서드
+    public String getSelectedSigunguCode() {
+        String selectedSigungu = (String) sigunguComboBox.getSelectedItem();
+        if (selectedSigungu == null || selectedSigungu.equals("시군구 선택")) {
+            System.out.println("Selected Sigungu: None (default)"); // 테스트 출력
+            return ""; // 시군구가 선택되지 않았으면 빈 문자열 반환
+        }
+        String sigunguCode = String.valueOf(sigunguCodeMap.getOrDefault(selectedSigungu, 0)); // 시군구 코드를 정확히 반환
+        System.out.println("Selected Sigungu: " + selectedSigungu + " | Sigungu Code: " + sigunguCode); // 테스트 출력
+        return sigunguCode;
+    }
+
+
 
     public static void main(String[] args) {
         new PlanwritepageFrame();
