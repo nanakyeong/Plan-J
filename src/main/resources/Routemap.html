@@ -22,36 +22,46 @@
 <div id="map"></div>
 <script>
   var mapContainer = document.getElementById('map');
-  var mapOption = {
-      center: new kakao.maps.LatLng(33.3059197039, 126.2507039833),
-      level: 9
-  };
-  var map = new kakao.maps.Map(mapContainer, mapOption);
 
-  function displayRoute(routeData) {
+  function displayRoute(optimizedPaths, markerData, centerLat, centerLng) {
+      var mapOption = {
+          center: new kakao.maps.LatLng(centerLat, centerLng),
+          level: 9
+      };
+      var map = new kakao.maps.Map(mapContainer, mapOption);
+
+      // Function to add a marker at a specific position
+      function addMarker(position) {
+          new kakao.maps.Marker({
+              position: position,
+              map: map
+          });
+      }
+
       try {
-          var data = JSON.parse(routeData);
+          var data = JSON.parse(optimizedPaths);
+          var markers = JSON.parse(markerData);
           var linePath = [];
-          var markers = [];
 
-          var origin = data.origin;
-          var destination = data.destination;
-          var waypoints = data.waypoints;
-
-          linePath.push(new kakao.maps.LatLng(origin.y, origin.x));
-          waypoints.forEach(waypoint => {
-              linePath.push(new kakao.maps.LatLng(waypoint.y, waypoint.x));
+          data.forEach(roads => {
+              roads.forEach(road => {
+                  var vertexes = road.vertexes;
+                  for (var i = 0; i < vertexes.length; i += 2) {
+                      var lat = vertexes[i + 1];
+                      var lng = vertexes[i];
+                      var latLng = new kakao.maps.LatLng(lat, lng);
+                      linePath.push(latLng);
+                  }
+              });
           });
-          linePath.push(new kakao.maps.LatLng(destination.y, destination.x));
 
-          // 마커 설정
-          new kakao.maps.Marker({ position: new kakao.maps.LatLng(origin.y, origin.x), map: map });
-          waypoints.forEach(waypoint => {
-              new kakao.maps.Marker({ position: new kakao.maps.LatLng(waypoint.y, waypoint.x), map: map });
+          // 주요 좌표에만 마커 추가
+          markers.forEach(marker => {
+              var position = new kakao.maps.LatLng(marker.y, marker.x);
+              addMarker(position);
           });
-          new kakao.maps.Marker({ position: new kakao.maps.LatLng(destination.y, destination.x), map: map });
 
-          // 경로 그리기
+          // Draw the path on the map
           var polyline = new kakao.maps.Polyline({
               path: linePath,
               strokeWeight: 5,
@@ -64,5 +74,6 @@
       }
   }
 </script>
+
 </body>
 </html>
