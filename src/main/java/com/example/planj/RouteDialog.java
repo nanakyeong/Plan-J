@@ -1,3 +1,4 @@
+
 package com.example.planj;
 
 import javafx.application.Platform;
@@ -19,12 +20,10 @@ import java.util.List;
 
 public class RouteDialog extends JFrame {
     private static final String API_KEY = "74c57db65fbd1377d25b3f8093772aaa";
-    private List<double[]> locations;
-    private List<String> placeNames; // 장소 이름 리스트 추가
+    private List<LocationData> locations;
 
-    public RouteDialog(List<double[]> locations, List<String> placeNames) {
-        this.locations = locations;
-        this.placeNames = placeNames;
+    public RouteDialog(List<double[]> coords, List<String> names) {
+        this.locations = createLocationDataList(coords, names);
         setTitle("Optimized Route Display");
         setSize(1000, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -35,24 +34,23 @@ public class RouteDialog extends JFrame {
         placeListPanel.setPreferredSize(new Dimension(200, 600));
         placeListPanel.setBackground(Color.WHITE);
 
-        JLabel placeListLabel = new JLabel("장소 리스트", SwingConstants.CENTER);
+        JLabel placeListLabel = new JLabel("정렬 리스트", SwingConstants.CENTER);
         placeListPanel.add(placeListLabel, BorderLayout.NORTH);
 
-        // 장소 리스트 표시용 JTextArea
         JTextArea placeListTextArea = new JTextArea();
         placeListTextArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(placeListTextArea);
         placeListPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // JTextArea에 장소 이름을 추가하여 표시
-        for (int i = 0; i < locations.size(); i++) {
-            String placeName = placeNames.get(i);
-            placeListTextArea.append(placeName + "\n");
+        // 최적화된 순서로 정렬 리스트에 추가
+        List<LocationData> optimizedOrder = optimizeRoute(locations);
+        placeListTextArea.setText(""); // 기존 텍스트 초기화
+        for (LocationData location : optimizedOrder) {
+            placeListTextArea.append(location.name + "\n");
         }
 
-        add(placeListPanel, BorderLayout.WEST); // 왼쪽에 장소 리스트 패널 추가
+        add(placeListPanel, BorderLayout.WEST);
 
-        // 지도 패널 설정
         JFXPanel fxPanel = new JFXPanel();
         add(fxPanel, BorderLayout.CENTER);
 
@@ -61,15 +59,17 @@ public class RouteDialog extends JFrame {
             WebEngine webEngine = webView.getEngine();
             webEngine.load(getClass().getResource("/Routemap.html").toExternalForm());
 
-            JSONArray optimizedPaths = getOptimizedRoute(locations);
+            JSONArray optimizedPaths = getOptimizedRoute(optimizedOrder);
             JSONArray markers = new JSONArray();
-            double[] centerCoordinates = calculateCenter(locations);
-            locations.forEach(loc -> {
+            double[] centerCoordinates = calculateCenter(optimizedOrder);
+
+            for (LocationData location : optimizedOrder) {
                 JSONObject marker = new JSONObject();
-                marker.put("x", loc[0]);
-                marker.put("y", loc[1]);
+                marker.put("x", location.coordinates[0]);
+                marker.put("y", location.coordinates[1]);
+                marker.put("title", location.name);
                 markers.put(marker);
-            });
+            }
 
             webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
                 if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
@@ -82,25 +82,32 @@ public class RouteDialog extends JFrame {
         });
     }
 
-    private double[] calculateCenter(List<double[]> locations) {
+    private List<LocationData> createLocationDataList(List<double[]> coords, List<String> names) {
+        List<LocationData> locationDataList = new ArrayList<>();
+        for (int i = 0; i < coords.size(); i++) {
+            locationDataList.add(new LocationData(coords.get(i), names.get(i)));
+        }
+        return locationDataList;
+    }
+
+    private double[] calculateCenter(List<LocationData> locations) {
         double sumX = 0;
         double sumY = 0;
-        for (double[] loc : locations) {
-            sumX += loc[0];
-            sumY += loc[1];
+        for (LocationData location : locations) {
+            sumX += location.coordinates[0];
+            sumY += location.coordinates[1];
         }
         double centerX = sumX / locations.size();
         double centerY = sumY / locations.size();
         return new double[]{centerX, centerY};
     }
 
-    private JSONArray getOptimizedRoute(List<double[]> locations) {
-        List<double[]> optimizedOrder = optimizeRoute(locations); // 최적화된 순서로 경로 계산
+    private JSONArray getOptimizedRoute(List<LocationData> optimizedOrder) {
         JSONArray pathSegments = new JSONArray();
 
         for (int i = 0; i < optimizedOrder.size() - 1; i++) {
-            double[] start = optimizedOrder.get(i);
-            double[] end = optimizedOrder.get(i + 1);
+            double[] start = optimizedOrder.get(i).coordinates;
+            double[] end = optimizedOrder.get(i + 1).coordinates;
 
             try {
                 String urlString = String.format(
@@ -131,7 +138,7 @@ public class RouteDialog extends JFrame {
                             JSONArray roads = firstRoute.getJSONArray("sections")
                                     .getJSONObject(0).getJSONArray("roads");
 
-                            pathSegments.put(roads); // 각 도로 세그먼트를 경로에 추가
+                            pathSegments.put(roads);
                         } else {
                             System.out.println("Error: 'sections' not found in the route data.");
                         }
@@ -147,30 +154,25 @@ public class RouteDialog extends JFrame {
         return pathSegments;
     }
 
+    private List<LocationData> optimizeRoute(List<LocationData> locations) {
+        List<LocationData> optimizedOrder = new ArrayList<>();
+        boolean[] visited = new boolean[locations.size()];
 
+        LocationData startAccommodation = locations.get(0);
+        LocationData endAccommodation = locations.get(locations.size() - 1);
 
-    private List<double[]> optimizeRoute(List<double[]> locations) {
-        List<double[]> optimizedOrder = new ArrayList<>();
+        optimizedOrder.add(startAccommodation);
+        visited[0] = true;
 
-        // 시작과 끝은 숙소로 고정
-        double[] startAccommodation = locations.get(0);
-        double[] endAccommodation = locations.get(locations.size() - 1);
+        LocationData currentLocation = startAccommodation;
 
-        optimizedOrder.add(startAccommodation); // 시작 숙소 추가
-
-        // 중간 지점들만 추출하여 최적화
-        List<double[]> intermediateLocations = new ArrayList<>(locations.subList(1, locations.size() - 1));
-        boolean[] visited = new boolean[intermediateLocations.size()];
-
-        // 중간 지점들 최적화하여 추가
-        for (int i = 0; i < intermediateLocations.size(); i++) {
-            double[] currentLocation = optimizedOrder.get(i);
+        for (int i = 1; i < locations.size() - 1; i++) {
             double minDistance = Double.MAX_VALUE;
             int nextIndex = -1;
 
-            for (int j = 0; j < intermediateLocations.size(); j++) {
+            for (int j = 1; j < locations.size() - 1; j++) {
                 if (!visited[j]) {
-                    double distance = calculateDistance(currentLocation, intermediateLocations.get(j));
+                    double distance = calculateDistance(currentLocation.coordinates, locations.get(j).coordinates);
                     if (distance < minDistance) {
                         minDistance = distance;
                         nextIndex = j;
@@ -180,19 +182,27 @@ public class RouteDialog extends JFrame {
 
             if (nextIndex != -1) {
                 visited[nextIndex] = true;
-                optimizedOrder.add(intermediateLocations.get(nextIndex));
+                optimizedOrder.add(locations.get(nextIndex));
+                currentLocation = locations.get(nextIndex);
             }
         }
 
-        optimizedOrder.add(endAccommodation); // 끝 숙소 추가
+        optimizedOrder.add(endAccommodation);
 
         return optimizedOrder;
     }
-
-
 
     private double calculateDistance(double[] loc1, double[] loc2) {
         return Math.sqrt(Math.pow(loc1[0] - loc2[0], 2) + Math.pow(loc1[1] - loc2[1], 2));
     }
 
+    public static class LocationData {
+        public double[] coordinates;
+        public String name;
+
+        public LocationData(double[] coordinates, String name) {
+            this.coordinates = coordinates;
+            this.name = name;
+        }
+    }
 }

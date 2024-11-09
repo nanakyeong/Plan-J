@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.ArrayList;
-
 
 public class PlanwritepageFrame extends JFrame {
 
@@ -130,7 +128,6 @@ public class PlanwritepageFrame extends JFrame {
         contentPane.add(myPanel);
 
         setVisible(true);
-
     }
 
     private void openAccommodationPopup() {
@@ -144,6 +141,9 @@ public class PlanwritepageFrame extends JFrame {
         this.accommodationLat = latitude;
         this.accommodationLon = longitude;
 
+        System.out.println("Accommodation added: " + accommodationName);
+        System.out.println("Latitude: " + accommodationLat + ", Longitude: " + accommodationLon);
+
         for (Component comp : planPanel.getComponents()) {
             if (comp instanceof JPanel) {
                 JPanel dayPanel = (JPanel) comp;
@@ -154,7 +154,6 @@ public class PlanwritepageFrame extends JFrame {
                 if (topLabel != null) topLabel.setText(accommodationName);
             }
         }
-
         planPanel.revalidate();
         planPanel.repaint();
     }
@@ -181,7 +180,6 @@ public class PlanwritepageFrame extends JFrame {
                 addDayPanel(planPanel, i + "일차");
             }
         }
-
         planPanel.revalidate();
         planPanel.repaint();
     }
@@ -264,24 +262,36 @@ public class PlanwritepageFrame extends JFrame {
 
     private void openRouteDialog(String dayText) {
         Map<String, Object> dayData = getLocationsForDay(dayText);
-        List<double[]> locationCoordinates = (List<double[]>) dayData.get("locations");
-        List<String> placeNames = (List<String>) dayData.get("placeNames");
+        List<double[]> locationCoordinates = new ArrayList<>();
+        List<String> placeNames = new ArrayList<>();
 
-        // 숙소 좌표와 이름을 경로 시작과 끝에 추가
+        // 숙소가 설정된 경우, 경로의 시작과 끝에 숙소를 추가
         if (accommodationName != null && accommodationLat != 0 && accommodationLon != 0) {
-            // 경로 시작 위치로 숙소 추가
-            locationCoordinates.add(0, new double[]{accommodationLat, accommodationLon});
-            placeNames.add(accommodationName);
+            locationCoordinates.add(new double[]{accommodationLon, accommodationLat});
+            placeNames.add(accommodationName);  // 시작 위치에 숙소 추가
+        }
 
-            // 경로 끝 위치로 숙소 추가
-            locationCoordinates.add(new double[]{accommodationLat, accommodationLon});
-            placeNames.add(accommodationName);
+        // 장소 좌표와 이름 추가
+        List<double[]> dayCoordinates = (List<double[]>) dayData.get("locations");
+        List<String> dayPlaceNames = (List<String>) dayData.get("placeNames");
+        locationCoordinates.addAll(dayCoordinates);
+        placeNames.addAll(dayPlaceNames);
+
+        // 경로 끝에 숙소 추가
+        if (accommodationName != null && accommodationLat != 0 && accommodationLon != 0) {
+            locationCoordinates.add(new double[]{accommodationLon, accommodationLat});
+            placeNames.add(accommodationName);  // 끝 위치에 숙소 추가
+        }
+
+        System.out.println("경로 최적화에 전달될 좌표 리스트:");
+        for (int i = 0; i < locationCoordinates.size(); i++) {
+            double[] coordinates = locationCoordinates.get(i);
+            System.out.printf("장소명: %s, Latitude: %f, Longitude: %f%n", placeNames.get(i), coordinates[0], coordinates[1]);
         }
 
         RouteDialog routeDialog = new RouteDialog(locationCoordinates, placeNames);
         routeDialog.setVisible(true);
     }
-
 
     // 특정 일차의 장소 좌표 목록을 가져오는 메서드
     private Map<String, Object> getLocationsForDay(String dayText) {
@@ -296,14 +306,11 @@ public class PlanwritepageFrame extends JFrame {
                 locations.add(new double[]{mapx, mapy});
             }
         }
-
         Map<String, Object> result = new HashMap<>();
         result.put("locations", locations);  // 좌표 리스트 저장
         result.put("placeNames", placeNames);  // 장소 이름 리스트 저장
         return result;
     }
-
-
 
     private void openAddPlaceDialog(JPanel dayPanel) {
         PopupDialog dialog = new PopupDialog(this, dayPanel);
@@ -318,7 +325,6 @@ public class PlanwritepageFrame extends JFrame {
                 dayPanel.remove(lastComponent);
             }
         }
-
         String dayText = dayPanel.getName(); // dayPanel의 이름을 통해 dayText 추출
 
         // HashMap에 장소 목록을 업데이트
@@ -661,8 +667,6 @@ public class PlanwritepageFrame extends JFrame {
         System.out.println("Selected Sigungu: " + selectedSigungu + " | Sigungu Code: " + sigunguCode); // 테스트 출력
         return sigunguCode;
     }
-
-
 
     public static void main(String[] args) {
         new PlanwritepageFrame();

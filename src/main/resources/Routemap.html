@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>Kakao Map</title>
+  <title>Kakao Map with Gradient Route</title>
   <style>
     html, body {
         margin: 0;
@@ -24,54 +24,77 @@
   var mapContainer = document.getElementById('map');
 
   function displayRoute(optimizedPaths, markerData, centerLat, centerLng) {
-      var mapOption = {
-          center: new kakao.maps.LatLng(centerLat, centerLng),
-          level: 9
-      };
-      var map = new kakao.maps.Map(mapContainer, mapOption);
+    var mapOption = {
+        center: new kakao.maps.LatLng(centerLat, centerLng),
+        level: 9
+    };
+    var map = new kakao.maps.Map(mapContainer, mapOption);
 
-      // Function to add a marker at a specific position
-      function addMarker(position) {
-          new kakao.maps.Marker({
-              position: position,
-              map: map
-          });
-      }
+    // Function to add a marker at a specific position and title
+    function addMarker(position, title, index) {
+        var imageSrc = `https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png`;
+        var imageSize = new kakao.maps.Size(36, 37);
+        var imgOptions =  {
+            spriteSize : new kakao.maps.Size(36, 691),
+            spriteOrigin : new kakao.maps.Point(0, (index * 46) + 10),
+            offset: new kakao.maps.Point(13, 37)
+        };
+        var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imgOptions);
 
-      try {
-          var data = JSON.parse(optimizedPaths);
-          var markers = JSON.parse(markerData);
-          var linePath = [];
+        var marker = new kakao.maps.Marker({
+            position: position,
+            image: markerImage,
+            map: map
+        });
 
-          data.forEach(roads => {
-              roads.forEach(road => {
-                  var vertexes = road.vertexes;
-                  for (var i = 0; i < vertexes.length; i += 2) {
-                      var lat = vertexes[i + 1];
-                      var lng = vertexes[i];
-                      var latLng = new kakao.maps.LatLng(lat, lng);
-                      linePath.push(latLng);
-                  }
-              });
-          });
+        var infowindow = new kakao.maps.InfoWindow({
+            content: `<div style="padding:5px;">${title}</div>`
+        });
+        kakao.maps.event.addListener(marker, 'mouseover', function() {
+            infowindow.open(map, marker);
+        });
+        kakao.maps.event.addListener(marker, 'mouseout', function() {
+            infowindow.close();
+        });
+    }
 
-          // 주요 좌표에만 마커 추가
-          markers.forEach(marker => {
-              var position = new kakao.maps.LatLng(marker.y, marker.x);
-              addMarker(position);
-          });
+    try {
+        var data = JSON.parse(optimizedPaths);
+        var markers = JSON.parse(markerData);
+        var linePath = [];
 
-          // Draw the path on the map
-          var polyline = new kakao.maps.Polyline({
-              path: linePath,
-              strokeWeight: 5,
-              strokeColor: '#FF0000',
-              strokeOpacity: 0.8
-          });
-          polyline.setMap(map);
-      } catch (error) {
-          console.error("Error displaying route:", error);
-      }
+        data.forEach(roads => {
+            roads.forEach(road => {
+                var vertexes = road.vertexes;
+                for (var i = 0; i < vertexes.length; i += 2) {
+                    var lat = vertexes[i + 1];
+                    var lng = vertexes[i];
+                    var latLng = new kakao.maps.LatLng(lat, lng);
+                    linePath.push(latLng);
+                }
+            });
+        });
+
+        // Add markers and apply gradient color
+        markers.forEach((marker, index) => {
+            var position = new kakao.maps.LatLng(marker.y, marker.x);
+            addMarker(position, marker.title, index);
+        });
+
+        // Draw the path with gradient
+        for (var i = 0; i < linePath.length - 1; i++) {
+            var polyline = new kakao.maps.Polyline({
+                path: [linePath[i], linePath[i + 1]],
+                strokeWeight: 5,
+                strokeColor: `hsl(${(i / linePath.length) * 240}, 100%, 50%)`, // Gradient color
+                strokeOpacity: 0.8
+            });
+            polyline.setMap(map);
+        }
+
+    } catch (error) {
+        console.error("Error displaying route:", error);
+    }
   }
 </script>
 
