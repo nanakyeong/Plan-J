@@ -15,8 +15,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 
 public class PlanwritepageFrame extends JFrame {
@@ -30,6 +33,11 @@ public class PlanwritepageFrame extends JFrame {
     private JComboBox<String> sigunguComboBox;
     private Map<String, Integer> areaCodeMap = new HashMap<>(); // 지역 이름과 코드 매핑을 위한 HashMap 추가
     private Map<String, Integer> sigunguCodeMap = new HashMap<>();
+    // HashMap 선언
+    private Map<String, List<String>> dayToPlacesMap = new HashMap<>();
+    private String accommodationName; // 숙소 이름 저장
+    private double accommodationLat;  // 숙소 위도
+    private double accommodationLon;  // 숙소 경도
 
     public PlanwritepageFrame() {
         setTitle("Plan J");
@@ -67,7 +75,7 @@ public class PlanwritepageFrame extends JFrame {
 
         Integer[] choices1 = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
         JComboBox<Integer> section1 = new JComboBox<>(choices1);
-        section1.setBounds(385, 220, 50, 23);
+        section1.setBounds(395, 220, 50, 23);
         contentPane.add(section1);
 
         JLabel day1 = new JLabel("박");
@@ -99,6 +107,12 @@ public class PlanwritepageFrame extends JFrame {
         section1.addActionListener(e -> updateDays(section1, section2));
         section2.addActionListener(e -> updatePlanPanel(section2));
 
+        // Add 숙소 추가 button next to area and sigungu dropdowns
+        JButton addAccommodationButton = new JButton("숙소 추가");
+        addAccommodationButton.setBounds(425, 250, 100, 23);
+        addAccommodationButton.addActionListener(e -> openAccommodationPopup());
+        contentPane.add(addAccommodationButton);
+
         // 일정 리스트 패널
         planPanel = new JPanel();
         planPanel.setLayout(new BoxLayout(planPanel, BoxLayout.Y_AXIS));
@@ -118,6 +132,33 @@ public class PlanwritepageFrame extends JFrame {
         setVisible(true);
 
     }
+
+    private void openAccommodationPopup() {
+        AccommodationPopup accommodationPopup = new AccommodationPopup(this);
+        accommodationPopup.setVisible(true);
+    }
+
+    // 숙소를 일정에 추가하는 메서드
+    public void addAccommodationToSchedule(String accommodationName, double latitude, double longitude) {
+        this.accommodationName = accommodationName;
+        this.accommodationLat = latitude;
+        this.accommodationLon = longitude;
+
+        for (Component comp : planPanel.getComponents()) {
+            if (comp instanceof JPanel) {
+                JPanel dayPanel = (JPanel) comp;
+
+                // 각 dayPanel에 저장된 라벨 가져와 업데이트
+                JLabel topLabel = (JLabel) dayPanel.getClientProperty("topAccommodationLabel");
+
+                if (topLabel != null) topLabel.setText(accommodationName);
+            }
+        }
+
+        planPanel.revalidate();
+        planPanel.repaint();
+    }
+
 
     private void updateDays(JComboBox<Integer> section1, JComboBox<Integer> section2) {
         int selectedNights = (Integer) section1.getSelectedItem();
@@ -149,13 +190,59 @@ public class PlanwritepageFrame extends JFrame {
         JPanel dayPanel = new JPanel();
         dayPanel.setLayout(new BoxLayout(dayPanel, BoxLayout.Y_AXIS));
         dayPanel.setBackground(Color.WHITE);
+        dayPanel.setName(dayText); // dayText를 이름으로 설정하여 식별
+
+        dayPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1),
+                BorderFactory.createEmptyBorder(0, 10, 10, 0) // 내부 여백 설정 (위, 좌, 아래, 우)
+        ));
+
+        // "일차" 라벨과 "경로최적화" 라벨을 가로로 배치하기 위해 패널 생성
+        JPanel labelPanel = new JPanel();
+        labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
+        labelPanel.setBackground(Color.WHITE);
 
         JLabel dayLabel = new JLabel(dayText);
         dayLabel.setFont(new Font("돋움", Font.BOLD, 17));
         dayLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-        dayLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        dayPanel.add(dayLabel);
 
+        JButton optimizeButton = new JButton("경로최적화");
+        optimizeButton.setFont(new Font("돋움", Font.PLAIN, 12));
+        optimizeButton.setForeground(Color.BLUE);
+        optimizeButton.setFocusPainted(false);
+        optimizeButton.setContentAreaFilled(false);
+        optimizeButton.setBorderPainted(false);
+        optimizeButton.addActionListener(e -> openRouteDialog(dayText)); // 액션 리스너 설정
+
+        labelPanel.add(optimizeButton);
+        labelPanel.add(dayLabel);
+        labelPanel.add(Box.createHorizontalGlue());
+        labelPanel.add(optimizeButton);
+        labelPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        dayPanel.add(labelPanel);
+
+        // 상단 고정 숙소 라벨 추가
+        JLabel topAccommodationLabel = new JLabel(accommodationName != null ? accommodationName : "숙소 미지정");
+        topAccommodationLabel.setFont(new Font("돋움", Font.PLAIN, 12));
+        topAccommodationLabel.setForeground(Color.BLUE);
+        topAccommodationLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        topAccommodationLabel.setBorder(BorderFactory.createEmptyBorder(10, 15, 0, 0));
+        dayPanel.add(topAccommodationLabel);
+
+        // 라벨 클릭 시 지도 위치 업데이트
+        topAccommodationLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                if (accommodationLat != 0 && accommodationLon != 0) {
+                    myPanel.updateMapMarker(accommodationLat, accommodationLon);
+                } else {
+                    JOptionPane.showMessageDialog(dayPanel, "숙소 위치가 지정되지 않았습니다.");
+                }
+            }
+        });
+
+        // 장소 추가 버튼을 아래쪽에 배치
         JButton addPlaceButton = new JButton("장소를 추가하려면 클릭하세요...");
         addPlaceButton.setFont(new Font("돋움", Font.PLAIN, 12));
         addPlaceButton.setForeground(Color.GRAY);
@@ -163,13 +250,60 @@ public class PlanwritepageFrame extends JFrame {
         addPlaceButton.setContentAreaFilled(false);
         addPlaceButton.setBorderPainted(false);
         addPlaceButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        addPlaceButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 0, 0));
+        addPlaceButton.setBorder(BorderFactory.createEmptyBorder(15, 15, 0, 0));
         addPlaceButton.addActionListener(e -> openAddPlaceDialog(dayPanel));
-        dayPanel.add(addPlaceButton);
+        dayPanel.add(addPlaceButton); // dayPanel에 addPlaceButton을 추가하여 배치
 
+        // 라벨을 업데이트하기 위해 저장
+        dayPanel.putClientProperty("topAccommodationLabel", topAccommodationLabel);
+
+        // 최종적으로 planPanel에 dayPanel 추가 및 여백 조정
         planPanel.add(dayPanel);
-        planPanel.add(Box.createVerticalStrut(5));
+        planPanel.add(Box.createVerticalStrut(5)); // 위아래 간격을 위한 여백
     }
+
+    private void openRouteDialog(String dayText) {
+        Map<String, Object> dayData = getLocationsForDay(dayText);
+        List<double[]> locationCoordinates = (List<double[]>) dayData.get("locations");
+        List<String> placeNames = (List<String>) dayData.get("placeNames");
+
+        // 숙소 좌표와 이름을 경로 시작과 끝에 추가
+        if (accommodationName != null && accommodationLat != 0 && accommodationLon != 0) {
+            // 경로 시작 위치로 숙소 추가
+            locationCoordinates.add(0, new double[]{accommodationLat, accommodationLon});
+            placeNames.add(accommodationName);
+
+            // 경로 끝 위치로 숙소 추가
+            locationCoordinates.add(new double[]{accommodationLat, accommodationLon});
+            placeNames.add(accommodationName);
+        }
+
+        RouteDialog routeDialog = new RouteDialog(locationCoordinates, placeNames);
+        routeDialog.setVisible(true);
+    }
+
+
+    // 특정 일차의 장소 좌표 목록을 가져오는 메서드
+    private Map<String, Object> getLocationsForDay(String dayText) {
+        List<double[]> locations = new ArrayList<>();
+        List<String> placeNames = dayToPlacesMap.getOrDefault(dayText, new ArrayList<>());
+
+        for (String placeName : placeNames) {
+            JSONObject placeInfo = searchPlaceByKeyword(this, placeName);
+            if (placeInfo != null) {
+                double mapx = placeInfo.getDouble("mapx");
+                double mapy = placeInfo.getDouble("mapy");
+                locations.add(new double[]{mapx, mapy});
+            }
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("locations", locations);  // 좌표 리스트 저장
+        result.put("placeNames", placeNames);  // 장소 이름 리스트 저장
+        return result;
+    }
+
+
 
     private void openAddPlaceDialog(JPanel dayPanel) {
         PopupDialog dialog = new PopupDialog(this, dayPanel);
@@ -185,6 +319,22 @@ public class PlanwritepageFrame extends JFrame {
             }
         }
 
+        String dayText = dayPanel.getName(); // dayPanel의 이름을 통해 dayText 추출
+
+        // HashMap에 장소 목록을 업데이트
+        dayToPlacesMap.putIfAbsent(dayText, new ArrayList<>()); // dayText가 없을 경우 리스트 초기화
+        dayToPlacesMap.get(dayText).add(placeName); // dayText에 해당하는 장소 목록에 추가
+
+        // 여백 블록과 장소 패널을 담는 패널 생성
+        JPanel combinedPanel = new JPanel();
+        combinedPanel.setLayout(new BoxLayout(combinedPanel, BoxLayout.Y_AXIS));
+        combinedPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        combinedPanel.setBackground(Color.WHITE);
+
+        // 여백 블록 생성 (상단 여백)
+        Component verticalStrut = Box.createVerticalStrut(10);
+        combinedPanel.add(verticalStrut);
+
         // 장소 항목 패널 생성
         JPanel placePanel = new JPanel();
         placePanel.setLayout(new BoxLayout(placePanel, BoxLayout.X_AXIS));
@@ -195,15 +345,21 @@ public class PlanwritepageFrame extends JFrame {
         // 장소 이름 라벨
         JLabel placeLabel = new JLabel(placeName);
         placeLabel.setFont(new Font("돋움", Font.PLAIN, 12));
-        placeLabel.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 0));
+        placeLabel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1), // 테두리 추가
+                BorderFactory.createEmptyBorder(0, 15, 0, 0) // 내부 여백 설정
+        ));
         placeLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
-        placePanel.add(placeLabel);
+        placeLabel.setPreferredSize(new Dimension(200, 20)); // 최대 너비 설정
+        placeLabel.setToolTipText(placeName); // 툴팁에 전체 텍스트 표시
 
+        // 텍스트가 길 때 줄임표(...)로 표시
+        placeLabel.setText(placeName.length() > 15 ? placeName.substring(0, 15) + "..." : placeName);
+        placePanel.add(placeLabel);
         // 클릭 시 지도의 위치를 업데이트하는 리스너 추가
         placeLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                // 예제 좌표 (실제 좌표로 대체 필요)
-                updateMapWithPlace(placeName);// MyPanel 참조를 이용해 지도 업데이트
+                updateMapWithPlace(placeName); // MyPanel 참조를 이용해 지도 업데이트
             }
         });
 
@@ -213,9 +369,9 @@ public class PlanwritepageFrame extends JFrame {
         upButton.setFocusPainted(false);
         upButton.setContentAreaFilled(false);
         upButton.setBorderPainted(false);
-        upButton.setPreferredSize(new Dimension(50, 20));
+        upButton.setPreferredSize(new Dimension(50, 15));
         upButton.setAlignmentY(Component.CENTER_ALIGNMENT); // 세로 중앙 정렬
-        upButton.addActionListener(e -> movePlacePanelUp(dayPanel, placePanel));
+        upButton.addActionListener(e -> movePlaceContainerUp(dayPanel, combinedPanel));
 
         // 아래로 이동 버튼
         JButton downButton = new JButton("▼");
@@ -223,9 +379,9 @@ public class PlanwritepageFrame extends JFrame {
         downButton.setFocusPainted(false);
         downButton.setContentAreaFilled(false);
         downButton.setBorderPainted(false);
-        downButton.setPreferredSize(new Dimension(50, 20));
+        downButton.setPreferredSize(new Dimension(50, 15));
         downButton.setAlignmentY(Component.CENTER_ALIGNMENT); // 세로 중앙 정렬
-        downButton.addActionListener(e -> movePlacePanelDown(dayPanel, placePanel));
+        downButton.addActionListener(e -> movePlaceContainerDown(dayPanel, combinedPanel));
 
         // 삭제 버튼
         JButton deleteButton = new JButton("×");
@@ -234,11 +390,12 @@ public class PlanwritepageFrame extends JFrame {
         deleteButton.setFocusPainted(false);
         deleteButton.setContentAreaFilled(false);
         deleteButton.setBorderPainted(false);
-        deleteButton.setPreferredSize(new Dimension(50, 20));
+        deleteButton.setPreferredSize(new Dimension(50, 15));
         deleteButton.setAlignmentY(Component.CENTER_ALIGNMENT); // 세로 중앙 정렬
         deleteButton.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 15));
         deleteButton.addActionListener(e -> {
-            dayPanel.remove(placePanel);
+            dayPanel.remove(combinedPanel);
+            dayToPlacesMap.get(dayText).remove(placeName); // HashMap에서 장소 삭제
             dayPanel.revalidate();
             dayPanel.repaint();
         });
@@ -249,8 +406,11 @@ public class PlanwritepageFrame extends JFrame {
         placePanel.add(downButton);
         placePanel.add(deleteButton);
 
-        // dayPanel에 placePanel 추가
-        dayPanel.add(placePanel);
+        // combinedPanel에 placePanel 추가
+        combinedPanel.add(placePanel);
+
+        // dayPanel에 combinedPanel 추가
+        dayPanel.add(combinedPanel);
 
         // 새로운 "장소를 추가하려면 클릭하세요..." 버튼 추가
         JButton addPlaceButton = new JButton("장소를 추가하려면 클릭하세요...");
@@ -260,7 +420,7 @@ public class PlanwritepageFrame extends JFrame {
         addPlaceButton.setContentAreaFilled(false);
         addPlaceButton.setBorderPainted(false);
         addPlaceButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        addPlaceButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 0, 0));
+        addPlaceButton.setBorder(BorderFactory.createEmptyBorder(15, 15, 0, 0));
         addPlaceButton.addActionListener(e -> openAddPlaceDialog(dayPanel));
         dayPanel.add(addPlaceButton);
 
@@ -269,27 +429,29 @@ public class PlanwritepageFrame extends JFrame {
         dayPanel.repaint();
     }
 
-    // 위로 이동하는 메서드
-    private void movePlacePanelUp(JPanel dayPanel, JPanel placePanel) {
-        int index = dayPanel.getComponentZOrder(placePanel);
+
+    // placeContainerPanel 전체를 위로 이동하는 메서드
+    private void movePlaceContainerUp(JPanel dayPanel, JPanel placeContainerPanel) {
+        int index = dayPanel.getComponentZOrder(placeContainerPanel);
         if (index > 1) { // 첫 번째 위치로 이동하지 않도록 제한
-            dayPanel.remove(placePanel);
-            dayPanel.add(placePanel, index - 1);
+            dayPanel.remove(placeContainerPanel);
+            dayPanel.add(placeContainerPanel, index - 1);
             dayPanel.revalidate();
             dayPanel.repaint();
         }
     }
 
-    // 아래로 이동하는 메서드
-    private void movePlacePanelDown(JPanel dayPanel, JPanel placePanel) {
-        int index = dayPanel.getComponentZOrder(placePanel);
+    // placeContainerPanel 전체를 아래로 이동하는 메서드
+    private void movePlaceContainerDown(JPanel dayPanel, JPanel placeContainerPanel) {
+        int index = dayPanel.getComponentZOrder(placeContainerPanel);
         if (index < dayPanel.getComponentCount() - 2) { // 마지막 위치로 이동하지 않도록 제한
-            dayPanel.remove(placePanel);
-            dayPanel.add(placePanel, index + 1);
+            dayPanel.remove(placeContainerPanel);
+            dayPanel.add(placeContainerPanel, index + 1);
             dayPanel.revalidate();
             dayPanel.repaint();
         }
     }
+
 
     class MyPanel extends JPanel {
         private JFXPanel jfxPanel;
