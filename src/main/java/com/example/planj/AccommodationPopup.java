@@ -184,11 +184,6 @@ public class AccommodationPopup extends JDialog {
                 double latitude = item.optDouble("mapy", 0.0);
                 double longitude = item.optDouble("mapx", 0.0);
 
-                // 좌표 정보를 콘솔에 출력하여 확인
-                System.out.println("Title: " + title);
-                System.out.println("Latitude (mapy): " + latitude);
-                System.out.println("Longitude (mapx): " + longitude);
-
                 listModel.addElement(title);
                 titleToContentIdMap.put(title, contentId);
                 titleToCoordinatesMap.put(title, new double[]{latitude, longitude}); // 좌표 저장

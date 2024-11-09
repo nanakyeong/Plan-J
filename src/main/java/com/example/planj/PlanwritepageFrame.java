@@ -111,6 +111,11 @@ public class PlanwritepageFrame extends JFrame {
         addAccommodationButton.addActionListener(e -> openAccommodationPopup());
         contentPane.add(addAccommodationButton);
 
+        JButton SaveButton = new JButton("저장하기");
+        SaveButton.setBounds(718, 160, 150, 30);
+        SaveButton.setFont(new Font("돋움", Font.BOLD, 18)); // 글씨 크기 설정
+        contentPane.add(SaveButton);
+
         // 일정 리스트 패널
         planPanel = new JPanel();
         planPanel.setLayout(new BoxLayout(planPanel, BoxLayout.Y_AXIS));
