@@ -57,16 +57,26 @@ public class UploadpageFrame extends JFrame {
         plan.addElement("(MY) test");
         plan.addElement("(MY) test");
 
+        JButton newPlanButton = new JButton("+ New Plan");
+        newPlanButton.setBounds(123, 225, 150, 40); // 위치와 크기 설정
+        newPlanButton.setFont(new Font("돋움", Font.BOLD, 17)); // 글씨 크기 설정
+        newPlanButton.setBackground(new Color(255, 255, 255)); // 배경색 설정 (파란색 계열)
+        contentPane.add(newPlanButton);
+
+        newPlanButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new PlanwritepageFrame(); // PlanwritepageFrame 열기
+                dispose(); // 현재 UploadpageFrame 닫기
+            }
+        });
 
         list = new JList<>(plan);
         list.setVisibleRowCount(7); // 보여질 plan 개수
         sp = new JScrollPane(list);
         sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        sp.setBounds(123, 220, 738, 200); // 크기와 위치 설정
+        sp.setBounds(123, 270, 738, 200); // 크기와 위치 설정
         contentPane.add(sp);
-
-
-
 
 
         MyPanel panel1 = new MyPanel();
@@ -90,4 +100,3 @@ public class UploadpageFrame extends JFrame {
         new UploadpageFrame();
     }
 }
-
