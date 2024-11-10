@@ -33,7 +33,6 @@ public class AccommodationPopup extends JDialog {
         setSize(900, 400);
         setLayout(new BorderLayout());
 
-        // 지도 표시용 JFXPanel
         JFXPanel fxPanel = new JFXPanel();
         fxPanel.setPreferredSize(new Dimension(294, 400));
 
@@ -43,39 +42,30 @@ public class AccommodationPopup extends JDialog {
             fxPanel.setScene(new Scene(webView));
         });
 
-        // 오른쪽 패널에 지도 추가
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
         rightPanel.add(fxPanel);
         add(rightPanel, BorderLayout.EAST);
 
-        // 숙소 리스트 패널
         mainPanel = new JPanel(new BorderLayout());
         JPanel accommodationPanel = createAccommodationPanel();
         mainPanel.add(accommodationPanel, BorderLayout.CENTER);
         add(mainPanel, BorderLayout.CENTER);
 
-        // 하단 버튼 패널
         JPanel bottomPanel = new JPanel();
         JButton addButton = new JButton("추가");
         JButton closeButton = new JButton("닫기");
 
-        // 버튼 리스너에서 좌표 전달
         addButton.addActionListener(e -> {
             selectedAccommodation = getSelectedAccommodation();
             if (selectedAccommodation != null) {
                 double[] coordinates = titleToCoordinatesMap.getOrDefault(selectedAccommodation, new double[]{0.0, 0.0});
-                System.out.println("Selected Accommodation: " + selectedAccommodation);
-                System.out.println("Latitude: " + coordinates[0] + ", Longitude: " + coordinates[1]);
-
-                // 좌표가 제대로 받아지는지 확인 후 PlanwritepageFrame에 전달
                 parentFrame.addAccommodationToSchedule(selectedAccommodation, coordinates[0], coordinates[1]);
                 setVisible(false);
             } else {
                 JOptionPane.showMessageDialog(this, "추가할 숙소를 선택하세요.");
             }
         });
-
 
         closeButton.addActionListener(e -> dispose());
         bottomPanel.add(addButton);
@@ -84,7 +74,6 @@ public class AccommodationPopup extends JDialog {
 
         setLocationRelativeTo(parent);
 
-        // 선택된 지역 코드에 따라 숙소 데이터를 로드
         loadAccommodationData((DefaultListModel<String>) ((JList<String>) ((JScrollPane) accommodationPanel.getComponent(0)).getViewport().getView()).getModel());
     }
 
@@ -180,13 +169,12 @@ public class AccommodationPopup extends JDialog {
                 String title = item.getString("title");
                 String contentId = item.getString("contentid");
 
-                // 좌표 정보 추출
                 double latitude = item.optDouble("mapy", 0.0);
                 double longitude = item.optDouble("mapx", 0.0);
 
                 listModel.addElement(title);
                 titleToContentIdMap.put(title, contentId);
-                titleToCoordinatesMap.put(title, new double[]{latitude, longitude}); // 좌표 저장
+                titleToCoordinatesMap.put(title, new double[]{latitude, longitude});
             }
 
         } catch (Exception e) {

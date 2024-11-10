@@ -30,7 +30,6 @@
     };
     var map = new kakao.maps.Map(mapContainer, mapOption);
 
-    // Function to add a marker at a specific position and title
     function addMarker(position, title, index) {
         var imageSrc = `https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png`;
         var imageSize = new kakao.maps.Size(36, 37);
@@ -75,18 +74,16 @@
             });
         });
 
-        // Add markers and apply gradient color
         markers.forEach((marker, index) => {
             var position = new kakao.maps.LatLng(marker.y, marker.x);
             addMarker(position, marker.title, index);
         });
 
-        // Draw the path with gradient
         for (var i = 0; i < linePath.length - 1; i++) {
             var polyline = new kakao.maps.Polyline({
                 path: [linePath[i], linePath[i + 1]],
                 strokeWeight: 5,
-                strokeColor: `hsl(${(i / linePath.length) * 240}, 100%, 50%)`, // Gradient color
+                strokeColor: `hsl(${(i / linePath.length) * 240}, 100%, 50%)`,
                 strokeOpacity: 0.8
             });
             polyline.setMap(map);

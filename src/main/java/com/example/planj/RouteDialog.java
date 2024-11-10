@@ -29,7 +29,6 @@ public class RouteDialog extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // 장소 리스트 패널 설정
         JPanel placeListPanel = new JPanel(new BorderLayout());
         placeListPanel.setPreferredSize(new Dimension(200, 600));
         placeListPanel.setBackground(Color.WHITE);
@@ -42,9 +41,8 @@ public class RouteDialog extends JFrame {
         JScrollPane scrollPane = new JScrollPane(placeListTextArea);
         placeListPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // 최적화된 순서로 정렬 리스트에 추가
         List<LocationData> optimizedOrder = optimizeRoute(locations);
-        placeListTextArea.setText(""); // 기존 텍스트 초기화
+        placeListTextArea.setText("");
         for (LocationData location : optimizedOrder) {
             placeListTextArea.append(location.name + "\n");
         }

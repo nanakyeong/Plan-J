@@ -18,14 +18,14 @@ import javafx.scene.web.WebView;
 
 
 public class PopupDialog extends JDialog {
-    private static final String SERVICE_KEY = "pRHMKrAJfJJZTC104XWkGvOIvKtKcO6zFysOGGDrH3Bo%2FktklWp6urJAiA5DoWSY3rf7LEKeb2NU5aDiAfDhlw%3D%3D"; // TourAPI 서비스 키를 입력하세요
-    private static final Map<String, String> titleToContentIdMap = new HashMap<>(); // 제목과 contentId 매핑
+    private static final String SERVICE_KEY = "pRHMKrAJfJJZTC104XWkGvOIvKtKcO6zFysOGGDrH3Bo%2FktklWp6urJAiA5DoWSY3rf7LEKeb2NU5aDiAfDhlw%3D%3D";
+    private static final Map<String, String> titleToContentIdMap = new HashMap<>();
     private JPanel mainPanel;
     private String selectedPlace;
     private JPanel foodPanel = createCategoryPanel("음식점", "39");
     private double latitude;
     private double longitude;
-    private WebView webView; // WebView를 인스턴스 변수로 설정하여 다른 메서드에서 접근 가능
+    private WebView webView;
 
     public PopupDialog(JFrame parent, JPanel dayPanel) {
         super(parent, "장소 추가", true);
@@ -36,13 +36,11 @@ public class PopupDialog extends JDialog {
         fxPanel.setPreferredSize(new Dimension(294, 400));
 
         Platform.runLater(() -> {
-            // WebView 인스턴스를 초기화합니다.
             webView = new WebView();
             webView.getEngine().load(getClass().getResource("/map.html").toExternalForm());
             fxPanel.setScene(new Scene(webView));
         });
 
-        // rightPanel에 fxPanel 추가
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
         rightPanel.add(fxPanel);
@@ -71,19 +69,18 @@ public class PopupDialog extends JDialog {
         add(mainPanel, BorderLayout.CENTER);
 
         sightseeingButton.addActionListener(e -> loadCategoryData(mainPanel, "관광지", sightseeingPanel, "12", "A01", "A0101", ""));
-        foodButton.addActionListener(e -> showFoodCategories()); // 음식점 버튼 클릭 시 카테고리 선택 창 표시
+        foodButton.addActionListener(e -> showFoodCategories());
         cafeButton.addActionListener(e -> loadCategoryData(mainPanel, "카페", cafePanel, "39", "A05", "A0502", "A05020900"));
 
         JPanel bottomPanel = new JPanel();
         JButton addButton = new JButton("추가");
         JButton closeButton = new JButton("닫기");
 
-        // PopupDialog 클래스에서 addButton 클릭 리스너
         addButton.addActionListener(e -> {
             selectedPlace = getSelectedPlace();
             if (selectedPlace != null) {
-                ((PlanwritepageFrame) parent).addPlaceToSchedule(selectedPlace, dayPanel); // 메인 창 일정에 추가
-                setVisible(false); // 팝업 창 닫기
+                ((PlanwritepageFrame) parent).addPlaceToSchedule(selectedPlace, dayPanel);
+                setVisible(false);
             } else {
                 JOptionPane.showMessageDialog(this, "추가할 장소를 선택하세요.");
             }
@@ -142,11 +139,9 @@ public class PopupDialog extends JDialog {
         listScrollPane.setPreferredSize(new Dimension(200, 300));
         panel.add(listScrollPane, BorderLayout.WEST);
 
-        // infoLabel을 JLabel로 생성하고 스크롤 가능하도록 JScrollPane으로 감싸기
         JLabel infoLabel = new JLabel("선택한 " + categoryName + " 정보", SwingConstants.CENTER);
         infoLabel.setVerticalAlignment(SwingConstants.TOP);
 
-        // infoLabel을 감싼 JScrollPane 생성
         JScrollPane infoScrollPane = new JScrollPane(infoLabel);
         infoScrollPane.setPreferredSize(new Dimension(400, 300));
         infoScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -154,16 +149,15 @@ public class PopupDialog extends JDialog {
 
         panel.add(infoScrollPane, BorderLayout.CENTER);
 
-        // 선택된 장소 정보를 가져오는 코드에서 setCoordinatesAndDisplayMap 호출
         placeList.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 String selectedItem = placeList.getSelectedValue();
                 if (selectedItem != null) {
                     String contentId = titleToContentIdMap.get(selectedItem);
                     if (contentId != null) {
-                        JSONObject item = fetchDetailItem(contentId, contentTypeId); // 장소 세부 정보 가져오기
-                        infoLabel.setText(fetchDetailInfo(contentId, contentTypeId)); // 기존 정보 표시
-                        setCoordinatesAndDisplayMap(item); // 지도 업데이트
+                        JSONObject item = fetchDetailItem(contentId, contentTypeId);
+                        infoLabel.setText(fetchDetailInfo(contentId, contentTypeId));
+                        setCoordinatesAndDisplayMap(item);
                     }
                 }
             }
@@ -177,8 +171,8 @@ public class PopupDialog extends JDialog {
         cl.show(mainPanel, category);
 
         PlanwritepageFrame parentFrame = (PlanwritepageFrame) getParent();
-        int areaCode = parentFrame.getSelectedAreaCode(); // 선택한 areaCode 가져오기
-        String sigunguCode = parentFrame.getSelectedSigunguCode(); // 선택한 sigunguCode 가져오기
+        int areaCode = parentFrame.getSelectedAreaCode();
+        String sigunguCode = parentFrame.getSelectedSigunguCode();
 
         String url = generateAPIUrl(contentTypeId, cat1, cat2, cat3, areaCode, sigunguCode);
         String jsonResponse = requestAPIData(url);
@@ -198,10 +192,8 @@ public class PopupDialog extends JDialog {
             url += "&sigunguCode=" + sigunguCode;
         }
 
-        System.out.println("Generated URL: " + url); // URL 확인용 로그
         return url;
     }
-
 
     private static String requestAPIData(String urlString) {
         try {
@@ -297,8 +289,6 @@ public class PopupDialog extends JDialog {
         return null;
     }
 
-    // 선택된 장소의 좌표를 업데이트하고 지도에 마커를 표시
-    // WebView에 지도 위치 설정 함수 호출
     private void updateMapMarker() {
         Platform.runLater(() -> {
             WebEngine webEngine = webView.getEngine();
@@ -306,8 +296,6 @@ public class PopupDialog extends JDialog {
         });
     }
 
-
-    // 좌표를 설정하고 지도 업데이트
     private void setCoordinatesAndDisplayMap(JSONObject item) {
         try {
             longitude = item.getDouble("mapx");
