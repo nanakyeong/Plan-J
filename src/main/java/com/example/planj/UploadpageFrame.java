@@ -63,21 +63,12 @@ public class UploadpageFrame extends JFrame {
         newPlanButton.setBackground(new Color(255, 255, 255)); // 배경색 설정 (파란색 계열)
         contentPane.add(newPlanButton);
 
-        newPlanButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new PlanwritepageFrame(); // PlanwritepageFrame 열기
-                dispose(); // 현재 UploadpageFrame 닫기
-            }
-        });
-
         list = new JList<>(plan);
         list.setVisibleRowCount(7); // 보여질 plan 개수
         sp = new JScrollPane(list);
         sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         sp.setBounds(123, 270, 738, 200); // 크기와 위치 설정
         contentPane.add(sp);
-
 
         MyPanel panel1 = new MyPanel();
         panel1.setBounds(0, 0, 1000, 600);
