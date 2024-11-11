@@ -63,6 +63,14 @@ public class UploadpageFrame extends JFrame {
         newPlanButton.setBackground(new Color(255, 255, 255)); // 배경색 설정 (파란색 계열)
         contentPane.add(newPlanButton);
 
+        newPlanButton.addActionListener(e -> {
+            SwingUtilities.invokeLater(() -> {
+                new PlanwritepageFrame();
+                dispose();
+            });
+        });
+
+
         list = new JList<>(plan);
         list.setVisibleRowCount(7); // 보여질 plan 개수
         sp = new JScrollPane(list);
