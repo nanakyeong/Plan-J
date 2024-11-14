@@ -1,26 +1,40 @@
 package com.example.planj;
 
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
+
+import com.example.planj.db.PlanDTO;
+import com.example.planj.db.PlanService;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import java.net.URL;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+@Component
 public class PlanwritepageFrame extends JFrame {
+
+    @Autowired
+    private PlanService planService;
 
     private JPanel planPanel;
     private MyPanel myPanel;
@@ -132,6 +146,21 @@ public class PlanwritepageFrame extends JFrame {
         myPanel.setBounds(0, 0, 1000, 600);
         contentPane.add(myPanel);
 
+        SaveButton.addActionListener(e -> {
+            this.planService = ApplicationContextProvider.getContext().getBean(PlanService.class);
+            PlanDTO planDTO = new PlanDTO();
+            planDTO.setTitle(planTitle.getText());
+            planDTO.setNights((Integer) section1.getSelectedItem());
+            planDTO.setDays((Integer) section2.getSelectedItem());
+            planDTO.setRegion((String) areaCodeComboBox.getSelectedItem());
+            planDTO.setAccommodation(accommodationName);
+            planDTO.setPlaces(dayToPlacesMap.values().stream().flatMap(List::stream).collect(Collectors.toList()));
+
+            planService.createPlan(planDTO);
+            JOptionPane.showMessageDialog(this, "계획이 성공적으로 저장되었습니다.");
+        });
+
+
         setVisible(true);
     }
 
@@ -145,7 +174,7 @@ public class PlanwritepageFrame extends JFrame {
         this.accommodationLat = latitude;
         this.accommodationLon = longitude;
 
-        for (Component comp : planPanel.getComponents()) {
+        for (java.awt.Component comp : planPanel.getComponents()) {
             if (comp instanceof JPanel) {
                 JPanel dayPanel = (JPanel) comp;
                 JLabel topLabel = (JLabel) dayPanel.getClientProperty("topAccommodationLabel");
@@ -214,14 +243,14 @@ public class PlanwritepageFrame extends JFrame {
         labelPanel.add(dayLabel);
         labelPanel.add(Box.createHorizontalGlue());
         labelPanel.add(optimizeButton);
-        labelPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        labelPanel.setAlignmentX(LEFT_ALIGNMENT);
 
         dayPanel.add(labelPanel);
 
         JLabel topAccommodationLabel = new JLabel(accommodationName != null ? accommodationName : "숙소 미지정");
         topAccommodationLabel.setFont(new Font("돋움", Font.PLAIN, 12));
         topAccommodationLabel.setForeground(Color.BLUE);
-        topAccommodationLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        topAccommodationLabel.setAlignmentX(LEFT_ALIGNMENT);
         topAccommodationLabel.setBorder(BorderFactory.createEmptyBorder(10, 15, 0, 0));
         dayPanel.add(topAccommodationLabel);
 
@@ -242,7 +271,7 @@ public class PlanwritepageFrame extends JFrame {
         addPlaceButton.setFocusPainted(false);
         addPlaceButton.setContentAreaFilled(false);
         addPlaceButton.setBorderPainted(false);
-        addPlaceButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        addPlaceButton.setAlignmentX(LEFT_ALIGNMENT);
         addPlaceButton.setBorder(BorderFactory.createEmptyBorder(15, 15, 0, 0));
         addPlaceButton.addActionListener(e -> openAddPlaceDialog(dayPanel));
         dayPanel.add(addPlaceButton);
@@ -306,7 +335,7 @@ public class PlanwritepageFrame extends JFrame {
 
     public void addPlaceToSchedule(String placeName, JPanel dayPanel) {
         if (dayPanel.getComponentCount() > 0) {
-            Component lastComponent = dayPanel.getComponent(dayPanel.getComponentCount() - 1);
+            java.awt.Component lastComponent = dayPanel.getComponent(dayPanel.getComponentCount() - 1);
             if (lastComponent instanceof JButton && ((JButton) lastComponent).getText().equals("장소를 추가하려면 클릭하세요...")) {
                 dayPanel.remove(lastComponent);
             }
@@ -318,22 +347,22 @@ public class PlanwritepageFrame extends JFrame {
 
         JPanel combinedPanel = new JPanel();
         combinedPanel.setLayout(new BoxLayout(combinedPanel, BoxLayout.Y_AXIS));
-        combinedPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        combinedPanel.setAlignmentX(LEFT_ALIGNMENT);
         combinedPanel.setBackground(Color.WHITE);
 
-        Component verticalStrut = Box.createVerticalStrut(10);
+        java.awt.Component verticalStrut = Box.createVerticalStrut(10);
         combinedPanel.add(verticalStrut);
 
         JPanel placePanel = new JPanel();
         placePanel.setLayout(new BoxLayout(placePanel, BoxLayout.X_AXIS));
-        placePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        placePanel.setAlignmentX(LEFT_ALIGNMENT);
         placePanel.setBackground(Color.WHITE);
         placePanel.setMaximumSize(new Dimension(400, 30));
 
         JLabel placeLabel = new JLabel(placeName);
         placeLabel.setFont(new Font("돋움", Font.PLAIN, 12));
         placeLabel.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 0));
-        placeLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
+        placeLabel.setAlignmentY(CENTER_ALIGNMENT);
         placeLabel.setPreferredSize(new Dimension(200, 20));
         placeLabel.setToolTipText(placeName);
 
@@ -351,7 +380,7 @@ public class PlanwritepageFrame extends JFrame {
         upButton.setContentAreaFilled(false);
         upButton.setBorderPainted(false);
         upButton.setPreferredSize(new Dimension(50, 15));
-        upButton.setAlignmentY(Component.CENTER_ALIGNMENT);
+        upButton.setAlignmentY(CENTER_ALIGNMENT);
         upButton.addActionListener(e -> movePlaceContainerUp(dayPanel, combinedPanel));
 
         JButton downButton = new JButton("▼");
@@ -360,7 +389,7 @@ public class PlanwritepageFrame extends JFrame {
         downButton.setContentAreaFilled(false);
         downButton.setBorderPainted(false);
         downButton.setPreferredSize(new Dimension(50, 15));
-        downButton.setAlignmentY(Component.CENTER_ALIGNMENT);
+        downButton.setAlignmentY(CENTER_ALIGNMENT);
         downButton.addActionListener(e -> movePlaceContainerDown(dayPanel, combinedPanel));
 
         JButton deleteButton = new JButton("×");
@@ -370,7 +399,7 @@ public class PlanwritepageFrame extends JFrame {
         deleteButton.setContentAreaFilled(false);
         deleteButton.setBorderPainted(false);
         deleteButton.setPreferredSize(new Dimension(50, 15));
-        deleteButton.setAlignmentY(Component.CENTER_ALIGNMENT);
+        deleteButton.setAlignmentY(CENTER_ALIGNMENT);
         deleteButton.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 15));
         deleteButton.addActionListener(e -> {
             dayPanel.remove(combinedPanel);
@@ -393,7 +422,7 @@ public class PlanwritepageFrame extends JFrame {
         addPlaceButton.setFocusPainted(false);
         addPlaceButton.setContentAreaFilled(false);
         addPlaceButton.setBorderPainted(false);
-        addPlaceButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        addPlaceButton.setAlignmentX(LEFT_ALIGNMENT);
         addPlaceButton.setBorder(BorderFactory.createEmptyBorder(15, 15, 0, 0));
         addPlaceButton.addActionListener(e -> openAddPlaceDialog(dayPanel));
         dayPanel.add(addPlaceButton);
