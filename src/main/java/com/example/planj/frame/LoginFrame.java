@@ -46,6 +46,12 @@ public class LoginFrame extends JFrame {
         check.setBounds(430, 350, 120, 30);
         contentPane.add(check);
 
+        JLabel findPassword = link("비밀번호 찾기", 500, 320, () -> openFindPassword());
+        contentPane.add(findPassword);
+
+        JLabel findUsername = link("아이디 찾기", 400, 320, () -> openFindUsername());
+        contentPane.add(findUsername);
+
         loginLabel = link("로그인", 755, 55, () -> openJoin());
         contentPane.add(loginLabel);
 
@@ -70,6 +76,74 @@ public class LoginFrame extends JFrame {
         contentPane.add(panel1);
 
         setVisible(true);
+    }
+
+    private void openFindUsername() {
+        String email = JOptionPane.showInputDialog(this, "등록된 이메일을 입력하세요:", "아이디 찾기", JOptionPane.PLAIN_MESSAGE);
+        if (email == null || email.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "이메일을 입력하세요.");
+            return;
+        }
+        try {
+            URL url = new URL("http://localhost:8080/api/users/username?email=" + email);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == 200) {
+                String username = new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+                JOptionPane.showMessageDialog(this, "아이디는: " + username);
+            } else {
+                JOptionPane.showMessageDialog(this, "등록된 이메일이 없습니다.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "아이디 찾기 중 오류가 발생했습니다.");
+        }
+    }
+
+    private void openFindPassword() {
+        JTextField usernameField = new JTextField();
+        JTextField emailField = new JTextField();
+        Object[] message = {
+                "아이디:", usernameField,
+                "이메일:", emailField
+        };
+
+        int option = JOptionPane.showConfirmDialog(this, message, "비밀번호 찾기", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            String username = usernameField.getText().trim();
+            String email = emailField.getText().trim();
+
+            if (username.isEmpty() || email.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "아이디와 이메일을 모두 입력하세요.");
+                return;
+            }
+
+            try {
+                URL url = new URL("http://localhost:8080/api/users/password");
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/json; utf-8");
+                connection.setDoOutput(true);
+
+                String jsonInputString = String.format("{\"username\": \"%s\", \"email\": \"%s\"}", username, email);
+                try (OutputStream os = connection.getOutputStream()) {
+                    os.write(jsonInputString.getBytes(StandardCharsets.UTF_8));
+                }
+
+                int responseCode = connection.getResponseCode();
+                if (responseCode == 200) {
+                    String tempPassword = new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+                    JOptionPane.showMessageDialog(this, "임시 비밀번호는: " + tempPassword);
+                } else {
+                    JOptionPane.showMessageDialog(this, "아이디와 이메일이 일치하지 않습니다.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "비밀번호 찾기 중 오류가 발생했습니다.");
+            }
+        }
     }
 
     private void login(String username, String password) {
