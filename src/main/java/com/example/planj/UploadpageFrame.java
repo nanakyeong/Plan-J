@@ -1,9 +1,17 @@
 package com.example.planj;
 
+import com.example.planj.ApplicationContextProvider;
+import com.example.planj.PlanwritepageFrame;
+import com.example.planj.db.PlanDTO;
+import com.example.planj.db.PlanService;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class UploadpageFrame extends JFrame {
 
@@ -37,25 +45,10 @@ public class UploadpageFrame extends JFrame {
         contentPane.add(login);
         contentPane.add(join);
 
-        DefaultListModel<String> plan = new DefaultListModel<>();
-        plan.addElement("(MY) 여수 여행 2박 3일 "+"- 2023.11.19");
-        plan.addElement("(MY) 제주도 3박 4일 여행 "+"- 2023.08.21");
-        plan.addElement("(MY) 세종 당일치기 "+"- 2023.02.08");
-        plan.addElement("(MY) 군산 낭만 여행 1박 2일 \"+\"- 2022.12.26");
-        plan.addElement("(MY) test");
-        plan.addElement("(MY) test");
-        plan.addElement("(MY) test");
-        plan.addElement("(MY) test");
-        plan.addElement("(MY) test");
-        plan.addElement("(MY) test");
-        plan.addElement("(MY) test");
-        plan.addElement("(MY) test");
-        plan.addElement("(MY) test");
-        plan.addElement("(MY) test");
-        plan.addElement("(MY) test");
-        plan.addElement("(MY) test");
-        plan.addElement("(MY) test");
-        plan.addElement("(MY) test");
+        List<String> plans = getPlanTitlesFromDatabase();
+
+        DefaultListModel<String> planListModel = new DefaultListModel<>();
+        plans.forEach(planListModel::addElement);
 
         JButton newPlanButton = new JButton("+ New Plan");
         newPlanButton.setBounds(123, 225, 150, 40); // 위치와 크기 설정
@@ -70,8 +63,7 @@ public class UploadpageFrame extends JFrame {
             });
         });
 
-
-        list = new JList<>(plan);
+        list = new JList<>(planListModel);
         list.setVisibleRowCount(7); // 보여질 plan 개수
         sp = new JScrollPane(list);
         sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -83,6 +75,22 @@ public class UploadpageFrame extends JFrame {
         contentPane.add(panel1);
 
         setVisible(true);
+    }
+
+    private List<String> getPlanTitlesFromDatabase() {
+        PlanService planService = ApplicationContextProvider.getContext().getBean(PlanService.class);
+        List<PlanDTO> plans = planService.getAllPlans();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
+
+        return plans.stream()
+                .map(plan -> {
+                    String dateString = plan.getDate() != null
+                            ? plan.getDate().format(formatter)
+                            : "날짜 없음"; // 기본 메시지 설정
+                    return plan.getTitle() + " - " + dateString;
+                })
+                .collect(Collectors.toList());
     }
 
     class MyPanel extends JPanel {
@@ -99,4 +107,3 @@ public class UploadpageFrame extends JFrame {
         new UploadpageFrame();
     }
 }
-

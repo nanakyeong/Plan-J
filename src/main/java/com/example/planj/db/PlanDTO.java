@@ -2,6 +2,8 @@ package com.example.planj.db;
 
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDate;
 import java.util.List;
 
 public class PlanDTO {
@@ -12,6 +14,7 @@ public class PlanDTO {
     private String region;
     private String accommodation;
     private List<String> places;
+    private LocalDate date;
 
     public Long getId() {
         return id;
@@ -68,4 +71,8 @@ public class PlanDTO {
     public void setPlaces(List<String> places) {
         this.places = places;
     }
+
+    public LocalDate getDate() {return date != null ? date : LocalDate.now();}
+
+    public void setDate(LocalDate date) {this.date = date;}
 }

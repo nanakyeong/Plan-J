@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -29,6 +30,9 @@ public class Plan {
     @Column(name = "place")
     private List<String> places;
 
+    @Column(nullable = false, updatable = false)
+    private LocalDate date;
+
     public Plan() {
     }
 
@@ -41,6 +45,13 @@ public class Plan {
         this.places = places;
     }
 
+    // @PrePersist: 데이터 저장 전에 호출되어 date를 설정
+    @PrePersist
+    public void prePersist() {
+        this.date = LocalDate.now();
+    }
+
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -95,5 +106,13 @@ public class Plan {
 
     public void setPlaces(List<String> places) {
         this.places = places;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 }

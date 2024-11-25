@@ -159,6 +159,9 @@ public class PlanwritepageFrame extends JFrame {
 
             planService.createPlan(planDTO);
             JOptionPane.showMessageDialog(this, "계획이 성공적으로 저장되었습니다.");
+
+            new UploadpageFrame();
+            dispose();
         });
 
 
