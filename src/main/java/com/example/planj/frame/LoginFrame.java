@@ -13,6 +13,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.mindrot.jbcrypt.BCrypt;
+
 
 
 
@@ -53,7 +55,7 @@ public class LoginFrame extends JFrame {
         check.setBounds(430, 350, 120, 30);
         contentPane.add(check);
 
-        JLabel findPassword = link("비밀번호 찾기", 500, 320, () -> openFindPassword());
+        JLabel findPassword = link("비밀번호 변경", 500, 320, () -> openFindPassword());
         contentPane.add(findPassword);
 
         JLabel findUsername = link("아이디 찾기", 400, 320, () -> openFindUsername());
@@ -129,7 +131,7 @@ public class LoginFrame extends JFrame {
                 "이메일:", emailField
         };
 
-        int option = JOptionPane.showConfirmDialog(this, message, "비밀번호 찾기", JOptionPane.OK_CANCEL_OPTION);
+        int option = JOptionPane.showConfirmDialog(this, message, "비밀번호 변경", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             String username = usernameField.getText().trim();
             String email = emailField.getText().trim();
@@ -139,28 +141,91 @@ public class LoginFrame extends JFrame {
                 return;
             }
 
-            try {
-                URL url = new URL("http://localhost:8080/api/users/password");
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("POST");
-                connection.setRequestProperty("Content-Type", "application/json; utf-8");
-                connection.setDoOutput(true);
+            // DB 연결 정보
+            String url = "jdbc:mysql://localhost:3306/planj_db"; // 데이터베이스 이름
+            String dbUsername = "root"; // MySQL 사용자 이름
+            String dbPassword = "0000"; // MySQL 비밀번호
 
-                String jsonInputString = String.format("{\"username\": \"%s\", \"email\": \"%s\"}", username, email);
-                try (OutputStream os = connection.getOutputStream()) {
-                    os.write(jsonInputString.getBytes(StandardCharsets.UTF_8));
-                }
+            // SQL 쿼리
+            String query = "SELECT password FROM site_user WHERE username = ? AND email = ?";
 
-                int responseCode = connection.getResponseCode();
-                if (responseCode == 200) {
-                    String tempPassword = new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-                    JOptionPane.showMessageDialog(this, "임시 비밀번호는: " + tempPassword);
-                } else {
-                    JOptionPane.showMessageDialog(this, "아이디와 이메일이 일치하지 않습니다.");
+            try (Connection conn = DriverManager.getConnection(url, dbUsername, dbPassword);
+                 PreparedStatement stmt = conn.prepareStatement(query)) {
+
+                // SQL 파라미터 설정
+                stmt.setString(1, username);
+                stmt.setString(2, email);
+
+                // 쿼리 실행
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        // 사용자 존재 시 비밀번호 재설정 안내
+                        JOptionPane.showMessageDialog(this, "비밀번호를 새로 설정하세요!");
+
+                        // 새 비밀번호 입력창 (비밀번호는 *로 표시)
+                        JPasswordField newPasswordField = new JPasswordField();
+                        JPasswordField confirmPasswordField = new JPasswordField();
+                        Object[] passwordMessage = {
+                                "새 비밀번호:", newPasswordField,
+                                "새 비밀번호 확인:", confirmPasswordField
+                        };
+
+                        // 새 비밀번호를 올바르게 입력할 때까지 반복문 사용
+                        boolean validPassword = false;
+                        while (!validPassword) {
+                            int passwordOption = JOptionPane.showConfirmDialog(this, passwordMessage, "새 비밀번호 설정", JOptionPane.OK_CANCEL_OPTION);
+                            if (passwordOption == JOptionPane.CANCEL_OPTION) {
+                                break; // 취소 버튼을 클릭하면 종료
+                            }
+
+                            String newPassword = new String(newPasswordField.getPassword()).trim();
+                            String confirmPassword = new String(confirmPasswordField.getPassword()).trim();
+
+                            if (newPassword.isEmpty() || confirmPassword.isEmpty()) {
+                                JOptionPane.showMessageDialog(this, "새 비밀번호와 확인 비밀번호를 모두 입력하세요.");
+                                return;
+                            }
+
+                            // 기존 비밀번호와 동일한지 확인
+                            String foundPassword = rs.getString("password");
+                            if (BCrypt.checkpw(newPassword, foundPassword)) {
+                                JOptionPane.showMessageDialog(this, "기존 비밀번호와 일치합니다! 새 비밀번호를 다시 입력해주세요.");
+                                continue; // 기존 비밀번호와 동일하면 새 비밀번호를 다시 입력하게 함
+                            }
+
+                            // 새 비밀번호가 확인 비밀번호와 일치하는지 체크
+                            if (!newPassword.equals(confirmPassword)) {
+                                JOptionPane.showMessageDialog(this, "새 비밀번호와 확인 비밀번호가 일치하지 않습니다.");
+                                continue; // 비밀번호가 일치하지 않으면 다시 입력
+                            }
+
+                            // 새 비밀번호를 bcrypt로 해시
+                            String hashedNewPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt(12)); // cost factor를 12로 지정
+
+                            // 비밀번호 업데이트 SQL 쿼리
+                            String updateQuery = "UPDATE site_user SET password = ? WHERE username = ? AND email = ?";
+
+                            try (PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
+                                updateStmt.setString(1, hashedNewPassword);
+                                updateStmt.setString(2, username);
+                                updateStmt.setString(3, email);
+                                int rowsUpdated = updateStmt.executeUpdate();
+
+                                if (rowsUpdated > 0) {
+                                    JOptionPane.showMessageDialog(this, "성공적으로 비밀번호가 변경되었습니다!");
+                                    validPassword = true; // 비밀번호가 변경되면 종료
+                                } else {
+                                    JOptionPane.showMessageDialog(this, "비밀번호 변경 실패: 해당 사용자가 존재하지 않거나 정보가 일치하지 않습니다.");
+                                }
+                            }
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(this, "아이디와 이메일이 일치하지 않습니다.");
+                    }
                 }
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "비밀번호 찾기 중 오류가 발생했습니다.");
+                JOptionPane.showMessageDialog(this, "데이터베이스 연결 중 오류가 발생했습니다.");
             }
         }
     }
