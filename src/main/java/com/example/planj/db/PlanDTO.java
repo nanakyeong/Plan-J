@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
 
+
 public class PlanDTO {
     private Long id;
     private String title;
