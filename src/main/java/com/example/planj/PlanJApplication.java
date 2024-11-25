@@ -14,7 +14,7 @@ import javax.swing.*;
 public class PlanJApplication {
 
     public static void main(String[] args) {
-        System.setProperty("java.awt.headless", "true");
+        System.setProperty("java.awt.headless", "false");
         SpringApplication.run(PlanJApplication.class, args);
 
     }
