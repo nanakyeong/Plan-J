@@ -8,6 +8,13 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+
 
 public class LoginFrame extends JFrame {
     private JLabel loginLabel;
@@ -84,21 +91,33 @@ public class LoginFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "이메일을 입력하세요.");
             return;
         }
-        try {
-            URL url = new URL("http://localhost:8080/api/users/username?email=" + email);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
 
-            int responseCode = connection.getResponseCode();
-            if (responseCode == 200) {
-                String username = new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-                JOptionPane.showMessageDialog(this, "아이디는: " + username);
-            } else {
-                JOptionPane.showMessageDialog(this, "등록된 이메일이 없습니다.");
+        // DB 연결 정보
+        String url = "jdbc:mysql://localhost:3306/planj_db"; // 데이터베이스 이름으로 수정
+        String username = "root"; // MySQL 사용자 이름
+        String password = "0000"; // MySQL 비밀번호
+
+        // SQL 쿼리
+        String query = "SELECT username FROM site_user WHERE email = ?";
+
+        try (Connection conn = DriverManager.getConnection(url, username, password);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // SQL 파라미터 설정
+            stmt.setString(1, email);
+
+            // 쿼리 실행
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String foundUsername = rs.getString("username");
+                    JOptionPane.showMessageDialog(this, "아이디는: " + foundUsername);
+                } else {
+                    JOptionPane.showMessageDialog(this, "등록된 이메일이 없습니다.");
+                }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "아이디 찾기 중 오류가 발생했습니다.");
+            JOptionPane.showMessageDialog(this, "데이터베이스 연결 중 오류가 발생했습니다.");
         }
     }
 
