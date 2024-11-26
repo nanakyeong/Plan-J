@@ -23,22 +23,19 @@ public class UploadpageFrame extends JFrame {
         setSize(1000, 600);
 
         contentPane = getContentPane();
-        contentPane.setLayout(null);
+        contentPane.setLayout(new BorderLayout());
 
         JLabel logo1 = new JLabel("Plan J");
         logo1.setFont(new Font("돋움", Font.BOLD, 35));
         logo1.setBounds(123, 135, 150, 30);
         contentPane.add(logo1);
 
-        JLabel ai = new JLabel("AI");
-        ai.setBounds(668, 55, 100, 20);
         JLabel myplan = new JLabel("myplan");
         myplan.setBounds(700, 55, 100, 20);
         JLabel login = new JLabel("로그인");
         login.setBounds(762, 55, 100, 20);
         JLabel join = new JLabel("회원가입");
         join.setBounds(814, 55, 100, 20);
-        contentPane.add(ai);
         contentPane.add(myplan);
         contentPane.add(login);
         contentPane.add(join);
@@ -95,7 +92,6 @@ public class UploadpageFrame extends JFrame {
 
         setVisible(true);
     }
-
 
     private List<String> getPlanTitlesFromDatabase() {
         PlanService planService = ApplicationContextProvider.getContext().getBean(PlanService.class);

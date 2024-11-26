@@ -4,17 +4,51 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 
 public class PlanDTO {
+
     private Long id;
     private String title;
     private int nights;
     private int days;
-    private String region;
     private String accommodation;
-    private List<String> places;
     private LocalDate date;
+
+    private Map<String, String> accommodationsPerDay = new HashMap<>();
+    private Map<String, List<String>> placesPerDay = new HashMap<>();
+
+    public PlanDTO() {
+        this.date = LocalDate.now();
+    }
+
+    public PlanDTO(Long id, String title, int nights, int days, String accommodation, LocalDate date,
+                   Map<String, String> accommodationsPerDay, Map<String, List<String>> placesPerDay) {
+        this.id = id;
+        this.title = title;
+        this.nights = nights;
+        this.days = days;
+        this.accommodation = accommodation;
+        this.date = date != null ? date : LocalDate.now();
+        this.accommodationsPerDay = accommodationsPerDay != null ? accommodationsPerDay : new HashMap<>();
+        this.placesPerDay = placesPerDay != null ? placesPerDay : new HashMap<>();
+    }
+
+    public void addAccommodation(String day, String accommodation) {
+        accommodationsPerDay.put(day, accommodation);
+    }
+
+    public void addPlace(String day, String place) {
+        placesPerDay.computeIfAbsent(day, k -> new ArrayList<>()).add(place);
+    }
+
+    public Optional<String> getAccommodation(String day) {
+        return Optional.ofNullable(accommodationsPerDay.get(day));
+    }
+
+    public Optional<List<String>> getPlaces(String day) {
+        return Optional.ofNullable(placesPerDay.get(day));
+    }
 
     public Long getId() {
         return id;
@@ -48,14 +82,6 @@ public class PlanDTO {
         this.days = days;
     }
 
-    public String getRegion() {
-        return region;
-    }
-
-    public void setRegion(String region) {
-        this.region = region;
-    }
-
     public String getAccommodation() {
         return accommodation;
     }
@@ -64,15 +90,41 @@ public class PlanDTO {
         this.accommodation = accommodation;
     }
 
-    public List<String> getPlaces() {
-        return places;
+    public LocalDate getDate() {
+        return date;
     }
 
-    public void setPlaces(List<String> places) {
-        this.places = places;
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
-    public LocalDate getDate() {return date != null ? date : LocalDate.now();}
+    public Map<String, String> getAccommodationsPerDay() {
+        return accommodationsPerDay;
+    }
 
-    public void setDate(LocalDate date) {this.date = date;}
+    public void setAccommodationsPerDay(Map<String, String> accommodationsPerDay) {
+        this.accommodationsPerDay = accommodationsPerDay;
+    }
+
+    public Map<String, List<String>> getPlacesPerDay() {
+        return placesPerDay;
+    }
+
+    public void setPlacesPerDay(Map<String, List<String>> placesPerDay) {
+        this.placesPerDay = placesPerDay;
+    }
+
+    @Override
+    public String toString() {
+        return "PlanDTO{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", nights=" + nights +
+                ", days=" + days +
+                ", accommodation='" + accommodation + '\'' +
+                ", date=" + date +
+                ", accommodationsPerDay=" + accommodationsPerDay +
+                ", placesPerDay=" + placesPerDay +
+                '}';
+    }
 }
