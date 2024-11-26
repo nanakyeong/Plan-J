@@ -1,7 +1,5 @@
 package com.example.planj;
 
-import com.example.planj.ApplicationContextProvider;
-import com.example.planj.PlanwritepageFrame;
 import com.example.planj.db.PlanDTO;
 import com.example.planj.db.PlanService;
 
@@ -74,8 +72,30 @@ public class UploadpageFrame extends JFrame {
         panel1.setBounds(0, 0, 1000, 600);
         contentPane.add(panel1);
 
+        list.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) { // 더블 클릭 이벤트
+                    int selectedIndex = list.getSelectedIndex();
+                    if (selectedIndex != -1) {
+                        PlanService planService = ApplicationContextProvider.getContext().getBean(PlanService.class);
+                        List<PlanDTO> plans = planService.getAllPlans();
+                        PlanDTO selectedPlan = plans.get(selectedIndex);
+
+                        SwingUtilities.invokeLater(() -> {
+                            PlanwritepageFrame frame = new PlanwritepageFrame();
+                            frame.setPlanDTO(selectedPlan);
+                            frame.setVisible(true);
+                            dispose();
+                        });
+                    }
+                }
+            }
+        });
+
         setVisible(true);
     }
+
 
     private List<String> getPlanTitlesFromDatabase() {
         PlanService planService = ApplicationContextProvider.getContext().getBean(PlanService.class);
@@ -87,7 +107,7 @@ public class UploadpageFrame extends JFrame {
                 .map(plan -> {
                     String dateString = plan.getDate() != null
                             ? plan.getDate().format(formatter)
-                            : "날짜 없음"; // 기본 메시지 설정
+                            : "날짜 없음";
                     return plan.getTitle() + " - " + dateString;
                 })
                 .collect(Collectors.toList());
@@ -107,3 +127,4 @@ public class UploadpageFrame extends JFrame {
         new UploadpageFrame();
     }
 }
+

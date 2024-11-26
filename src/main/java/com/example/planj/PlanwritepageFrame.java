@@ -42,6 +42,9 @@ public class PlanwritepageFrame extends JFrame {
 
     private static final String SERVICE_KEY = "pRHMKrAJfJJZTC104XWkGvOIvKtKcO6zFysOGGDrH3Bo%2FktklWp6urJAiA5DoWSY3rf7LEKeb2NU5aDiAfDhlw%3D%3D";
 
+    private JTextField planTitle;
+    private JComboBox<Integer> section1;
+    private JComboBox<Integer> section2;
     private JComboBox<String> areaCodeComboBox;
     private JComboBox<String> sigunguComboBox;
     private Map<String, Integer> areaCodeMap = new HashMap<>();
@@ -50,6 +53,29 @@ public class PlanwritepageFrame extends JFrame {
     private String accommodationName;
     private double accommodationLat;
     private double accommodationLon;
+    private PlanDTO planDTO;
+
+    public void setPlanDTO(PlanDTO planDTO) {
+        this.planDTO = planDTO;
+
+        if (planDTO != null) {
+            planTitle.setText(planDTO.getTitle());
+            section1.setSelectedItem(planDTO.getNights());
+            section2.setSelectedItem(planDTO.getDays());
+            areaCodeComboBox.setSelectedItem(planDTO.getRegion());
+
+            // 기존 장소 데이터 추가
+            if (planDTO.getPlaces() != null) {
+                planPanel.removeAll(); // 기존 데이터 초기화
+                planDTO.getPlaces().forEach(place -> {
+                    JLabel placeLabel = new JLabel(place);
+                    planPanel.add(placeLabel);
+                });
+                planPanel.revalidate();
+                planPanel.repaint();
+            }
+        }
+    }
 
     public PlanwritepageFrame() {
         setTitle("Plan J");
@@ -64,21 +90,32 @@ public class PlanwritepageFrame extends JFrame {
         logo1.setBounds(123, 135, 150, 30);
         contentPane.add(logo1);
 
-        JButton SaveButton = new JButton("저장하기");
-        SaveButton.setBounds(718, 160, 150, 30);
-        SaveButton.setFont(new Font("돋움", Font.BOLD, 18));
-        SaveButton.setBackground(new Color(255, 255, 255));
-        contentPane.add(SaveButton);
+        JButton saveButton = new JButton("저장하기");
+        saveButton.setBounds(718, 160, 150, 30);
+        saveButton.setFont(new Font("돋움", Font.BOLD, 18));
+        saveButton.setBackground(new Color(255, 255, 255));
+        contentPane.add(saveButton);
 
-        JLabel ai = new JLabel("AI");
-        ai.setBounds(668, 55, 100, 20);
+        JButton updateButton = new JButton("수정하기");
+        updateButton.setBounds(600, 100, 130, 20);
+        updateButton.setFont(new Font("돋움", Font.BOLD, 18));
+        updateButton.setBackground(new Color(255, 255, 255));
+        contentPane.add(updateButton);
+        updateButton.addActionListener(e -> updatePlan());
+
+        JButton deleteButton = new JButton("삭제하기");
+        deleteButton.setBounds(735, 100, 130, 20);
+        deleteButton.setFont(new Font("돋움", Font.BOLD, 18));
+        deleteButton.setBackground(new Color(255, 255, 255));
+        contentPane.add(deleteButton);
+        deleteButton.addActionListener(e -> deletePlan());
+
         JLabel myplan = new JLabel("myplan");
         myplan.setBounds(700, 55, 100, 20);
         JLabel login = new JLabel("로그인");
         login.setBounds(762, 55, 100, 20);
         JLabel join = new JLabel("회원가입");
         join.setBounds(814, 55, 100, 20);
-        contentPane.add(ai);
         contentPane.add(myplan);
         contentPane.add(login);
         contentPane.add(join);
@@ -87,24 +124,24 @@ public class PlanwritepageFrame extends JFrame {
         title.setBounds(138, 220, 210, 20);
         contentPane.add(title);
 
-        JTextField planTitle = new JTextField();
-        planTitle.setBounds(178, 220, 200, 23);
-        contentPane.add(planTitle);
+        this.planTitle = new JTextField();
+        this.planTitle.setBounds(178, 220, 200, 23);
+        contentPane.add(this.planTitle);
 
         Integer[] choices1 = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-        JComboBox<Integer> section1 = new JComboBox<>(choices1);
-        section1.setBounds(395, 220, 50, 23);
-        section1.setBackground(new Color(255, 255, 255));
-        contentPane.add(section1);
+        this.section1 = new JComboBox<>(choices1);
+        this.section1.setBounds(395, 220, 50, 23);
+        this.section1.setBackground(new Color(255, 255, 255));
+        contentPane.add(this.section1);
 
         JLabel day1 = new JLabel("박");
         day1.setBounds(450, 220, 30, 20);
         contentPane.add(day1);
 
-        JComboBox<Integer> section2 = new JComboBox<>();
-        section2.setBounds(475, 220, 50, 23);
-        section2.setBackground(new Color(255, 255, 255));
-        contentPane.add(section2);
+        this.section2 = new JComboBox<>();
+        this.section2.setBounds(475, 220, 50, 23);
+        this.section2.setBackground(new Color(255, 255, 255));
+        contentPane.add(this.section2);
 
         JLabel day2 = new JLabel("일");
         day2.setBounds(530, 220, 30, 20);
@@ -123,8 +160,8 @@ public class PlanwritepageFrame extends JFrame {
 
         populateAreaCodeComboBox();
 
-        section1.addActionListener(e -> updateDays(section1, section2));
-        section2.addActionListener(e -> updatePlanPanel(section2));
+        this.section1.addActionListener(e -> updateDays(section1, section2));
+        this.section2.addActionListener(e -> updatePlanPanel(section2));
 
         JButton addAccommodationButton = new JButton("숙소 추가");
         addAccommodationButton.setBounds(425, 250, 100, 23);
@@ -132,22 +169,22 @@ public class PlanwritepageFrame extends JFrame {
         addAccommodationButton.addActionListener(e -> openAccommodationPopup());
         contentPane.add(addAccommodationButton);
 
-        planPanel = new JPanel();
-        planPanel.setLayout(new BoxLayout(planPanel, BoxLayout.Y_AXIS));
-        planPanel.setBackground(Color.WHITE);
+        this.planPanel = new JPanel();
+        this.planPanel.setLayout(new BoxLayout(planPanel, BoxLayout.Y_AXIS));
+        this.planPanel.setBackground(Color.WHITE);
 
         JScrollPane scrollPane = new JScrollPane(planPanel);
         scrollPane.setBounds(138, 280, 408, 228);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         contentPane.add(scrollPane);
 
-        section1.setSelectedIndex(0);
+        this.section1.setSelectedIndex(0);
 
         myPanel = new MyPanel();
         myPanel.setBounds(0, 0, 1000, 600);
         contentPane.add(myPanel);
 
-        SaveButton.addActionListener(e -> {
+        saveButton.addActionListener(e -> {
             this.planService = ApplicationContextProvider.getContext().getBean(PlanService.class);
             PlanDTO planDTO = new PlanDTO();
             planDTO.setTitle(planTitle.getText());
@@ -164,8 +201,42 @@ public class PlanwritepageFrame extends JFrame {
             dispose();
         });
 
-
         setVisible(true);
+    }
+
+    private void updatePlan() {
+        if (planDTO != null) {
+            planDTO.setTitle(planTitle.getText());
+            planDTO.setNights((Integer) section1.getSelectedItem());
+            planDTO.setDays((Integer) section2.getSelectedItem());
+            planDTO.setRegion((String) areaCodeComboBox.getSelectedItem());
+
+            this.planService = ApplicationContextProvider.getContext().getBean(PlanService.class);
+            planService.updatePlan(planDTO.getId(), planDTO);
+
+            JOptionPane.showMessageDialog(this, "계획이 수정되었습니다.");
+            new UploadpageFrame();
+            dispose();
+        }
+    }
+
+    private void deletePlan() {
+        if (planDTO != null) {
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "정말 삭제하시겠습니까?",
+                    "삭제 확인",
+                    JOptionPane.YES_NO_OPTION
+            );
+            if (confirm == JOptionPane.YES_OPTION) {
+                this.planService = ApplicationContextProvider.getContext().getBean(PlanService.class);
+                planService.deletePlan(planDTO.getId());
+
+                JOptionPane.showMessageDialog(this, "계획이 삭제되었습니다.");
+                new UploadpageFrame();
+                dispose();
+            }
+        }
     }
 
     private void openAccommodationPopup() {

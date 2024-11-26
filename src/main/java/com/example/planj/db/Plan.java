@@ -25,7 +25,7 @@ public class Plan {
     @Column(length = 100)
     private String accommodation;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "plan_places", joinColumns = @JoinColumn(name = "plan_id"))
     @Column(name = "place")
     private List<String> places;
