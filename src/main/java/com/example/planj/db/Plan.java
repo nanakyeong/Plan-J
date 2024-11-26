@@ -163,4 +163,5 @@ public class Plan {
     public int hashCode() {
         return Objects.hash(id, title);
     }
+
 }

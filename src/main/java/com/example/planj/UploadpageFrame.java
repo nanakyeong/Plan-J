@@ -40,6 +40,7 @@ public class UploadpageFrame extends JFrame {
         contentPane.add(login);
         contentPane.add(join);
 
+
         List<String> plans = getPlanTitlesFromDatabase();
 
         DefaultListModel<String> planListModel = new DefaultListModel<>();

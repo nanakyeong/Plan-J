@@ -41,5 +41,6 @@ public class PlacePerDay {
     public void setPlaces(List<String> places) {
         this.places = places;
     }
+
 }
 

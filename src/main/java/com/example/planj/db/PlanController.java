@@ -30,6 +30,7 @@ public class PlanController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+
     @PostMapping
     public ResponseEntity<PlanDTO> createPlan(@RequestBody PlanDTO planDTO) {
         PlanDTO createdPlan = planService.createPlan(planDTO);

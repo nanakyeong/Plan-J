@@ -15,6 +15,7 @@ public class PlanDTO {
     private String accommodation;
     private LocalDate date;
 
+
     private Map<String, String> accommodationsPerDay = new HashMap<>();
     private Map<String, List<String>> placesPerDay = new HashMap<>();
 
