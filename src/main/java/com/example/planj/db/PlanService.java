@@ -36,15 +36,24 @@ public class PlanService {
             existingPlan.setTitle(planDTO.getTitle());
             existingPlan.setNights(planDTO.getNights());
             existingPlan.setDays(planDTO.getDays());
-            existingPlan.setAccommodation(planDTO.getAccommodation());
-            existingPlan.setAccommodationsPerDay(planDTO.getAccommodationsPerDay());
+            existingPlan.setRegion(planDTO.getRegion());
+            existingPlan.setDistrict(planDTO.getDestrict());
+
+            // 날짜별 숙소 및 장소 데이터 설정
+            Map<String, String> accommodationsPerDay = planDTO.getAccommodationsPerDay();
+            Map<String, List<String>> placesPerDayMap = planDTO.getPlacesPerDay();
 
             // Map<String, List<String>> -> List<PlacePerDay> 변환
-            List<PlacePerDay> placesPerDayList = planDTO.getPlacesPerDay()
-                    .entrySet()
+            List<PlacePerDay> placesPerDayList = placesPerDayMap.entrySet()
                     .stream()
-                    .map(entry -> new PlacePerDay(entry.getKey(), entry.getValue()))
+                    .map(entry -> {
+                        String day = entry.getKey();
+                        List<String> places = entry.getValue();
+                        String accommodation = accommodationsPerDay.get(day); // 해당 날짜의 숙소 정보
+                        return new PlacePerDay(day, places, accommodation); // PlacePerDay 생성 시 숙소 정보 추가
+                    })
                     .collect(Collectors.toList());
+
             existingPlan.setPlacesPerDay(placesPerDayList);
 
             Plan updatedPlan = planRepository.save(existingPlan);
@@ -52,7 +61,6 @@ public class PlanService {
         }
         return null;
     }
-
 
 
     public boolean deletePlan(Long id) {
@@ -68,21 +76,24 @@ public class PlanService {
         planDTO.setTitle(plan.getTitle());
         planDTO.setNights(plan.getNights());
         planDTO.setDays(plan.getDays());
-        planDTO.setAccommodation(plan.getAccommodation());
         planDTO.setDate(plan.getDate());
+        planDTO.setRegion(plan.getRegion());
+        planDTO.setDestrict(plan.getDistrict());
         planDTO.setAccommodationsPerDay(plan.getAccommodationsPerDay());
 
         // List<PlacePerDay> -> Map<String, List<String>>
-        Map<String, List<String>> placesPerDayMap = plan.getPlacesPerDay().stream()
-                .collect(Collectors.toMap(
-                        PlacePerDay::getDay,  // 키: day
-                        PlacePerDay::getPlaces // 값: places 리스트
-                ));
+        Map<String, List<String>> placesPerDayMap = new HashMap<>();
+        Map<String, String> accommodationsPerDay = new HashMap<>();
+        for (PlacePerDay placePerDay : plan.getPlacesPerDay()) {
+            placesPerDayMap.put(placePerDay.getDay(), placePerDay.getPlaces());
+            accommodationsPerDay.put(placePerDay.getDay(), placePerDay.getAccommodation()); // 추가
+        }
+
         planDTO.setPlacesPerDay(placesPerDayMap);
+        planDTO.setAccommodationsPerDay(accommodationsPerDay);
 
         return planDTO;
     }
-
 
     private Plan convertToEntity(PlanDTO planDTO) {
         Plan plan = new Plan();
@@ -90,19 +101,23 @@ public class PlanService {
         plan.setTitle(planDTO.getTitle());
         plan.setNights(planDTO.getNights());
         plan.setDays(planDTO.getDays());
-        plan.setAccommodation(planDTO.getAccommodation());
         plan.setDate(planDTO.getDate());
+        plan.setDistrict(planDTO.getDestrict());
+        plan.setRegion(planDTO.getRegion());
         plan.setAccommodationsPerDay(planDTO.getAccommodationsPerDay());
 
         // Map<String, List<String>> -> List<PlacePerDay>
         List<PlacePerDay> placesPerDayList = planDTO.getPlacesPerDay().entrySet().stream()
-                .map(entry -> new PlacePerDay(entry.getKey(), entry.getValue()))
+                .map(entry -> new PlacePerDay(
+                        entry.getKey(),
+                        entry.getValue(),
+                        planDTO.getAccommodationsPerDay().get(entry.getKey()) // 숙소 정보 반영
+                ))
                 .collect(Collectors.toList());
         plan.setPlacesPerDay(placesPerDayList);
 
         return plan;
     }
-
 
 
 }

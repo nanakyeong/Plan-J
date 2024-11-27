@@ -13,6 +13,9 @@ public class PlacePerDay {
     @Column(nullable = false)
     private String day;
 
+    @Column(length = 50, nullable = false)
+    private String accommodation;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "places", joinColumns = @JoinColumn(name = "place_per_day_id"))
     @Column(name = "place")
@@ -21,9 +24,10 @@ public class PlacePerDay {
     public PlacePerDay() {
     }
 
-    public PlacePerDay(String day, List<String> places) {
+    public PlacePerDay(String day, List<String> places, String accommodation) {
         this.day = day;
         this.places = places;
+        this.accommodation = accommodation;
     }
 
     public String getDay() {
@@ -42,5 +46,12 @@ public class PlacePerDay {
         this.places = places;
     }
 
+    public String getAccommodation() {
+        return accommodation;
+    }
+
+    public void setAccommodation(String accommodation) {
+        this.accommodation = accommodation;
+    }
 }
 

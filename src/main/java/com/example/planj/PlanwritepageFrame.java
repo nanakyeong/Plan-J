@@ -51,40 +51,6 @@ public class PlanwritepageFrame extends JFrame {
     private Map<String, String> accommodationsPerDay = new HashMap<>();
     private Map<String, List<String>> placesPerDay = new HashMap<>();
 
-    public void setPlanDTO(PlanDTO planDTO) {
-        this.planDTO = planDTO;
-
-        if (planDTO != null) {
-            // 제목, 박/일, 숙소 설정
-            planTitle.setText(planDTO.getTitle());
-            section1.setSelectedItem(planDTO.getNights());
-            section2.setSelectedItem(planDTO.getDays());
-            areaCodeComboBox.setSelectedItem(planDTO.getAccommodation());
-
-            // 기존 데이터 초기화
-            planPanel.removeAll();
-
-            // 날짜별 장소 데이터를 처리
-            Map<String, List<String>> placesPerDay = planDTO.getPlacesPerDay();
-            if (placesPerDay != null) {
-                placesPerDay.forEach((day, places) -> {
-                    JLabel dayLabel = new JLabel(day);
-                    planPanel.add(dayLabel);
-
-                    if (places != null) {
-                        for (String place : places) {
-                            JLabel placeLabel = new JLabel("- " + place);
-                            planPanel.add(placeLabel);
-                        }
-                    }
-                });
-            }
-
-            planPanel.revalidate();
-            planPanel.repaint();
-        }
-    }
-
     public PlanwritepageFrame() {
         setTitle("Plan J");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -194,40 +160,112 @@ public class PlanwritepageFrame extends JFrame {
 
         saveButton.addActionListener(e -> {
             this.planService = ApplicationContextProvider.getContext().getBean(PlanService.class);
+
+            // PlanDTO 객체 생성 및 데이터 설정
             PlanDTO planDTO = new PlanDTO();
             planDTO.setTitle(planTitle.getText());
             planDTO.setNights((Integer) section1.getSelectedItem());
             planDTO.setDays((Integer) section2.getSelectedItem());
-            planDTO.setAccommodation((String) areaCodeComboBox.getSelectedItem());
+            planDTO.setRegion((String) areaCodeComboBox.getSelectedItem());
+            planDTO.setDestrict((String) sigunguComboBox.getSelectedItem());
 
-            // 날짜별 데이터 설정
+            // 날짜별 숙소 및 장소 데이터 추가
             planDTO.setAccommodationsPerDay(new HashMap<>(accommodationsPerDay));
-            planDTO.setPlacesPerDay(new HashMap<>(placesPerDay));
+            planDTO.setPlacesPerDay(new HashMap<>(placesPerDay)); // 정확한 장소 데이터 반영
 
-            planService.createPlan(planDTO);
-            JOptionPane.showMessageDialog(this, "계획이 성공적으로 저장되었습니다.");
-            new UploadpageFrame();
-            dispose();
+            // PlanService를 통해 저장
+            try {
+                planService.createPlan(planDTO);
+                JOptionPane.showMessageDialog(this, "계획이 성공적으로 저장되었습니다.");
+                new UploadpageFrame();
+                dispose();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "저장 중 오류가 발생했습니다: " + ex.getMessage(), "오류", JOptionPane.ERROR_MESSAGE);
+            }
         });
-
-
 
         setVisible(true);
     }
 
+    public void setPlanDTO(PlanDTO planDTO) {
+        this.planDTO = planDTO;
+
+        if (planDTO != null) {
+            // 제목, 박/일 설정
+            planTitle.setText(planDTO.getTitle());
+            section1.setSelectedItem(planDTO.getNights());
+            section2.setSelectedItem(planDTO.getDays());
+            areaCodeComboBox.setSelectedItem(planDTO.getRegion());
+            sigunguComboBox.setSelectedItem(planDTO.getDestrict());
+
+            // 날짜별 장소 및 숙소 데이터를 표시
+            planPanel.removeAll(); // 기존 데이터 초기화
+            accommodationsPerDay.clear(); // 날짜별 숙소 데이터 초기화
+            placesPerDay.clear(); // 날짜별 장소 데이터 초기화
+
+            Map<String, List<String>> placesPerDay = planDTO.getPlacesPerDay();
+            Map<String, String> accommodationsPerDayFromDTO = planDTO.getAccommodationsPerDay();
+
+            if (placesPerDay != null) {
+                placesPerDay.forEach((day, places) -> {
+                    JLabel dayLabel = new JLabel(day);
+                    planPanel.add(dayLabel);
+
+                    if (places != null) {
+                        for (String place : places) {
+                            JLabel placeLabel = new JLabel("- " + place);
+                            planPanel.add(placeLabel);
+                        }
+                    }
+
+                    // 날짜별 숙소 데이터 설정
+                    String accommodation = accommodationsPerDayFromDTO.get(day);
+                    if (accommodation != null) {
+                        JLabel accommodationLabel = new JLabel("[숙소] " + accommodation);
+                        accommodationLabel.setFont(new Font("돋움", Font.ITALIC, 12));
+                        accommodationLabel.setForeground(Color.BLUE);
+                        planPanel.add(accommodationLabel);
+
+                        accommodationsPerDay.put(day, accommodation); // 맵에 추가
+                    }
+                });
+            }
+
+            planPanel.revalidate();
+            planPanel.repaint();
+        }
+    }
+
     private void updatePlan() {
         if (planDTO != null) {
+            // 기본 정보 업데이트
             planDTO.setTitle(planTitle.getText());
             planDTO.setNights((Integer) section1.getSelectedItem());
             planDTO.setDays((Integer) section2.getSelectedItem());
-            planDTO.setAccommodation((String) areaCodeComboBox.getSelectedItem());
-            planDTO.setAccommodationsPerDay(new HashMap<>(accommodationsPerDay)); // 날짜별 숙소 업데이트
-            planDTO.setPlacesPerDay(new HashMap<>(placesPerDay)); // 날짜별 장소 업데이트
+            planDTO.setRegion((String) areaCodeComboBox.getSelectedItem());
+            planDTO.setDestrict((String) sigunguComboBox.getSelectedItem());
 
+            // 날짜별 숙소 및 장소 데이터를 업데이트
+            Map<String, List<String>> combinedPlacesPerDay = new HashMap<>();
+            accommodationsPerDay.forEach((day, accommodation) -> {
+                List<String> places = placesPerDay.getOrDefault(day, new ArrayList<>());
+                places.add(0, "[숙소] " + accommodation); // 숙소를 장소 리스트의 첫 번째로 추가
+                combinedPlacesPerDay.put(day, places);
+            });
+            planDTO.setPlacesPerDay(combinedPlacesPerDay);
+
+            // PlanService를 통해 업데이트 호출
             this.planService = ApplicationContextProvider.getContext().getBean(PlanService.class);
-            planService.updatePlan(planDTO.getId(), planDTO);
+            PlanDTO updatedPlanDTO = planService.updatePlan(planDTO.getId(), planDTO);
 
-            JOptionPane.showMessageDialog(this, "계획이 수정되었습니다.");
+            // 성공 메시지 표시
+            if (updatedPlanDTO != null) {
+                JOptionPane.showMessageDialog(this, "계획이 성공적으로 수정되었습니다.");
+            } else {
+                JOptionPane.showMessageDialog(this, "계획 수정에 실패했습니다.", "오류", JOptionPane.ERROR_MESSAGE);
+            }
+
+            // 화면 전환
             new UploadpageFrame();
             dispose();
         }
@@ -268,12 +306,18 @@ public class PlanwritepageFrame extends JFrame {
         this.accommodationLat = latitude;
         this.accommodationLon = longitude;
 
+        // 날짜별 숙소 맵 업데이트
         for (java.awt.Component comp : planPanel.getComponents()) {
             if (comp instanceof JPanel) {
                 JPanel dayPanel = (JPanel) comp;
-                JLabel topLabel = (JLabel) dayPanel.getClientProperty("topAccommodationLabel");
+                String dayName = dayPanel.getName(); // 패널 이름을 날짜로 사용
 
-                if (topLabel != null) topLabel.setText(accommodationName);
+                if (dayName != null) {
+                    accommodationsPerDay.put(dayName, accommodationName); // 숙소 저장
+                }
+
+                JLabel topLabel = (JLabel) dayPanel.getClientProperty("topAccommodationLabel");
+                if (topLabel != null) topLabel.setText(accommodationName); // UI 갱신
             }
         }
 

@@ -40,7 +40,6 @@ public class UploadpageFrame extends JFrame {
         contentPane.add(login);
         contentPane.add(join);
 
-
         List<String> plans = getPlanTitlesFromDatabase();
 
         DefaultListModel<String> planListModel = new DefaultListModel<>();
@@ -82,6 +81,15 @@ public class UploadpageFrame extends JFrame {
 
                         SwingUtilities.invokeLater(() -> {
                             PlanwritepageFrame frame = new PlanwritepageFrame();
+
+                            // PlacePerDay에서 숙소 정보 추출
+                            String accommodation = selectedPlan.getPlacesPerDay().entrySet().stream()
+                                    .flatMap(entry -> entry.getValue().stream())
+                                    .filter(place -> place.startsWith("[숙소]"))
+                                    .findFirst()
+                                    .map(place -> place.replace("[숙소] ", ""))
+                                    .orElse(null);
+
                             frame.setPlanDTO(selectedPlan);
                             frame.setVisible(true);
                             dispose();
@@ -98,17 +106,18 @@ public class UploadpageFrame extends JFrame {
         PlanService planService = ApplicationContextProvider.getContext().getBean(PlanService.class);
         List<PlanDTO> plans = planService.getAllPlans();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년MM월dd일");
 
         return plans.stream()
                 .map(plan -> {
                     String dateString = plan.getDate() != null
                             ? plan.getDate().format(formatter)
                             : "날짜 없음";
-                    return plan.getTitle() + " - " + dateString;
+                    return plan.getTitle() + " - " + dateString; // 형식: title - yyyy년MM월dd일
                 })
                 .collect(Collectors.toList());
     }
+
 
     class MyPanel extends JPanel {
         public void paintComponent(Graphics g) {

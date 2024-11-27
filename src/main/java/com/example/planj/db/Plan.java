@@ -22,8 +22,11 @@ public class Plan {
 
     private int days;
 
-    @Column(length = 50, nullable = false)
-    private String accommodation;
+    @Column(nullable = false)
+    private String region;
+
+    @Column(nullable = false)
+    private String district;
 
     @Column(nullable = false, updatable = false)
     private LocalDate date;
@@ -41,25 +44,25 @@ public class Plan {
     public Plan() {
     }
 
-    public Plan(String title, int nights, int days, String accommodation, LocalDate date,
+    public Plan(String title, int nights, int days, LocalDate date, String region, String district,
                 Map<String, String> accommodationsPerDay, Map<String, List<String>> placesPerDay) {
         this.title = title;
         this.nights = nights;
         this.days = days;
-        this.accommodation = accommodation;
+        this.district = district;
         this.date = date != null ? date : LocalDate.now();
         this.accommodationsPerDay = accommodationsPerDay;
+        this.region = region;
 
         // Map<String, List<String>> -> List<PlacePerDay>
         if (placesPerDay != null) {
             this.placesPerDay = placesPerDay.entrySet().stream()
-                    .map(entry -> new PlacePerDay(entry.getKey(), entry.getValue()))
+                    .map(entry -> new PlacePerDay(entry.getKey(), entry.getValue(), accommodationsPerDay.get(entry.getKey())))
                     .collect(Collectors.toList());
         } else {
             this.placesPerDay = new ArrayList<>();
         }
     }
-
 
     @PrePersist
     public void prePersist() {
@@ -101,14 +104,6 @@ public class Plan {
         this.days = days;
     }
 
-    public String getAccommodation() {
-        return accommodation;
-    }
-
-    public void setAccommodation(String accommodation) {
-        this.accommodation = accommodation;
-    }
-
     public LocalDate getDate() {
         return date;
     }
@@ -133,23 +128,21 @@ public class Plan {
         this.placesPerDay = placesPerDay;
     }
 
-
-    @Override
-    public String toString() {
-        return "Plan{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", nights=" + nights +
-                ", days=" + days +
-                ", accommodation='" + accommodation + '\'' +
-                ", date=" + date +
-                ", accommodationsPerDay=" + accommodationsPerDay +
-                ", placesPerDay=" + placesPerDay.stream()
-                .map(PlacePerDay::toString)
-                .collect(Collectors.joining(", ")) +
-                '}';
+    public String getRegion() {
+        return region;
     }
 
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
+    }
 
     @Override
     public boolean equals(Object o) {
