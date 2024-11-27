@@ -384,6 +384,7 @@ public class PlanwritepageFrame extends JFrame {
 
         List<double[]> dayCoordinates = (List<double[]>) dayData.get("locations");
         List<String> dayPlaceNames = (List<String>) dayData.get("placeNames");
+        System.out.println("dayPlaceNames: " + dayPlaceNames);
         if (dayPlaceNames.isEmpty()) {
             JOptionPane.showMessageDialog(this, "경로에 추가된 장소가 없습니다. 장소를 추가해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
             return;
@@ -439,6 +440,9 @@ public class PlanwritepageFrame extends JFrame {
 
         placesPerDay.putIfAbsent(dayText, new ArrayList<>());
         placesPerDay.get(dayText).add(placeName);
+
+        dayToPlacesMap.putIfAbsent(dayText, new ArrayList<>());
+        dayToPlacesMap.get(dayText).add(placeName);
 
         JPanel combinedPanel = new JPanel();
         combinedPanel.setLayout(new BoxLayout(combinedPanel, BoxLayout.Y_AXIS));
@@ -529,7 +533,7 @@ public class PlanwritepageFrame extends JFrame {
 
     private void movePlaceContainerUp(JPanel dayPanel, JPanel placeContainerPanel) {
         int index = dayPanel.getComponentZOrder(placeContainerPanel);
-        if (index > 1) {
+        if (index > 2) {
             dayPanel.remove(placeContainerPanel);
             dayPanel.add(placeContainerPanel, index - 1);
             dayPanel.revalidate();
