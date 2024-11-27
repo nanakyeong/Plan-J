@@ -24,6 +24,7 @@ public class RouteDialog extends JFrame {
 
     public RouteDialog(List<double[]> coords, List<String> names) {
         this.locations = createLocationDataList(coords, names);
+
         setTitle("Optimized Route Display");
         setSize(1000, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -41,7 +42,18 @@ public class RouteDialog extends JFrame {
         JScrollPane scrollPane = new JScrollPane(placeListTextArea);
         placeListPanel.add(scrollPane, BorderLayout.CENTER);
 
+        JPanel summaryPanel = new JPanel(new GridLayout(2, 1));
+        summaryPanel.setPreferredSize(new Dimension(800, 50));
+        summaryPanel.setBackground(Color.WHITE);
+
+        JLabel distanceLabel = new JLabel("총 거리: 계산 중...");
+        JLabel timeLabel = new JLabel("총 시간: 계산 중...");
+        summaryPanel.add(distanceLabel);
+        summaryPanel.add(timeLabel);
+        add(summaryPanel, BorderLayout.SOUTH);
+
         List<LocationData> optimizedOrder = optimizeRoute(locations);
+
         placeListTextArea.setText("");
         for (LocationData location : optimizedOrder) {
             placeListTextArea.append(location.name + "\n");
@@ -69,6 +81,13 @@ public class RouteDialog extends JFrame {
                 markers.put(marker);
             }
 
+            // 총 거리 및 시간 계산
+            double[] totalDistanceAndTime = calculateTotalDistanceAndTime(optimizedPaths);
+
+            // UI 업데이트
+            distanceLabel.setText(String.format("총 거리: %.2f km", totalDistanceAndTime[0]));
+            timeLabel.setText(String.format("총 시간: %.1f 분", totalDistanceAndTime[1]));
+
             webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
                 if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
                     webEngine.executeScript("displayRoute('" + optimizedPaths.toString() + "', '" + markers.toString() + "', "
@@ -79,6 +98,7 @@ public class RouteDialog extends JFrame {
             fxPanel.setScene(new Scene(webView));
         });
     }
+
 
     private List<LocationData> createLocationDataList(List<double[]> coords, List<String> names) {
         List<LocationData> locationDataList = new ArrayList<>();
@@ -203,4 +223,23 @@ public class RouteDialog extends JFrame {
             this.name = name;
         }
     }
+
+    private double[] calculateTotalDistanceAndTime(JSONArray pathSegments) {
+        double totalDistance = 0; // 단위: m
+        double totalTime = 0;     // 단위: 초
+
+        for (int i = 0; i < pathSegments.length(); i++) {
+            JSONArray segment = pathSegments.getJSONArray(i);
+
+            for (int j = 0; j < segment.length(); j++) {
+                JSONObject road = segment.getJSONObject(j);
+                totalDistance += road.getDouble("distance"); // 도로의 거리(m)
+                totalTime += road.getDouble("duration");    // 도로의 시간(초)
+            }
+        }
+
+        // 반환값: {총 거리(km), 총 시간(분)}
+        return new double[]{totalDistance / 1000.0, totalTime / 60.0};
+    }
+
 }
