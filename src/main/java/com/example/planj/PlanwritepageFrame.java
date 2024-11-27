@@ -530,7 +530,6 @@ public class PlanwritepageFrame extends JFrame {
         dayPanel.repaint();
     }
 
-
     private void movePlaceContainerUp(JPanel dayPanel, JPanel placeContainerPanel) {
         int index = dayPanel.getComponentZOrder(placeContainerPanel);
         if (index > 2) {
