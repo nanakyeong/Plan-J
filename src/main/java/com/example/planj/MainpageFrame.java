@@ -22,15 +22,12 @@ public class MainpageFrame extends JFrame {
         logo1.setBounds(123, 135, 150, 30);
         contentPane.add(logo1);
 
-        JLabel ai = new JLabel("AI");
-        ai.setBounds(668, 55, 100, 20);
         JLabel myplan = new JLabel("myplan");
         myplan.setBounds(700, 55, 100, 20);
         JLabel login = new JLabel("로그인");
         login.setBounds(762, 55, 100, 20);
         JLabel join = new JLabel("회원가입");
         join.setBounds(814, 55, 100, 20);
-        contentPane.add(ai);
         contentPane.add(myplan);
         contentPane.add(login);
         contentPane.add(join);
@@ -53,18 +50,24 @@ public class MainpageFrame extends JFrame {
         searchPanel.add(searchIcon);
 
         search_plan.addActionListener(e -> {
-            String searchText = search_plan.getText();
-            System.out.println("검색어: " + searchText);
-            // 실제 검색 동작 구현
+            String searchText = search_plan.getText().trim();
+            if (searchText.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "검색어를 입력하세요!", "오류", JOptionPane.WARNING_MESSAGE);
+            } else {
+                performSearch(searchText);
+            }
         });
 
         // 클릭 효과를 위한 마우스 리스너 추가
         searchIcon.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // 클릭 시 동작
-                String searchText = search_plan.getText();
-                System.out.println("검색어: " + searchText);
+                String searchText = search_plan.getText().trim();
+                if (searchText.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "검색어를 입력하세요!", "오류", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    performSearch(searchText);
+                }
             }
 
             @Override
@@ -159,14 +162,22 @@ public class MainpageFrame extends JFrame {
         setVisible(true);
 
     }
-    class MyPanel extends JPanel{
-        public void paintComponent(Graphics g){
 
+    private void performSearch(String searchText) {
+        // 검색 결과 화면 열기
+        new SearchFrame(searchText);
+    }
+
+
+    class MyPanel extends JPanel {
+        @Override
+        protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
+
             g2.setStroke(new BasicStroke(2));
             g2.setColor(Color.black);
-            g2.drawLine(123, 85, 740, 85);
+            g2.drawLine(123, 85, 866, 85);
         }
     }
 
