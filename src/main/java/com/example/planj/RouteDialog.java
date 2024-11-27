@@ -90,7 +90,7 @@ public class RouteDialog extends JFrame {
 
             webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
                 if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
-                    webEngine.executeScript("displayRoute('" + optimizedPaths.toString() + "', '" + markers.toString() + "', "
+                    webEngine.executeScript("displayRoute('" + optimizedPaths + "', '" + markers + "', "
                             + centerCoordinates[1] + ", " + centerCoordinates[0] + ");");
                 }
             });
@@ -150,7 +150,7 @@ public class RouteDialog extends JFrame {
                 JSONObject jsonResponse = new JSONObject(response.toString());
                 if (jsonResponse.has("routes")) {
                     JSONArray routes = jsonResponse.getJSONArray("routes");
-                    if (routes.length() > 0) {
+                    if (!routes.isEmpty()) {
                         JSONObject firstRoute = routes.getJSONObject(0);
                         if (firstRoute.has("sections")) {
                             JSONArray roads = firstRoute.getJSONArray("sections")
