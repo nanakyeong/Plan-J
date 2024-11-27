@@ -2,6 +2,10 @@ package com.example.planj;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class MainpageFrame extends JFrame {
 
@@ -31,10 +35,53 @@ public class MainpageFrame extends JFrame {
         contentPane.add(login);
         contentPane.add(join);
 
-        JTextField search = new JTextField();
-        search.setBounds(653, 142, 210,23);
-        contentPane.add(search);
+        // 패널 생성
+        JPanel searchPanel = new JPanel();
+        searchPanel.setBounds(630, 142, 250, 23);
+        searchPanel.setLayout(null);
+        contentPane.add(searchPanel);
 
+        // 텍스트 필드
+        JTextField search_plan = new JTextField();
+        search_plan.setBounds(0, 0, 210, 23); // 왼쪽에 공간을 둠
+        searchPanel.add(search_plan);
+
+        // 아이콘 또는 특수문자 라벨
+        JLabel searchIcon = new JLabel("🔍"); // 아이콘 대신 특수문자 사용
+        searchIcon.setBounds(210, 0, 30, 22); // 텍스트 필드 오른쪽 위치
+        searchIcon.setHorizontalAlignment(SwingConstants.CENTER);
+        searchPanel.add(searchIcon);
+
+        search_plan.addActionListener(e -> {
+            String searchText = search_plan.getText();
+            System.out.println("검색어: " + searchText);
+            // 실제 검색 동작 구현
+        });
+
+        // 클릭 효과를 위한 마우스 리스너 추가
+        searchIcon.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // 클릭 시 동작
+                String searchText = search_plan.getText();
+                System.out.println("검색어: " + searchText);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                // 마우스 오버 시 효과 (배경 색 변경)
+                searchIcon.setOpaque(true);
+                searchIcon.setBackground(Color.LIGHT_GRAY);
+                searchIcon.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 손 모양 커서
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                // 마우스가 나가면 원래 상태로
+                searchIcon.setOpaque(false);
+                searchIcon.setBackground(null);
+            }
+        });
 
         //1줄
 
