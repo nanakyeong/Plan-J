@@ -15,8 +15,11 @@ public class PlanJApplication {
 
     public static void main(String[] args) {
         System.setProperty("java.awt.headless", "false");
-        SpringApplication.run(PlanJApplication.class, args);
+        ApplicationContext context = SpringApplication.run(PlanJApplication.class, args);
 
+        SwingUtilities.invokeLater(() -> {
+            PlanwritepageFrame frame = context.getBean(PlanwritepageFrame.class);
+            frame.setVisible(true);
+        });
     }
-
 }
