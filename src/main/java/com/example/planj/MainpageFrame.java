@@ -2,12 +2,13 @@ package com.example.planj;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class MainpageFrame extends JFrame {
+    private JPanel contentPanel; // 게시물 표시 패널
+    private JLabel searchResultLabel; // 검색 결과 라벨
+    private JTextField search_plan; // 검색 텍스트 필드
 
     public MainpageFrame() {
         setTitle("Plan J");
@@ -22,6 +23,15 @@ public class MainpageFrame extends JFrame {
         logo1.setBounds(123, 135, 150, 30);
         contentPane.add(logo1);
 
+        // Plan J 로고 클릭 시 초기화
+        logo1.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        logo1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                resetToDefault(); // 초기 상태로 되돌림
+            }
+        });
+
         JLabel myplan = new JLabel("myplan");
         myplan.setBounds(700, 55, 100, 20);
         JLabel login = new JLabel("로그인");
@@ -32,143 +42,117 @@ public class MainpageFrame extends JFrame {
         contentPane.add(login);
         contentPane.add(join);
 
-        // 패널 생성
+        // 검색 패널
         JPanel searchPanel = new JPanel();
         searchPanel.setBounds(630, 142, 250, 23);
         searchPanel.setLayout(null);
         contentPane.add(searchPanel);
 
-        // 텍스트 필드
-        JTextField search_plan = new JTextField();
-        search_plan.setBounds(0, 0, 210, 23); // 왼쪽에 공간을 둠
+        // 검색 텍스트 필드
+        search_plan = new JTextField();
+        search_plan.setBounds(0, 0, 210, 23);
         searchPanel.add(search_plan);
 
-        // 아이콘 또는 특수문자 라벨
-        JLabel searchIcon = new JLabel("🔍"); // 아이콘 대신 특수문자 사용
-        searchIcon.setBounds(210, 0, 30, 22); // 텍스트 필드 오른쪽 위치
+        // 검색 아이콘
+        JLabel searchIcon = new JLabel("🔍");
+        searchIcon.setBounds(210, 0, 30, 22);
         searchIcon.setHorizontalAlignment(SwingConstants.CENTER);
         searchPanel.add(searchIcon);
 
-        search_plan.addActionListener(e -> {
-            String searchText = search_plan.getText().trim();
-            if (searchText.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "검색어를 입력하세요!", "오류", JOptionPane.WARNING_MESSAGE);
-            } else {
-                performSearch(searchText);
-            }
-        });
+        // 검색 결과 라벨
+        searchResultLabel = new JLabel("");
+        searchResultLabel.setFont(new Font("돋움", Font.BOLD, 18));
+        searchResultLabel.setBounds(123, 190, 500, 30);
+        contentPane.add(searchResultLabel);
 
-        // 클릭 효과를 위한 마우스 리스너 추가
+        // 게시물 표시 패널
+        contentPanel = new JPanel();
+        contentPanel.setLayout(null);
+        contentPanel.setBounds(0, 230, 1000, 340);
+        contentPane.add(contentPanel);
+
+        // 기본 게시물 표시
+        initializeDefaultContent();
+
+        // 검색 동작 설정
+        search_plan.addActionListener(e -> triggerSearch());
         searchIcon.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                String searchText = search_plan.getText().trim();
-                if (searchText.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "검색어를 입력하세요!", "오류", JOptionPane.WARNING_MESSAGE);
-                } else {
-                    performSearch(searchText);
-                }
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                // 마우스 오버 시 효과 (배경 색 변경)
-                searchIcon.setOpaque(true);
-                searchIcon.setBackground(Color.LIGHT_GRAY);
-                searchIcon.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 손 모양 커서
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                // 마우스가 나가면 원래 상태로
-                searchIcon.setOpaque(false);
-                searchIcon.setBackground(null);
+                triggerSearch();
             }
         });
 
-        //1줄
-
-        JButton btn_newplan = new JButton("+");	//+ 버튼
-        btn_newplan.setBounds(123, 230, 120, 120);
-        JLabel newplan = new JLabel("plan 업로드");
-        newplan.setBounds(143, 350, 100, 20);
-
-        contentPane.add(btn_newplan);
-        contentPane.add(newplan);
-
-        JButton btn_plan1 = new JButton();	//게시물1
-        btn_plan1.setBounds(323, 230, 120, 120);
-        JLabel plan1 = new JLabel("- plan_name");
-        plan1.setBounds(343, 350, 100, 20);
-
-        contentPane.add(btn_plan1);
-        contentPane.add(plan1);
-
-        JButton btn_plan2 = new JButton();	//게시물2
-        btn_plan2.setBounds(533, 230, 120, 120);
-        JLabel plan2 = new JLabel("- plan_name");
-        plan2.setBounds(563, 350, 100, 20);
-
-        contentPane.add(btn_plan2);
-        contentPane.add(plan2);
-
-        JButton btn_plan3 = new JButton();	//게시물3
-        btn_plan3.setBounds(743, 230, 120, 120);
-        JLabel plan3 = new JLabel("- plan_name");
-        plan3.setBounds(763, 350, 100, 20);
-
-        contentPane.add(btn_plan3);
-        contentPane.add(plan3);
-
-        //2줄
-
-        JButton btn_plan4 = new JButton();	//게시물4
-        btn_plan4.setBounds(123, 400, 120, 120);
-        JLabel plan4 = new JLabel("- plan_name");
-        plan4.setBounds(143, 520, 100, 20);
-
-        contentPane.add(btn_plan4);
-        contentPane.add(plan4);
-
-        JButton btn_plan5 = new JButton();	//게시물5
-        btn_plan5.setBounds(323, 400, 120, 120);
-        JLabel plan5 = new JLabel("- plan_name");
-        plan5.setBounds(343, 520, 100, 20);
-
-        contentPane.add(btn_plan5);
-        contentPane.add(plan5);
-
-        JButton btn_plan6 = new JButton();	//게시물6
-        btn_plan6.setBounds(533, 400, 120, 120);
-        JLabel plan6 = new JLabel("- plan_name");
-        plan6.setBounds(563, 520, 100, 20);
-
-        contentPane.add(btn_plan6);
-        contentPane.add(plan6);
-
-        JButton btn_plan7 = new JButton();	//게시물7
-        btn_plan7.setBounds(743, 400, 120, 120);
-        JLabel plan7 = new JLabel("- plan_name");
-        plan7.setBounds(763, 520, 100, 20);
-
-        contentPane.add(btn_plan7);
-        contentPane.add(plan7);
-
+        // 하단 라인 그리기
         MyPanel panel1 = new MyPanel();
         panel1.setBounds(0, 0, 1000, 600);
         contentPane.add(panel1);
 
-
         setVisible(true);
-
     }
 
+    // 초기 상태로 되돌리는 메서드
+    private void resetToDefault() {
+        searchResultLabel.setText(""); // 라벨 비우기
+        initializeDefaultContent(); // 기본 게시물 표시
+    }
+
+    // 기본 게시물 표시
+    private void initializeDefaultContent() {
+        contentPanel.removeAll();
+        for (int i = 0; i < 8; i++) {
+            int x = 123 + (i % 4) * 200;
+            int y = (i / 4) * 170;
+
+            JButton btn_plan = new JButton("+");
+            if (i != 0) {
+                btn_plan.setText("");
+            }
+
+            btn_plan.setBounds(x, y, 120, 120);
+            contentPanel.add(btn_plan);
+
+            JLabel label = new JLabel((i == 0 ? "plan 업로드" : "- plan_name"));
+            label.setBounds(x + 20, y + 130, 100, 20);
+            contentPanel.add(label);
+        }
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+
+    // 검색 동작 트리거
+    private void triggerSearch() {
+        String searchText = search_plan.getText().trim();
+        if (searchText.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "검색어를 입력하세요!", "오류", JOptionPane.WARNING_MESSAGE);
+        } else {
+            performSearch(searchText);
+        }
+    }
+
+    // 검색 결과 표시
     private void performSearch(String searchText) {
-        // 검색 결과 화면 열기
-        new SearchFrame(searchText);
+        searchResultLabel.setText("\"" + searchText + "\"가 포함된 검색 결과입니다.");
+        contentPanel.removeAll();
+
+        for (int i = 0; i < 8; i++) {
+            int x = 123 + (i % 4) * 200;
+            int y = (i / 4) * 170;
+
+            JButton btn_plan = new JButton("결과 " + (i + 1));
+            btn_plan.setBounds(x, y, 120, 120);
+            contentPanel.add(btn_plan);
+
+            JLabel label = new JLabel("- " + searchText + " 결과 " + (i + 1));
+            label.setBounds(x + 20, y + 130, 100, 20);
+            contentPanel.add(label);
+        }
+
+        contentPanel.revalidate();
+        contentPanel.repaint();
     }
 
-
+    // 하단 라인 그리기
     class MyPanel extends JPanel {
         @Override
         protected void paintComponent(Graphics g) {
