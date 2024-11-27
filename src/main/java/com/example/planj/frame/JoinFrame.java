@@ -14,6 +14,8 @@ import java.nio.charset.StandardCharsets;
 import java.awt.Font;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.border.AbstractBorder;
+import java.awt.geom.RoundRectangle2D;
 
 public class JoinFrame extends JFrame {
 
@@ -51,17 +53,16 @@ public class JoinFrame extends JFrame {
 
         setBackground(Color.white);
 
-        setTitle("Plan J");
+        setTitle("PLAN J");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 600);
 
         Container contentPane = getContentPane();
         contentPane.setLayout(null);
 
-        // 배경색 변경
         contentPane.setBackground(Color.WHITE);
 
-        JLabel logo1 = new JLabel("Plan J");
+        JLabel logo1 = new JLabel("<html><span style='color:#89AEBF;'>P</span>lan<span style='color:#436698;'> J</span></html>");
         logo1.setFont(FontLoader.getFont("낭만있구미체",35f, Font.BOLD));
         contentPane.add(logo1);
         logo1.setBounds(440, 120, 150, 40);
@@ -167,10 +168,83 @@ public class JoinFrame extends JFrame {
         });
 
 
-        JLabel myplan = link("myplan", 650, 50, () -> openMyPlan());
-        JLabel login = link("로그인", 740, 50, () -> openLogin());
-        JLabel join = link("회원가입", 815, 50, () -> {});
+        JLabel myplan = new JLabel("myplan");
+        myplan.setFont(FontLoader.getFont("Rix X Lady Watermelon", 18f, Font.PLAIN));
+        myplan.setForeground(Color.BLACK);
+        myplan.setBackground(Color.WHITE); // 초기 배경 색
+        myplan.setOpaque(true); // 배경 색이 보이도록 설정
+        myplan.setBounds(620, 50, 80, 30); // 크기와 위치 설정
+        myplan.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스를 올리면 커서 변경
 
+        myplan.setHorizontalAlignment(SwingConstants.CENTER); // 수평 중앙 정렬
+        myplan.setVerticalAlignment(SwingConstants.CENTER);   // 수직 중앙 정렬
+
+        myplan.setBorder(new RoundRectangleBorder(new Color(0, 0, 0, 0), 2, 60)); // 둥근 테두리 추가
+
+
+        myplan.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                myplan.setBackground(Color.LIGHT_GRAY); // 마우스 오버 시 배경색 변경
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                myplan.setBackground(Color.WHITE); // 마우스 나가면 배경색 원래대로
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                openMyPlan(); // 클릭 시 실행할 액션
+            }
+        });
+
+        JLabel login = new JLabel("로그인");
+        login.setFont(FontLoader.getFont("Rix X Lady Watermelon", 18f, Font.PLAIN));
+        login.setForeground(Color.BLACK);
+        login.setBackground(Color.WHITE); // 초기 배경 색
+        login.setOpaque(true); // 배경 색이 보이도록 설정
+        login.setBounds(711, 50, 80, 30); // 크기와 위치 설정
+        login.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스를 올리면 커서 변경
+
+        login.setHorizontalAlignment(SwingConstants.CENTER); // 수평 중앙 정렬
+        login.setVerticalAlignment(SwingConstants.CENTER);   // 수직 중앙 정렬
+
+
+        login.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                login.setBackground(Color.LIGHT_GRAY); // 마우스 오버 시 배경색 변경
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                login.setBackground(Color.WHITE); // 마우스 나가면 배경색 원래대로
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                openLogin(); // 클릭 시 실행할 액션
+            }
+        });
+
+        JLabel join = new JLabel("회원가입");
+        join.setFont(FontLoader.getFont("Rix X Lady Watermelon", 18f, Font.PLAIN));
+        join.setForeground(Color.BLACK);
+        join.setBackground(Color.LIGHT_GRAY); // 초기 배경 색은 라이트 그레이
+        join.setOpaque(true); // 배경 색이 보이도록 설정
+        join.setBounds(800, 50, 80, 30); // 크기와 위치 설정
+        join.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스를 올리면 커서 변경
+
+        join.setHorizontalAlignment(SwingConstants.CENTER); // 수평 중앙 정렬
+        join.setVerticalAlignment(SwingConstants.CENTER);   // 수직 중앙 정렬
+
+        join.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // 회원가입 클릭 시 아무 동작 안 함 (빈 액션)
+            }
+        });
         contentPane.add(myplan);
         contentPane.add(login);
         contentPane.add(join);
@@ -180,6 +254,26 @@ public class JoinFrame extends JFrame {
         contentPane.add(panel1);
 
         setVisible(true);
+    }
+
+    class RoundRectangleBorder extends AbstractBorder {
+        private final Color color;
+        private final int thickness;
+        private final int arcWidth;
+
+        public RoundRectangleBorder(Color color, int thickness, int arcWidth) {
+            this.color = color;
+            this.thickness = thickness;
+            this.arcWidth = arcWidth;
+        }
+
+        @Override
+        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setColor(color);
+            g2.setStroke(new BasicStroke(thickness));
+            g2.drawRoundRect(x, y, width - 1, height - 1, arcWidth, arcWidth); // 둥근 사각형 그리기
+        }
     }
 
 
@@ -249,7 +343,6 @@ public class JoinFrame extends JFrame {
                 action.run();
             }
         });
-        label.setHorizontalAlignment(SwingConstants.LEFT);
 
         return label;
     }
@@ -288,3 +381,5 @@ public class JoinFrame extends JFrame {
     }
 
 }
+
+
