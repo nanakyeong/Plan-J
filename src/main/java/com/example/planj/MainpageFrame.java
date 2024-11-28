@@ -114,27 +114,37 @@ public class MainpageFrame extends JFrame {
     }
 
     // 기본 게시물 표시
+    // 기본 게시물 표시
     private void initializeDefaultContent() {
         contentPanel.removeAll();
-        for (int i = 0; i < 8; i++) {
-            int x = 123 + (i % 4) * 200;
-            int y = (i / 4) * 170;
 
-            JButton btn_plan = new JButton("+");
-            if (i != 0) {
-                btn_plan.setText("");
-            }
+        // 버튼과 라벨 위치 및 텍스트 설정
+        int[][] positions = {
+                {123, 0}, {323, 0}, {533, 0}, {743, 0}, // 첫 번째 줄
+                {123, 170}, {323, 170}, {533, 170}, {743, 170}  // 두 번째 줄
+        };
 
-            btn_plan.setBounds(x, y, 120, 120);
+        String[] labels = {
+                "plan 업로드", "- plan_name", "- plan_name", "- plan_name",
+                "- plan_name", "- plan_name", "- plan_name", "- plan_name"
+        };
+
+        for (int i = 0; i < positions.length; i++) {
+            // 버튼 생성
+            JButton btn_plan = new JButton(i == 0 ? "+" : ""); // 첫 번째 버튼은 "+"
+            btn_plan.setBounds(positions[i][0], positions[i][1], 120, 120);
             contentPanel.add(btn_plan);
 
-            JLabel label = new JLabel((i == 0 ? "plan 업로드" : "- plan_name"));
-            label.setBounds(x + 20, y + 130, 100, 20);
+            // 라벨 생성
+            JLabel label = new JLabel(labels[i]);
+            label.setBounds(positions[i][0] + 20, positions[i][1] + 120, 100, 20);
             contentPanel.add(label);
         }
+
         contentPanel.revalidate();
         contentPanel.repaint();
     }
+
 
     // 검색 동작 트리거
     private void triggerSearch() {
