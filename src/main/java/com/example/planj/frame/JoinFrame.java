@@ -16,8 +16,11 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.border.AbstractBorder;
 import java.awt.geom.RoundRectangle2D;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 
 public class JoinFrame extends JFrame {
+    private BufferedImage backgroundImage;
 
     public class FontLoader {
         private static final Map<String, Font> fontRegistry = new HashMap<>();
@@ -51,61 +54,95 @@ public class JoinFrame extends JFrame {
 
     public JoinFrame() {
 
-        setBackground(Color.white);
-
-        setTitle("PLAN J");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 600);
-
         Container contentPane = getContentPane();
         contentPane.setLayout(null);
 
         contentPane.setBackground(Color.WHITE);
 
+        setTitle("PLAN J");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1000, 600);
+
+        JLayeredPane layeredPane = new JLayeredPane();
+        layeredPane.setBounds(0, 0, getWidth(), getHeight());
+        setContentPane(layeredPane);
+
+        // 배경 이미지 로드
+        try {
+            backgroundImage = ImageIO.read(new File("C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\img\\배경.png"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("배경 이미지를 로드할 수 없습니다.");
+        }
+
+        // 배경 이미지를 설정하는 커스텀 패널
+        JPanel backgroundPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.setColor(Color.WHITE); // 기본 배경색 설정
+                g.fillRect(0, 0, getWidth(), getHeight()); // 흰색으로 전체 배경 채우기
+
+                if (backgroundImage != null) {
+                    g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+                }
+            }
+        };
+        backgroundPanel.setBounds(0, 0, getWidth(), getHeight());
+        layeredPane.add(backgroundPanel, Integer.valueOf(0)); // 배경 패널을 가장 아래로 추가
+
+        // 콘텐츠 패널 생성
+        JPanel contentPanel = new JPanel(null);
+        contentPanel.setBounds(0, 0, getWidth(), getHeight());
+        contentPanel.setOpaque(false); // 투명하게 설정
+        layeredPane.add(contentPanel, Integer.valueOf(1));
+
+        contentPanel.setBackground(Color.WHITE);
+
         JLabel logo1 = new JLabel("<html><span style='color:#89AEBF;'>P</span>lan<span style='color:#436698;'> J</span></html>");
         logo1.setFont(FontLoader.getFont("낭만있구미체",35f, Font.BOLD));
-        contentPane.add(logo1);
+        contentPanel.add(logo1);
         logo1.setBounds(440, 120, 150, 40);
 
         JLabel logo2 = new JLabel("회원가입");
         logo2.setFont(FontLoader.getFont("낭만있구미체",17f,Font.PLAIN));
         logo2.setBounds(460, 180, 180, 40);
-        contentPane.add(logo2);
+        contentPanel.add(logo2);
 
         MyPanel line = new MyPanel();
         line.setBounds(370, 200, 220, 20);
-        contentPane.add(line);
+        contentPanel.add(line);
 
         RoundTextField phone = new RoundTextField("  000-0000-0000");
-        phone.setFont(FontLoader.getFont("Rix X Lady Watermelon",15f,Font.PLAIN));
+        phone.setFont(FontLoader.getFont("세종글꽃체",15f,Font.PLAIN));
         phone.setBounds(400, 250, 180, 20);
-        contentPane.add(phone);
+        contentPanel.add(phone);
 
         RoundTextField email = new RoundTextField("  email");
-        email.setFont(FontLoader.getFont("Rix X Lady Watermelon",15f,Font.PLAIN));
+        email.setFont(FontLoader.getFont("세종글꽃체",15f,Font.PLAIN));
         email.setBounds(400, 280, 180, 20);
-        contentPane.add(email);
+        contentPanel.add(email);
 
         RoundTextField username = new RoundTextField("  아이디");
-        username.setFont(FontLoader.getFont("Rix X Lady Watermelon",15f,Font.PLAIN));
+        username.setFont(FontLoader.getFont("세종글꽃체",15f,Font.PLAIN));
         username.setBounds(400, 310, 180, 20);
-        contentPane.add(username);
+        contentPanel.add(username);
 
         PasswordField password1 = new PasswordField("  비밀번호");
-        password1.setFont(FontLoader.getFont("Rix X Lady Watermelon",15f,Font.PLAIN));
+        password1.setFont(FontLoader.getFont("세종글꽃체",15f,Font.PLAIN));
         password1.setBounds(400, 340, 180, 20);
-        contentPane.add(password1);
+        contentPanel.add(password1);
 
         PasswordField password2 = new PasswordField("  비밀번호 확인");
-        password2.setFont(FontLoader.getFont("Rix X Lady Watermelon",15f,Font.PLAIN));
+        password2.setFont(FontLoader.getFont("세종글꽃체",15f,Font.PLAIN));
         password2.setBounds(400, 370, 180, 20);
-        contentPane.add(password2);
+        contentPanel.add(password2);
 
 
         RoundButton check = new RoundButton("회원가입");
-        check.setFont(FontLoader.getFont("Rix X Lady Watermelon",20f,Font.PLAIN));
+        check.setFont(FontLoader.getFont("세종글꽃체",20f,Font.PLAIN));
         check.setBounds(430, 420, 120, 30);
-        contentPane.add(check);
+        contentPanel.add(check);
 
         phone.setMargin(new Insets(5, 10, 5, 10)); // 위, 왼쪽, 아래, 오른쪽 여백 설정
         email.setMargin(new Insets(5, 10, 5, 10));
@@ -129,39 +166,46 @@ public class JoinFrame extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
 
-                if (phone.getText().isEmpty()) {
+                String phoneText = phone.getText().trim().equals("000-0000-0000") ? null : phone.getText().trim();
+                String emailText = email.getText().trim().equals("email") ? null : email.getText().trim();
+                String usernameText = username.getText().trim().equals("아이디") ? null : username.getText().trim();
+                String passwordText1 = password1.getText().trim().equals("비밀번호") ? null : password1.getText().trim();
+                String passwordText2 = password2.getText().trim().equals("비밀번호 확인") ? null : password2.getText().trim();
+
+                if (phoneText == null) {
+                    UIManager.put("OptionPane.messageFont", FontLoader.getFont("세종글꽃체", 14f, Font.BOLD));
                     JOptionPane.showMessageDialog(null, "전화번호는 필수 항목입니다.");
                     return;
                 }
-
-                if (email.getText().isEmpty()) {
+                if (emailText == null) {
                     JOptionPane.showMessageDialog(null, "이메일은 필수 항목입니다.");
+                    UIManager.put("OptionPane.messageFont", FontLoader.getFont("세종글꽃체", 14f, Font.BOLD));
                     return;
                 }
-
-                if (username.getText().isEmpty()) {
+                if (usernameText == null) {
                     JOptionPane.showMessageDialog(null, "아이디는 필수 항목입니다.");
+                    UIManager.put("OptionPane.messageFont", FontLoader.getFont("세종글꽃체", 14f, Font.BOLD));
                     return;
                 }
-
-                if (password1.getText().isEmpty()) {
+                if (passwordText1 == null) {
                     JOptionPane.showMessageDialog(null, "비밀번호는 필수 항목입니다.");
+                    UIManager.put("OptionPane.messageFont", FontLoader.getFont("세종글꽃체", 14f, Font.BOLD));
                     return;
                 }
-
-                if (password2.getText().isEmpty()) {
+                if (passwordText2 == null) {
                     JOptionPane.showMessageDialog(null, "비밀번호 확인은 필수 항목입니다.");
+                    UIManager.put("OptionPane.messageFont", FontLoader.getFont("세종글꽃체", 14f, Font.BOLD));
                     return;
                 }
-
-                if (!password1.getText().equals(password2.getText())) {
+                if (!passwordText1.equals(passwordText2)) {
                     JOptionPane.showMessageDialog(null, "비밀번호가 일치하지 않습니다.");
+                    UIManager.put("OptionPane.messageFont", FontLoader.getFont("세종글꽃체", 14f, Font.BOLD));
                     return;
                 }
 
                 String userData = String.format(
                         "{\"phone\":\"%s\", \"email\":\"%s\", \"username\":\"%s\", \"password\":\"%s\"}",
-                        phone.getText(), email.getText(), username.getText(), password1.getText()
+                        phoneText, emailText, usernameText, passwordText1
                 );
                 registerUser(userData);
             }
@@ -169,17 +213,17 @@ public class JoinFrame extends JFrame {
 
 
         JLabel myplan = new JLabel("myplan");
-        myplan.setFont(FontLoader.getFont("Rix X Lady Watermelon", 18f, Font.PLAIN));
+        myplan.setFont(FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
         myplan.setForeground(Color.BLACK);
-        myplan.setBackground(Color.WHITE); // 초기 배경 색
-        myplan.setOpaque(true); // 배경 색이 보이도록 설정
-        myplan.setBounds(620, 50, 80, 30); // 크기와 위치 설정
+        myplan.setBackground(Color.WHITE);
+        myplan.setOpaque(true);
+        myplan.setBounds(620, 47, 80, 30); // 크기와 위치 설정
         myplan.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스를 올리면 커서 변경
 
         myplan.setHorizontalAlignment(SwingConstants.CENTER); // 수평 중앙 정렬
         myplan.setVerticalAlignment(SwingConstants.CENTER);   // 수직 중앙 정렬
 
-        myplan.setBorder(new RoundRectangleBorder(new Color(0, 0, 0, 0), 2, 60)); // 둥근 테두리 추가
+        myplan.setBorder(new RoundRectangleBorder(new Color(0, 0, 0, 0), 20, 20)); // 둥근 테두리 추가
 
 
         myplan.addMouseListener(new MouseAdapter() {
@@ -200,11 +244,11 @@ public class JoinFrame extends JFrame {
         });
 
         JLabel login = new JLabel("로그인");
-        login.setFont(FontLoader.getFont("Rix X Lady Watermelon", 18f, Font.PLAIN));
+        login.setFont(FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
         login.setForeground(Color.BLACK);
         login.setBackground(Color.WHITE); // 초기 배경 색
         login.setOpaque(true); // 배경 색이 보이도록 설정
-        login.setBounds(711, 50, 80, 30); // 크기와 위치 설정
+        login.setBounds(711, 47, 80, 30); // 크기와 위치 설정
         login.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스를 올리면 커서 변경
 
         login.setHorizontalAlignment(SwingConstants.CENTER); // 수평 중앙 정렬
@@ -229,11 +273,11 @@ public class JoinFrame extends JFrame {
         });
 
         JLabel join = new JLabel("회원가입");
-        join.setFont(FontLoader.getFont("Rix X Lady Watermelon", 18f, Font.PLAIN));
+        join.setFont(FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
         join.setForeground(Color.BLACK);
         join.setBackground(Color.LIGHT_GRAY); // 초기 배경 색은 라이트 그레이
         join.setOpaque(true); // 배경 색이 보이도록 설정
-        join.setBounds(800, 50, 80, 30); // 크기와 위치 설정
+        join.setBounds(800, 47, 80, 30); // 크기와 위치 설정
         join.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스를 올리면 커서 변경
 
         join.setHorizontalAlignment(SwingConstants.CENTER); // 수평 중앙 정렬
@@ -245,13 +289,13 @@ public class JoinFrame extends JFrame {
                 // 회원가입 클릭 시 아무 동작 안 함 (빈 액션)
             }
         });
-        contentPane.add(myplan);
-        contentPane.add(login);
-        contentPane.add(join);
+        contentPanel.add(myplan);
+        contentPanel.add(login);
+        contentPanel.add(join);
 
         MyPanel panel1 = new MyPanel();
         panel1.setBounds(100, 60, 800, 50);
-        contentPane.add(panel1);
+        contentPanel.add(panel1);
 
         setVisible(true);
     }
@@ -374,6 +418,13 @@ public class JoinFrame extends JFrame {
                     "C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\font\\Rix X ladywatermelon OTF Regular.otf",
                     "Rix X Lady Watermelon"
             );
+            FontLoader.loadCustomFont(
+                    "C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\font\\SejongGeulggot.otf",
+                    "세종글꽃체"
+            );
+
+            UIManager.put("OptionPane.background", Color.WHITE); // OptionPane 자체 배경색
+            UIManager.put("Panel.background", Color.WHITE);
 
             // JoinFrame 실행
             new JoinFrame();
