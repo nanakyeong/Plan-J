@@ -79,6 +79,7 @@ public class UploadpageFrame extends JFrame {
                         List<PlanDTO> plans = planService.getAllPlans();
                         PlanDTO selectedPlan = plans.get(selectedIndex);
 
+
                         SwingUtilities.invokeLater(() -> {
                             PlanwritepageFrame frame = new PlanwritepageFrame();
 

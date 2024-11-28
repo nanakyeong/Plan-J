@@ -38,6 +38,7 @@ public class MainpageFrame extends JFrame {
 
         //1줄
 
+
         JButton btn_newplan = new JButton("+");   //+ 버튼
         btn_newplan.setBounds(123, 230, 120, 120);
         JLabel newplan = new JLabel("plan 업로드");

@@ -218,12 +218,12 @@ public class PlanwritepageFrame extends JFrame {
                         }
                     }
 
+
                     // 날짜별 숙소 데이터 설정
                     String accommodation = accommodationsPerDayFromDTO.get(day);
                     if (accommodation != null) {
                         JLabel accommodationLabel = new JLabel("[숙소] " + accommodation);
-                        accommodationLabel.setFont(new Font("돋움", Font.ITALIC, 12));
-                        accommodationLabel.setForeground(Color.BLUE);
+                        accommodationLabel.setFont(new Font("돋움", Font.BOLD, 12));
                         planPanel.add(accommodationLabel);
 
                         accommodationsPerDay.put(day, accommodation); // 맵에 추가
