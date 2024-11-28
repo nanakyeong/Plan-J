@@ -188,7 +188,7 @@ public class MainpageFrame extends JFrame {
             contentPanel.add(btn_plan);
 
             // 라벨 생성
-            JLabel label = new JLabel("- " + searchText + " 결과 " + (i + 1));
+            JLabel label = new JLabel(searchText + " 결과 " + (i + 1));
             label.setBounds(positions[i][0] + 20, positions[i][1] + 120, 100, 20);
             contentPanel.add(label);
         }
