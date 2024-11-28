@@ -66,12 +66,12 @@ public class MainpageFrame extends JFrame {
 
         // 검색 텍스트 필드
         search_plan = new JTextField();
-        search_plan.setBounds(120, 0, 240, 23);
+        search_plan.setBounds(120, 0, 210, 23);
         searchPanel.add(search_plan);
 
         // 검색 아이콘
         JLabel searchIcon = new JLabel("🔍");
-        searchIcon.setBounds(360, 0, 30, 22);
+        searchIcon.setBounds(330, 0, 30, 22);
         searchIcon.setHorizontalAlignment(SwingConstants.CENTER);
         searchPanel.add(searchIcon);
 
@@ -161,22 +161,28 @@ public class MainpageFrame extends JFrame {
         searchResultLabel.setText("\"" + searchText + "\"가 포함된 검색 결과입니다.");
         contentPanel.removeAll();
 
-        for (int i = 0; i < 8; i++) {
-            int x = 123 + (i % 4) * 200;
-            int y = (i / 4) * 170;
+        // 버튼과 라벨 위치 및 텍스트 설정
+        int[][] positions = {
+                {123, 0}, {323, 0}, {533, 0}, {743, 0}, // 첫 번째 줄
+                {123, 170}, {323, 170}, {533, 170}, {743, 170}  // 두 번째 줄
+        };
 
+        for (int i = 0; i < positions.length; i++) {
+            // 버튼 생성
             JButton btn_plan = new JButton("결과 " + (i + 1));
-            btn_plan.setBounds(x, y, 120, 120);
+            btn_plan.setBounds(positions[i][0], positions[i][1], 120, 120);
             contentPanel.add(btn_plan);
 
+            // 라벨 생성
             JLabel label = new JLabel("- " + searchText + " 결과 " + (i + 1));
-            label.setBounds(x + 20, y + 130, 100, 20);
+            label.setBounds(positions[i][0] + 20, positions[i][1] + 120, 100, 20);
             contentPanel.add(label);
         }
 
         contentPanel.revalidate();
         contentPanel.repaint();
     }
+
 
     // 하단 라인 그리기
     class MyPanel extends JPanel {
