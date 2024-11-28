@@ -43,7 +43,6 @@ public class MainpageFrame extends JFrame {
         contentPane.add(join);
 
         // 검색 패널
-        // 검색 패널
         JPanel searchPanel = new JPanel();
         searchPanel.setBounds(500, 142, 380, 23); // 크기를 늘려서 라디오 버튼 추가 가능
         searchPanel.setLayout(null);
@@ -129,7 +128,6 @@ public class MainpageFrame extends JFrame {
         initializeDefaultContent(); // 기본 게시물 표시
     }
 
-    // 기본 게시물 표시
     // 기본 게시물 표시
     private void initializeDefaultContent() {
         contentPanel.removeAll();
