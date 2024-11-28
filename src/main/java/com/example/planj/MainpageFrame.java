@@ -95,7 +95,23 @@ public class MainpageFrame extends JFrame {
         searchIcon.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                // 검색 실행
                 triggerSearch();
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                // 마우스 오버 효과 (배경색 변경 및 손 모양 커서)
+                searchIcon.setOpaque(true);
+                searchIcon.setBackground(Color.LIGHT_GRAY);
+                searchIcon.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                // 마우스가 나가면 원래 상태로 복원
+                searchIcon.setOpaque(false);
+                searchIcon.setBackground(null);
             }
         });
 
