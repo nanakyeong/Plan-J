@@ -1,11 +1,27 @@
 package com.example.planj;
 
+import com.example.planj.db.PlanDTO;
+import com.example.planj.db.PlanService;
+import org.apache.catalina.core.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
+@Component
 public class MainpageFrame extends JFrame {
+    private final PlanService planService;
+    private final JButton[] planButtons = new JButton[7];
 
-    public MainpageFrame() {
+    @Autowired
+    public MainpageFrame(PlanService planService) {
+        this.planService = planService;
+        initialize();
+    }
+
+    private void initialize() {
         setTitle("Plan J");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 600);
@@ -29,98 +45,70 @@ public class MainpageFrame extends JFrame {
         contentPane.add(join);
 
         JTextField search = new JTextField();
-        search.setBounds(653, 142, 210,23);
+        search.setBounds(653, 142, 210, 23);
         contentPane.add(search);
 
-
-        //1줄
-
-
-        JButton btn_newplan = new JButton("+");   //+ 버튼
+        JButton btn_newplan = new JButton("+");
         btn_newplan.setBounds(123, 230, 120, 120);
         JLabel newplan = new JLabel("plan 업로드");
         newplan.setBounds(143, 350, 100, 20);
-
         contentPane.add(btn_newplan);
         contentPane.add(newplan);
 
         btn_newplan.addActionListener(e -> {
             SwingUtilities.invokeLater(() -> {
-                UploadpageFrame uploadFrame = new UploadpageFrame(); // 새로운 UploadpageFrame 열기
+                UploadpageFrame uploadFrame = ApplicationContextProvider.getContext().getBean(UploadpageFrame.class);
                 uploadFrame.setVisible(true);
                 dispose();
             });
         });
 
-        JButton btn_plan1 = new JButton();   //게시물1
-        btn_plan1.setBounds(323, 230, 120, 120);
-        JLabel plan1 = new JLabel("- plan_name");
-        plan1.setBounds(343, 350, 100, 20);
+        contentPane.add(btn_newplan);
 
-        contentPane.add(btn_plan1);
-        contentPane.add(plan1);
-
-        JButton btn_plan2 = new JButton();   //게시물2
-        btn_plan2.setBounds(533, 230, 120, 120);
-        JLabel plan2 = new JLabel("- plan_name");
-        plan2.setBounds(563, 350, 100, 20);
-
-        contentPane.add(btn_plan2);
-        contentPane.add(plan2);
-
-        JButton btn_plan3 = new JButton();   //게시물3
-        btn_plan3.setBounds(743, 230, 120, 120);
-        JLabel plan3 = new JLabel("- plan_name");
-        plan3.setBounds(763, 350, 100, 20);
-
-        contentPane.add(btn_plan3);
-        contentPane.add(plan3);
-
-        //2줄
-
-        JButton btn_plan4 = new JButton();   //게시물4
-        btn_plan4.setBounds(123, 400, 120, 120);
-        JLabel plan4 = new JLabel("- plan_name");
-        plan4.setBounds(143, 520, 100, 20);
-
-        contentPane.add(btn_plan4);
-        contentPane.add(plan4);
-
-        JButton btn_plan5 = new JButton();   //게시물5
-        btn_plan5.setBounds(323, 400, 120, 120);
-        JLabel plan5 = new JLabel("- plan_name");
-        plan5.setBounds(343, 520, 100, 20);
-
-        contentPane.add(btn_plan5);
-        contentPane.add(plan5);
-
-        JButton btn_plan6 = new JButton();   //게시물6
-        btn_plan6.setBounds(533, 400, 120, 120);
-        JLabel plan6 = new JLabel("- plan_name");
-        plan6.setBounds(563, 520, 100, 20);
-
-        contentPane.add(btn_plan6);
-        contentPane.add(plan6);
-
-        JButton btn_plan7 = new JButton();   //게시물7
-        btn_plan7.setBounds(743, 400, 120, 120);
-        JLabel plan7 = new JLabel("- plan_name");
-        plan7.setBounds(763, 520, 100, 20);
-
-        contentPane.add(btn_plan7);
-        contentPane.add(plan7);
+        createPlanButtons(contentPane);
+        updatePlanButtons();
 
         MyPanel panel1 = new MyPanel();
         panel1.setBounds(0, 0, 1000, 600);
         contentPane.add(panel1);
 
-
         setVisible(true);
-
     }
-    class MyPanel extends JPanel{
-        public void paintComponent(Graphics g){
 
+    private void createPlanButtons(Container contentPane) {
+        for (int i = 0; i < planButtons.length; i++) {
+            JButton planButton = new JButton();
+            planButton.setBounds(123 + (((i+1) % 4) * 210), 230 + (((i+1) / 4) * 170), 120, 120);
+            planButton.setVisible(false);
+            contentPane.add(planButton);
+            planButtons[i] = planButton;
+        }
+    }
+
+    private void updatePlanButtons() {
+        List<PlanDTO> plans = planService.getAllPlans();
+        for (int i = 0; i < plans.size(); i++) {
+            PlanDTO plan = plans.get(i);
+            JButton planButton = planButtons[i];
+            planButton.setText(plan.getTitle());
+            planButton.setVisible(true);
+
+            planButton.addActionListener(e -> openPlan(plan));
+        }
+    }
+
+
+    private void openPlan(PlanDTO planDTO) {
+        SwingUtilities.invokeLater(() -> {
+            PlanwritepageFrame planFrame = ApplicationContextProvider.getContext().getBean(PlanwritepageFrame.class);
+            planFrame.setPlanDTO(planDTO);
+            planFrame.setVisible(true);
+            dispose();
+        });
+    }
+
+    class MyPanel extends JPanel {
+        public void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
             g2.setStroke(new BasicStroke(2));
@@ -130,6 +118,8 @@ public class MainpageFrame extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(MainpageFrame::new);
+        SwingUtilities.invokeLater(() -> {
+            ApplicationContextProvider.getContext().getBean(MainpageFrame.class).setVisible(true);
+        });
     }
 }

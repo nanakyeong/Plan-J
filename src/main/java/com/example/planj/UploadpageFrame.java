@@ -11,13 +11,25 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+
+@Component
 public class UploadpageFrame extends JFrame {
 
+    private final PlanService planService;
     private Container contentPane;
     private JList<String> list;
     private JScrollPane sp;
 
-    public UploadpageFrame() {
+    @Autowired
+    public UploadpageFrame(PlanService planService) {
+        this.planService = planService;
+        initialize();
+    }
+
+    private void initialize() {
         setTitle("Plan J");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 600);
@@ -53,7 +65,8 @@ public class UploadpageFrame extends JFrame {
 
         newPlanButton.addActionListener(e -> {
             SwingUtilities.invokeLater(() -> {
-                new PlanwritepageFrame();
+                PlanwritepageFrame planFrame = new PlanwritepageFrame(planService);
+                planFrame.setVisible(true);
                 dispose();
             });
         });
@@ -81,7 +94,7 @@ public class UploadpageFrame extends JFrame {
 
 
                         SwingUtilities.invokeLater(() -> {
-                            PlanwritepageFrame frame = new PlanwritepageFrame();
+                            PlanwritepageFrame frame = new PlanwritepageFrame(planService);
 
                             // PlacePerDay에서 숙소 정보 추출
                             String accommodation = selectedPlan.getPlacesPerDay().entrySet().stream()
@@ -99,8 +112,6 @@ public class UploadpageFrame extends JFrame {
                 }
             }
         });
-
-        setVisible(true);
     }
 
     private List<String> getPlanTitlesFromDatabase() {
@@ -128,10 +139,6 @@ public class UploadpageFrame extends JFrame {
             g2.setColor(Color.black);
             g2.drawLine(123, 85, 740, 85);
         }
-    }
-
-    public static void main(String[] args) {
-        new UploadpageFrame();
     }
 }
 

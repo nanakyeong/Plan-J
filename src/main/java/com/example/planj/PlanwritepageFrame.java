@@ -51,7 +51,12 @@ public class PlanwritepageFrame extends JFrame {
     private Map<String, String> accommodationsPerDay = new HashMap<>();
     private Map<String, List<String>> placesPerDay = new HashMap<>();
 
-    public PlanwritepageFrame() {
+    public PlanwritepageFrame(PlanService planService) {
+        this.planService = planService;
+        initialize();
+    }
+
+    private void initialize() {
         setTitle("Plan J");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 600);
@@ -64,8 +69,14 @@ public class PlanwritepageFrame extends JFrame {
         logo1.setBounds(123, 135, 150, 30);
         contentPane.add(logo1);
 
+        JButton registerButton = new JButton("등록하기");
+        registerButton.setBounds(600, 160, 130, 20);
+        registerButton.setFont(new Font("돋움", Font.BOLD, 18));
+        registerButton.setBackground(new Color(255, 255, 255));
+        contentPane.add(registerButton);
+
         JButton saveButton = new JButton("저장하기");
-        saveButton.setBounds(718, 160, 150, 30);
+        saveButton.setBounds(735, 160, 130, 20);
         saveButton.setFont(new Font("돋움", Font.BOLD, 18));
         saveButton.setBackground(new Color(255, 255, 255));
         contentPane.add(saveButton);
@@ -177,12 +188,13 @@ public class PlanwritepageFrame extends JFrame {
             try {
                 planService.createPlan(planDTO);
                 JOptionPane.showMessageDialog(this, "계획이 성공적으로 저장되었습니다.");
-                new UploadpageFrame();
+                new UploadpageFrame(planService);
                 dispose();
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "저장 중 오류가 발생했습니다: " + ex.getMessage(), "오류", JOptionPane.ERROR_MESSAGE);
             }
         });
+
 
         setVisible(true);
     }
@@ -266,11 +278,10 @@ public class PlanwritepageFrame extends JFrame {
             }
 
             // 화면 전환
-            new UploadpageFrame();
+            new UploadpageFrame(planService);
             dispose();
         }
     }
-
 
     private void deletePlan() {
         if (planDTO != null) {
@@ -290,7 +301,7 @@ public class PlanwritepageFrame extends JFrame {
                     JOptionPane.showMessageDialog(this, "삭제할 계획을 찾을 수 없습니다.", "오류", JOptionPane.ERROR_MESSAGE);
                 }
 
-                new UploadpageFrame();
+                new UploadpageFrame(planService);
                 dispose();
             }
         }
@@ -324,7 +335,6 @@ public class PlanwritepageFrame extends JFrame {
         planPanel.revalidate();
         planPanel.repaint();
     }
-
 
     private void updateDays(JComboBox<Integer> section1, JComboBox<Integer> section2) {
         int selectedNights = (Integer) section1.getSelectedItem();
@@ -792,6 +802,9 @@ public class PlanwritepageFrame extends JFrame {
     }
 
     public static void main(String[] args) {
-        new PlanwritepageFrame();
+        SwingUtilities.invokeLater(() -> {
+            PlanwritepageFrame frame = ApplicationContextProvider.getContext().getBean(PlanwritepageFrame.class);
+            frame.setVisible(true);
+        });
     }
 }
