@@ -223,7 +223,7 @@ public class PlanwritepageFrame extends JFrame {
     private void openEditPage() {
         if (planDTO != null) {
             SwingUtilities.invokeLater(() -> {
-                PlanwritepageFrame editFrame = new PlanwritepageFrame(); // 새로운 수정 페이지 생성
+                PlanwritepageFrame editFrame = new PlanwritepageFrame(planService); // 새로운 수정 페이지 생성
                 editFrame.setPlanDTO(planDTO); // 기존 데이터를 수정 페이지에 전달
                 editFrame.setVisible(true); // 수정 페이지 표시
                 dispose(); // 현재 창 닫기
@@ -329,11 +329,7 @@ public class PlanwritepageFrame extends JFrame {
                 this.planService = ApplicationContextProvider.getContext().getBean(PlanService.class);
                 boolean isDeleted = planService.deletePlan(planDTO.getId());
 
-                if (isDeleted) {
-                    JOptionPane.showMessageDialog(this, "계획이 삭제되었습니다.");
-                } else {
-                    JOptionPane.showMessageDialog(this, "삭제할 계획을 찾을 수 없습니다.", "오류", JOptionPane.ERROR_MESSAGE);
-                }
+                JOptionPane.showMessageDialog(this, "계획이 삭제되었습니다.");
 
                 new UploadpageFrame(planService);
                 dispose();
