@@ -18,8 +18,8 @@ public class PlanJApplication {
         ApplicationContext context = SpringApplication.run(PlanJApplication.class, args);
 
         SwingUtilities.invokeLater(() -> {
-            PlanwritepageFrame frame = context.getBean(PlanwritepageFrame.class);
-            frame.setVisible(true);
+            MainpageFrame mainFrame = new MainpageFrame();
+            mainFrame.setVisible(true);
         });
     }
 }
