@@ -37,7 +37,7 @@ public class PlanService {
             existingPlan.setNights(planDTO.getNights());
             existingPlan.setDays(planDTO.getDays());
             existingPlan.setRegion(planDTO.getRegion());
-            existingPlan.setDistrict(planDTO.getDestrict());
+            existingPlan.setDistrict(planDTO.getDistrict());
 
             // 날짜별 숙소 및 장소 데이터 설정
             Map<String, String> accommodationsPerDay = planDTO.getAccommodationsPerDay();
@@ -78,7 +78,7 @@ public class PlanService {
         planDTO.setDays(plan.getDays());
         planDTO.setDate(plan.getDate());
         planDTO.setRegion(plan.getRegion());
-        planDTO.setDestrict(plan.getDistrict());
+        planDTO.setDistrict(plan.getDistrict());
         planDTO.setAccommodationsPerDay(plan.getAccommodationsPerDay());
 
         // List<PlacePerDay> -> Map<String, List<String>>
@@ -102,7 +102,7 @@ public class PlanService {
         plan.setNights(planDTO.getNights());
         plan.setDays(planDTO.getDays());
         plan.setDate(planDTO.getDate());
-        plan.setDistrict(planDTO.getDestrict());
+        plan.setDistrict(planDTO.getDistrict());
         plan.setRegion(planDTO.getRegion());
         plan.setAccommodationsPerDay(planDTO.getAccommodationsPerDay());
 

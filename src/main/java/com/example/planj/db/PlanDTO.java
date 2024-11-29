@@ -10,7 +10,7 @@ public class PlanDTO {
     private int nights;
     private int days;
     private String region;
-    private String destrict;
+    private String district;
     private LocalDate date;
 
     // 날짜별 숙소
@@ -29,7 +29,7 @@ public class PlanDTO {
         this.nights = nights;
         this.days = days;
         this.region = region;
-        this.destrict = district;
+        this.district = district;
         this.date = date != null ? date : LocalDate.now();
         this.accommodationsPerDay = accommodationsPerDay != null ? accommodationsPerDay : new HashMap<>();
         this.placesPerDay = placesPerDay != null ? placesPerDay : new HashMap<>();
@@ -120,11 +120,11 @@ public class PlanDTO {
         this.region = region;
     }
 
-    public String getDestrict() {
-        return destrict;
+    public String getDistrict() {
+        return district;
     }
 
-    public void setDestrict(String destrict) {
-        this.destrict = destrict;
+    public void setDistrict(String district) {
+        this.district = district;
     }
 }

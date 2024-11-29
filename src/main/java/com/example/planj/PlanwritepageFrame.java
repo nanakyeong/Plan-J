@@ -73,6 +73,7 @@ public class PlanwritepageFrame extends JFrame {
         registerButton.setBounds(600, 160, 130, 20);
         registerButton.setFont(new Font("돋움", Font.BOLD, 18));
         registerButton.setBackground(new Color(255, 255, 255));
+        registerButton.addActionListener(e -> onRegisterButtonClick());
         contentPane.add(registerButton);
 
         JButton saveButton = new JButton("저장하기");
@@ -178,7 +179,7 @@ public class PlanwritepageFrame extends JFrame {
             planDTO.setNights((Integer) section1.getSelectedItem());
             planDTO.setDays((Integer) section2.getSelectedItem());
             planDTO.setRegion((String) areaCodeComboBox.getSelectedItem());
-            planDTO.setDestrict((String) sigunguComboBox.getSelectedItem());
+            planDTO.setDistrict((String) sigunguComboBox.getSelectedItem());
 
             // 날짜별 숙소 및 장소 데이터 추가
             planDTO.setAccommodationsPerDay(new HashMap<>(accommodationsPerDay));
@@ -199,6 +200,20 @@ public class PlanwritepageFrame extends JFrame {
         setVisible(true);
     }
 
+    private void onRegisterButtonClick() {
+        PlanDTO newPlan = new PlanDTO();
+        newPlan.setTitle("새 계획");
+        planService.createPlan(newPlan);
+
+        JOptionPane.showMessageDialog(this, "등록이 완료되었습니다.", "알림", JOptionPane.INFORMATION_MESSAGE);
+
+        SwingUtilities.invokeLater(() -> {
+            MainpageFrame mainFrame = ApplicationContextProvider.getContext().getBean(MainpageFrame.class);
+            mainFrame.setVisible(true);
+            dispose();
+        });
+    }
+
     public void setPlanDTO(PlanDTO planDTO) {
         this.planDTO = planDTO;
 
@@ -208,7 +223,7 @@ public class PlanwritepageFrame extends JFrame {
             section1.setSelectedItem(planDTO.getNights());
             section2.setSelectedItem(planDTO.getDays());
             areaCodeComboBox.setSelectedItem(planDTO.getRegion());
-            sigunguComboBox.setSelectedItem(planDTO.getDestrict());
+            sigunguComboBox.setSelectedItem(planDTO.getDistrict());
 
             // 날짜별 장소 및 숙소 데이터를 표시
             planPanel.removeAll(); // 기존 데이터 초기화
@@ -255,7 +270,7 @@ public class PlanwritepageFrame extends JFrame {
             planDTO.setNights((Integer) section1.getSelectedItem());
             planDTO.setDays((Integer) section2.getSelectedItem());
             planDTO.setRegion((String) areaCodeComboBox.getSelectedItem());
-            planDTO.setDestrict((String) sigunguComboBox.getSelectedItem());
+            planDTO.setDistrict((String) sigunguComboBox.getSelectedItem());
 
             // 날짜별 숙소 및 장소 데이터를 업데이트
             Map<String, List<String>> combinedPlacesPerDay = new HashMap<>();
@@ -799,12 +814,5 @@ public class PlanwritepageFrame extends JFrame {
         }
         String sigunguCode = String.valueOf(sigunguCodeMap.getOrDefault(selectedSigungu, 0));
         return sigunguCode;
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            PlanwritepageFrame frame = ApplicationContextProvider.getContext().getBean(PlanwritepageFrame.class);
-            frame.setVisible(true);
-        });
     }
 }
