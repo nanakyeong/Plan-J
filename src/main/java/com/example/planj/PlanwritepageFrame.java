@@ -223,7 +223,7 @@ public class PlanwritepageFrame extends JFrame {
     private void openEditPage() {
         if (planDTO != null) {
             SwingUtilities.invokeLater(() -> {
-                PlanwritepageFrame editFrame = new PlanwritepageFrame(); // 새로운 수정 페이지 생성
+                PlanwritepageFrame editFrame = new PlanwritepageFrame(planService); // 새로운 수정 페이지 생성
                 editFrame.setPlanDTO(planDTO); // 기존 데이터를 수정 페이지에 전달
                 editFrame.setVisible(true); // 수정 페이지 표시
                 dispose(); // 현재 창 닫기
@@ -483,18 +483,13 @@ public class PlanwritepageFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "경로에 추가된 장소가 없습니다. 장소를 추가해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        if (accommodationName != null && accommodationLat != 0 && accommodationLon != 0) {
+        if (accommodationName != null && !accommodationName.equals("숙소 미지정") && accommodationLat != 0 && accommodationLon != 0) {
             locationCoordinates.add(new double[]{accommodationLon, accommodationLat});
             placeNames.add(accommodationName);
         }
 
         locationCoordinates.addAll(dayCoordinates);
         placeNames.addAll(dayPlaceNames);
-
-        if (accommodationName != null && accommodationLat != 0 && accommodationLon != 0) {
-            locationCoordinates.add(new double[]{accommodationLon, accommodationLat});
-            placeNames.add(accommodationName);
-        }
 
         if (accommodationName != null && !accommodationName.equals("숙소 미지정") && accommodationLat != 0 && accommodationLon != 0) {
             locationCoordinates.add(new double[]{accommodationLon, accommodationLat});
