@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.List;
+import com.example.planj.db.Plan;
 
 @Component
 public class PlanwritepageFrame extends JFrame {
@@ -50,12 +51,16 @@ public class PlanwritepageFrame extends JFrame {
     private PlanDTO planDTO;
     private Map<String, String> accommodationsPerDay = new HashMap<>();
     private Map<String, List<String>> placesPerDay = new HashMap<>();
+    private Plan currentPlan;
 
     public PlanwritepageFrame(PlanService planService) {
         this.planService = planService;
         initialize();
     }
 
+    public void setCurrentPlan(Plan plan) {
+        this.currentPlan = plan;
+    }
     private void initialize() {
         setTitle("Plan J");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -87,7 +92,6 @@ public class PlanwritepageFrame extends JFrame {
         updateButton.setFont(new Font("돋움", Font.BOLD, 18));
         updateButton.setBackground(new Color(255, 255, 255));
         contentPane.add(updateButton);
-        updateButton.addActionListener(e -> openEditPage());
 
         JButton deleteButton = new JButton("삭제하기");
         deleteButton.setBounds(735, 100, 130, 20);
@@ -201,37 +205,49 @@ public class PlanwritepageFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, "저장 중 오류가 발생했습니다: " + ex.getMessage(), "오류", JOptionPane.ERROR_MESSAGE);
             }
         });
-
-
         setVisible(true);
     }
 
     private void onRegisterButtonClick() {
-        PlanDTO newPlan = new PlanDTO();
-        newPlan.setTitle("새 계획");
-        planService.createPlan(newPlan);
+        try {
+            // 현재 Plan 데이터가 존재하는지 확인
+            if (currentPlan == null) {
+                JOptionPane.showMessageDialog(this, "저장된 계획만 등록할 수 있습니다.", "오류", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-        JOptionPane.showMessageDialog(this, "등록이 완료되었습니다.", "알림", JOptionPane.INFORMATION_MESSAGE);
+            String selectedArea = (String) areaCodeComboBox.getSelectedItem();
+            String selectedSigungu = (String) sigunguComboBox.getSelectedItem();
 
-        SwingUtilities.invokeLater(() -> {
-            MainpageFrame mainFrame = ApplicationContextProvider.getContext().getBean(MainpageFrame.class);
-            mainFrame.setVisible(true);
-            dispose();
-        });
-    }
+            if (selectedArea == null || selectedArea.equals("지역 선택")) {
+                JOptionPane.showMessageDialog(this, "지역을 선택해주세요.", "오류", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-    private void openEditPage() {
-        if (planDTO != null) {
+            if (selectedSigungu == null || selectedSigungu.equals("시군구 선택")) {
+                JOptionPane.showMessageDialog(this, "시군구를 선택해주세요.", "오류", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            currentPlan.setRegion(selectedArea); // 지역
+            currentPlan.setDistrict(selectedSigungu);
+
+            planService.createPlan(currentPlan); // 등록 메서드 호출
+
+            JOptionPane.showMessageDialog(this, "등록이 완료되었습니다.", "알림", JOptionPane.INFORMATION_MESSAGE);
+
+            // 메인 페이지로 이동
             SwingUtilities.invokeLater(() -> {
-                PlanwritepageFrame editFrame = new PlanwritepageFrame(planService); // 새로운 수정 페이지 생성
-                editFrame.setPlanDTO(planDTO); // 기존 데이터를 수정 페이지에 전달
-                editFrame.setVisible(true); // 수정 페이지 표시
-                dispose(); // 현재 창 닫기
+                MainpageFrame mainFrame = ApplicationContextProvider.getContext().getBean(MainpageFrame.class);
+                mainFrame.setVisible(true);
+                dispose();
             });
-        } else {
-            JOptionPane.showMessageDialog(this, "수정할 계획이 없습니다.", "오류", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "등록 중 오류 발생: " + e.getMessage(), "오류", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
+
 
     public void setPlanDTO(PlanDTO planDTO) {
         this.planDTO = planDTO;

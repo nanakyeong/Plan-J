@@ -87,15 +87,25 @@ public class MainpageFrame extends JFrame {
 
     private void updatePlanButtons() {
         List<PlanDTO> plans = planService.getAllPlans();
-        for (int i = 0; i < plans.size(); i++) {
+
+        // 반복문에서 유효한 버튼 수를 초과하지 않도록 설정
+        int maxButtons = Math.min(plans.size(), planButtons.length);
+        for (int i = 0; i < maxButtons; i++) {
             PlanDTO plan = plans.get(i);
             JButton planButton = planButtons[i];
             planButton.setText(plan.getTitle());
             planButton.setVisible(true);
 
+            // 버튼 클릭 시 계획 열기
             planButton.addActionListener(e -> openPlan(plan));
         }
+
+        // 남아 있는 버튼은 숨기기
+        for (int i = plans.size(); i < planButtons.length; i++) {
+            planButtons[i].setVisible(false);
+        }
     }
+
 
 
     private void openPlan(PlanDTO planDTO) {

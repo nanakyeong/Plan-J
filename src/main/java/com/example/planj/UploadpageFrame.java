@@ -105,6 +105,7 @@ public class UploadpageFrame extends JFrame {
                                     .orElse(null);
 
                             frame.setPlanDTO(selectedPlan);
+                            frame.setCurrentPlan(selectedPlan.toPlan());
                             frame.setVisible(true);
                             dispose();
                         });

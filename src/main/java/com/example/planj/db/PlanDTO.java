@@ -12,6 +12,24 @@ public class PlanDTO {
     private String region;
     private String district;
     private LocalDate date;
+    private int areaCode;
+    private boolean isRegistered;
+
+    public boolean isRegistered() {
+        return isRegistered;
+    }
+
+    public void setRegistered(boolean registered) {
+        this.isRegistered = registered;
+    }
+
+    public int getAreaCode() {
+        return areaCode;
+    }
+
+    public void setAreaCode(int areaCode) {
+        this.areaCode = areaCode;
+    }
 
     // 날짜별 숙소
     private Map<String, String> accommodationsPerDay = new HashMap<>();
@@ -126,5 +144,13 @@ public class PlanDTO {
 
     public void setDistrict(String district) {
         this.district = district;
+    }
+
+    public Plan toPlan() {
+        Plan plan = new Plan();
+        plan.setTitle(this.title);
+        plan.setDistrict(this.district);
+        plan.setRegistered(this.isRegistered);
+        return plan;
     }
 }

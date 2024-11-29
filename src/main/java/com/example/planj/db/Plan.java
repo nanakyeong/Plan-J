@@ -22,8 +22,20 @@ public class Plan {
 
     private int days;
 
+    private int areaCode;
+
     @Column(nullable = false)
     private String region;
+
+    private boolean isRegistered;
+
+    public boolean isRegistered() {
+        return isRegistered;
+    }
+
+    public void setRegistered(boolean registered) {
+        isRegistered = registered;
+    }
 
     @Column(nullable = false)
     private String district;
@@ -157,4 +169,11 @@ public class Plan {
         return Objects.hash(id, title);
     }
 
+    public int getAreaCode() {
+        return areaCode;
+    }
+
+    public void setAreaCode(int areaCode) {
+        this.areaCode = areaCode;
+    }
 }

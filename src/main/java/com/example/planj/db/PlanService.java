@@ -12,6 +12,16 @@ public class PlanService {
     @Autowired
     private PlanRepository planRepository;
 
+    public void createPlan(Plan plan) {
+        PlanDTO planDTO = new PlanDTO();
+        planDTO.setTitle(plan.getTitle());
+        planDTO.setRegion(plan.getRegion());
+        planDTO.setAreaCode(plan.getAreaCode());
+        planDTO.setDistrict(plan.getDistrict());
+        createPlan(planDTO);
+        planRepository.save(plan);
+    }
+
     public List<PlanDTO> getAllPlans() {
         return planRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
     }
@@ -111,6 +121,5 @@ public class PlanService {
 
         return plan;
     }
-
 
 }
