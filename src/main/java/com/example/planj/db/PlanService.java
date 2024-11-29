@@ -32,36 +32,29 @@ public class PlanService {
         if (optionalPlan.isPresent()) {
             Plan existingPlan = optionalPlan.get();
 
-            // 기본 정보 설정
+            // 기본 정보 업데이트
             existingPlan.setTitle(planDTO.getTitle());
             existingPlan.setNights(planDTO.getNights());
             existingPlan.setDays(planDTO.getDays());
             existingPlan.setRegion(planDTO.getRegion());
             existingPlan.setDistrict(planDTO.getDistrict());
 
-            // 날짜별 숙소 및 장소 데이터 설정
-            Map<String, String> accommodationsPerDay = planDTO.getAccommodationsPerDay();
-            Map<String, List<String>> placesPerDayMap = planDTO.getPlacesPerDay();
-
-            // Map<String, List<String>> -> List<PlacePerDay> 변환
-            List<PlacePerDay> placesPerDayList = placesPerDayMap.entrySet()
-                    .stream()
-                    .map(entry -> {
-                        String day = entry.getKey();
-                        List<String> places = entry.getValue();
-                        String accommodation = accommodationsPerDay.get(day); // 해당 날짜의 숙소 정보
-                        return new PlacePerDay(day, places, accommodation); // PlacePerDay 생성 시 숙소 정보 추가
-                    })
+            // 날짜별 숙소와 장소 데이터를 반영
+            List<PlacePerDay> updatedPlaces = planDTO.getPlacesPerDay().entrySet().stream()
+                    .map(entry -> new PlacePerDay(
+                            entry.getKey(),
+                            entry.getValue(),
+                            planDTO.getAccommodationsPerDay().get(entry.getKey()) // 해당 날짜의 숙소 정보 반영
+                    ))
                     .collect(Collectors.toList());
+            existingPlan.setPlacesPerDay(updatedPlaces);
 
-            existingPlan.setPlacesPerDay(placesPerDayList);
-
+            // 데이터베이스 저장
             Plan updatedPlan = planRepository.save(existingPlan);
             return convertToDTO(updatedPlan);
         }
         return null;
     }
-
 
     public boolean deletePlan(Long id) {
         if (planRepository.existsById(id)) {

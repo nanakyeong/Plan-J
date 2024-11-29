@@ -87,7 +87,7 @@ public class PlanwritepageFrame extends JFrame {
         updateButton.setFont(new Font("돋움", Font.BOLD, 18));
         updateButton.setBackground(new Color(255, 255, 255));
         contentPane.add(updateButton);
-        updateButton.addActionListener(e -> updatePlan());
+        updateButton.addActionListener(e -> openEditPage());
 
         JButton deleteButton = new JButton("삭제하기");
         deleteButton.setBounds(735, 100, 130, 20);
@@ -170,7 +170,7 @@ public class PlanwritepageFrame extends JFrame {
         myPanel.setBounds(0, 0, 1000, 600);
         contentPane.add(myPanel);
 
-        saveButton.addActionListener(e -> {
+        saveButton.addActionListener(e ->  {
             this.planService = ApplicationContextProvider.getContext().getBean(PlanService.class);
 
             // PlanDTO 객체 생성 및 데이터 설정
@@ -180,6 +180,12 @@ public class PlanwritepageFrame extends JFrame {
             planDTO.setDays((Integer) section2.getSelectedItem());
             planDTO.setRegion((String) areaCodeComboBox.getSelectedItem());
             planDTO.setDistrict((String) sigunguComboBox.getSelectedItem());
+
+            if (accommodationName == null || accommodationName.equals("숙소 미지정")) {
+                planDTO.setAccommodationsPerDay(new HashMap<>());
+            } else {
+                planDTO.setAccommodationsPerDay(new HashMap<>(accommodationsPerDay));
+            }
 
             // 날짜별 숙소 및 장소 데이터 추가
             planDTO.setAccommodationsPerDay(new HashMap<>(accommodationsPerDay));
@@ -212,6 +218,19 @@ public class PlanwritepageFrame extends JFrame {
             mainFrame.setVisible(true);
             dispose();
         });
+    }
+
+    private void openEditPage() {
+        if (planDTO != null) {
+            SwingUtilities.invokeLater(() -> {
+                PlanwritepageFrame editFrame = new PlanwritepageFrame(); // 새로운 수정 페이지 생성
+                editFrame.setPlanDTO(planDTO); // 기존 데이터를 수정 페이지에 전달
+                editFrame.setVisible(true); // 수정 페이지 표시
+                dispose(); // 현재 창 닫기
+            });
+        } else {
+            JOptionPane.showMessageDialog(this, "수정할 계획이 없습니다.", "오류", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public void setPlanDTO(PlanDTO planDTO) {
@@ -328,6 +347,11 @@ public class PlanwritepageFrame extends JFrame {
     }
 
     public void addAccommodationToSchedule(String accommodationName, double latitude, double longitude) {
+        if (accommodationName == null || accommodationName.isEmpty()) {
+            accommodationName = "숙소 미지정";
+            latitude = 0;
+            longitude = 0;
+        }
         this.accommodationName = accommodationName;
         this.accommodationLat = latitude;
         this.accommodationLon = longitude;
@@ -453,6 +477,7 @@ public class PlanwritepageFrame extends JFrame {
 
         List<double[]> dayCoordinates = (List<double[]>) dayData.get("locations");
         List<String> dayPlaceNames = (List<String>) dayData.get("placeNames");
+
         System.out.println("dayPlaceNames: " + dayPlaceNames);
         if (dayPlaceNames.isEmpty()) {
             JOptionPane.showMessageDialog(this, "경로에 추가된 장소가 없습니다. 장소를 추가해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
@@ -467,6 +492,11 @@ public class PlanwritepageFrame extends JFrame {
         placeNames.addAll(dayPlaceNames);
 
         if (accommodationName != null && accommodationLat != 0 && accommodationLon != 0) {
+            locationCoordinates.add(new double[]{accommodationLon, accommodationLat});
+            placeNames.add(accommodationName);
+        }
+
+        if (accommodationName != null && !accommodationName.equals("숙소 미지정") && accommodationLat != 0 && accommodationLon != 0) {
             locationCoordinates.add(new double[]{accommodationLon, accommodationLat});
             placeNames.add(accommodationName);
         }
