@@ -74,7 +74,7 @@ public class PlanwritepageFrame extends JFrame {
         logo1.setBounds(123, 135, 150, 30);
         contentPane.add(logo1);
 
-        JButton registerButton = new JButton("등록하기");
+        JButton registerButton = new JButton("공유하기");
         registerButton.setBounds(600, 160, 130, 20);
         registerButton.setFont(new Font("돋움", Font.BOLD, 18));
         registerButton.setBackground(new Color(255, 255, 255));
@@ -212,7 +212,7 @@ public class PlanwritepageFrame extends JFrame {
         try {
             // 현재 Plan 데이터가 존재하는지 확인
             if (currentPlan == null) {
-                JOptionPane.showMessageDialog(this, "저장된 계획만 등록할 수 있습니다.", "오류", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "저장된 계획만 공유할 수 있습니다.", "오류", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -234,7 +234,7 @@ public class PlanwritepageFrame extends JFrame {
 
             planService.createPlan(currentPlan); // 등록 메서드 호출
 
-            JOptionPane.showMessageDialog(this, "등록이 완료되었습니다.", "알림", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "계획 공유가 완료되었습니다.", "알림", JOptionPane.INFORMATION_MESSAGE);
 
             // 메인 페이지로 이동
             SwingUtilities.invokeLater(() -> {
@@ -243,7 +243,7 @@ public class PlanwritepageFrame extends JFrame {
                 dispose();
             });
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "등록 중 오류 발생: " + e.getMessage(), "오류", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "계획 공유 중 오류 발생: " + e.getMessage(), "오류", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
