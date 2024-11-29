@@ -18,15 +18,12 @@ public class MainpageFrame extends JFrame {
         logo1.setBounds(123, 135, 150, 30);
         contentPane.add(logo1);
 
-        JLabel ai = new JLabel("AI");
-        ai.setBounds(668, 55, 100, 20);
         JLabel myplan = new JLabel("myplan");
         myplan.setBounds(700, 55, 100, 20);
         JLabel login = new JLabel("로그인");
         login.setBounds(762, 55, 100, 20);
         JLabel join = new JLabel("회원가입");
         join.setBounds(814, 55, 100, 20);
-        contentPane.add(ai);
         contentPane.add(myplan);
         contentPane.add(login);
         contentPane.add(join);
@@ -46,6 +43,14 @@ public class MainpageFrame extends JFrame {
 
         contentPane.add(btn_newplan);
         contentPane.add(newplan);
+
+        btn_newplan.addActionListener(e -> {
+            SwingUtilities.invokeLater(() -> {
+                UploadpageFrame uploadFrame = new UploadpageFrame(); // 새로운 UploadpageFrame 열기
+                uploadFrame.setVisible(true);
+                dispose();
+            });
+        });
 
         JButton btn_plan1 = new JButton();   //게시물1
         btn_plan1.setBounds(323, 230, 120, 120);
@@ -125,6 +130,6 @@ public class MainpageFrame extends JFrame {
     }
 
     public static void main(String[] args) {
-        new MainpageFrame();
+        SwingUtilities.invokeLater(MainpageFrame::new);
     }
 }
