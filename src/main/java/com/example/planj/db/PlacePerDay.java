@@ -54,4 +54,3 @@ public class PlacePerDay {
         this.accommodation = accommodation;
     }
 }
-

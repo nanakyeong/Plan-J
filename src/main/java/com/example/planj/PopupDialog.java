@@ -46,7 +46,6 @@ public class PopupDialog extends JDialog {
         rightPanel.add(fxPanel);
         add(rightPanel, BorderLayout.EAST);
 
-
         JPanel topPanel = new JPanel(new GridLayout(1, 3));
         JButton sightseeingButton = new JButton("관광지");
         JButton foodButton = new JButton("음식점");

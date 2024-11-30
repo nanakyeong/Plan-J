@@ -439,7 +439,6 @@ public class PlanwritepageFrame extends JFrame {
                 if (topLabel != null) topLabel.setText(accommodationName); // UI 갱신
             }
         }
-
         planPanel.revalidate();
         planPanel.repaint();
     }
