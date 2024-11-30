@@ -310,7 +310,6 @@ public class PlanwritepageFrame extends JFrame {
                         }
                     }
 
-
                     // 날짜별 숙소 데이터 설정
                     String accommodation = accommodationsPerDayFromDTO.get(day);
                     if (accommodation != null) {
@@ -319,11 +318,14 @@ public class PlanwritepageFrame extends JFrame {
                         accommodationLabel.addMouseListener(new MouseAdapter() {
                             @Override
                             public void mouseClicked(MouseEvent e) {
-                                // 숙소 클릭 시 지도 업데이트
-                                if (accommodationLat != 0 && accommodationLon != 0) {
-                                    myPanel.updateMapMarker(accommodationLat, accommodationLon);
+                                // 숙소 정보 검색 및 지도 업데이트
+                                JSONObject placeInfo = searchPlaceByKeyword(PlanwritepageFrame.this, accommodation);
+                                if (placeInfo != null) {
+                                    double latitude = placeInfo.getDouble("mapy");
+                                    double longitude = placeInfo.getDouble("mapx");
+                                    myPanel.updateMapMarker(latitude, longitude); // 지도 업데이트
                                 } else {
-                                    JOptionPane.showMessageDialog(null, "숙소 위치가 지정되지 않았습니다.");
+                                    JOptionPane.showMessageDialog(null, "숙소 정보를 찾을 수 없습니다.");
                                 }
                             }
                         });
