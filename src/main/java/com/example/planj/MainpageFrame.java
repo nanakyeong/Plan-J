@@ -106,8 +106,6 @@ public class MainpageFrame extends JFrame {
         }
     }
 
-
-
     private void openPlan(PlanDTO planDTO) {
         SwingUtilities.invokeLater(() -> {
             PlanwritepageFrame planFrame = ApplicationContextProvider.getContext().getBean(PlanwritepageFrame.class);
