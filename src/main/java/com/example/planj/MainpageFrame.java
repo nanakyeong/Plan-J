@@ -50,18 +50,33 @@ public class MainpageFrame extends JFrame {
 
         // 검색 패널
         JPanel searchPanel = new JPanel();
-        searchPanel.setBounds(630, 142, 250, 23);
+        searchPanel.setBounds(500, 142, 380, 23); // 크기를 늘려서 라디오 버튼 추가 가능
         searchPanel.setLayout(null);
         contentPane.add(searchPanel);
 
+        // 라디오 버튼 그룹 생성
+        ButtonGroup radioGroup = new ButtonGroup();
+        JRadioButton regionRadioButton = new JRadioButton("지역");
+        regionRadioButton.setBounds(0, 0, 60, 23);
+        regionRadioButton.setSelected(true); // 기본 선택
+        searchPanel.add(regionRadioButton);
+
+        JRadioButton placeRadioButton = new JRadioButton("장소");
+        placeRadioButton.setBounds(60, 0, 60, 23);
+        searchPanel.add(placeRadioButton);
+
+        // 라디오 버튼 그룹에 추가
+        radioGroup.add(regionRadioButton);
+        radioGroup.add(placeRadioButton);
+
         // 검색 텍스트 필드
         search_plan = new JTextField();
-        search_plan.setBounds(0, 0, 210, 23);
+        search_plan.setBounds(120, 0, 210, 23);
         searchPanel.add(search_plan);
 
         // 검색 아이콘
         JLabel searchIcon = new JLabel("🔍");
-        searchIcon.setBounds(210, 0, 30, 22);
+        searchIcon.setBounds(330, 0, 30, 22);
         searchIcon.setHorizontalAlignment(SwingConstants.CENTER);
         searchPanel.add(searchIcon);
 
