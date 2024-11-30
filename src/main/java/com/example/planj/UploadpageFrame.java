@@ -12,11 +12,6 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.Scene;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -72,8 +67,8 @@ public class UploadpageFrame extends JFrame {
 
         newPlanButton.addActionListener(e -> {
             SwingUtilities.invokeLater(() -> {
-                panel1.setMapVisibility(false); // 지도 숨김
                 PlanwritepageFrame planFrame = new PlanwritepageFrame(planService);
+                panel1.setMapVisibility(false); // 지도 숨김
                 dispose();
             });
         });
@@ -84,11 +79,6 @@ public class UploadpageFrame extends JFrame {
         sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         sp.setBounds(123, 270, 738, 200); // 크기와 위치 설정
         contentPane.add(sp);
-
-        panel1 = new MyPanel(); // 지도 패널 초기화
-        panel1.setBounds(0, 0, 1000, 600);
-        contentPane.add(panel1);
-        panel1.setMapVisibility(false); // 초기 상태에서 지도 숨김
 
         list.addMouseListener(new MouseAdapter() {
             @Override
@@ -101,8 +91,8 @@ public class UploadpageFrame extends JFrame {
                         PlanDTO selectedPlan = plans.get(selectedIndex);
 
                         SwingUtilities.invokeLater(() -> {
-                            panel1.setMapVisibility(true); // 지도 표시
                             PlanwritepageFrame frame = new PlanwritepageFrame(planService);
+                            frame.disableEditing(); // UI 비활성화
 
                             // PlacePerDay에서 숙소 정보 추출
                             String accommodation = selectedPlan.getPlacesPerDay().entrySet().stream()
@@ -120,7 +110,6 @@ public class UploadpageFrame extends JFrame {
                 }
             }
         });
-
         setVisible(true);
     }
 
@@ -141,32 +130,6 @@ public class UploadpageFrame extends JFrame {
     }
 
     class MyPanel extends JPanel {
-        private JFXPanel jfxPanel;
-        private WebEngine webEngine;
-
-        public MyPanel() {
-            setLayout(null);
-
-            jfxPanel = new JFXPanel();
-            jfxPanel.setBounds(565, 220, 285, 290); // 지도 위치 설정
-            add(jfxPanel);
-
-            // JavaFX 초기화
-            Platform.runLater(() -> {
-                WebView webView = new WebView();
-                webEngine = webView.getEngine();
-
-                URL url = getClass().getResource("/map.html");
-                if (url != null) {
-                    webEngine.load(url.toExternalForm());
-                } else {
-                    webEngine.loadContent("<html><body><h1>지도 파일을 찾을 수 없습니다.</h1></body></html>");
-                }
-
-                jfxPanel.setScene(new Scene(webView));
-            });
-        }
-
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
@@ -177,7 +140,6 @@ public class UploadpageFrame extends JFrame {
         }
 
         public void setMapVisibility(boolean isVisible) {
-            jfxPanel.setVisible(isVisible); // 지도 표시/숨김
             revalidate();
             repaint();
         }
