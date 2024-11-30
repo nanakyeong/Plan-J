@@ -11,6 +11,8 @@ import javafx.scene.Scene;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -37,6 +39,7 @@ public class PlanwritepageFrame extends JFrame {
 
     private static final String SERVICE_KEY = "pRHMKrAJfJJZTC104XWkGvOIvKtKcO6zFysOGGDrH3Bo%2FktklWp6urJAiA5DoWSY3rf7LEKeb2NU5aDiAfDhlw%3D%3D";
 
+    private JPanel blockingPanel; // 특정 영역 클릭 차단용 패널
     private JTextField planTitle;
     private JComboBox<Integer> section1;
     private JComboBox<Integer> section2;
@@ -52,6 +55,7 @@ public class PlanwritepageFrame extends JFrame {
     private Map<String, String> accommodationsPerDay = new HashMap<>();
     private Map<String, List<String>> placesPerDay = new HashMap<>();
     private Plan currentPlan;
+    private JButton addAccommodationButton; // 클래스 멤버로 선언
 
     public PlanwritepageFrame(PlanService planService) {
         this.planService = planService;
@@ -92,6 +96,9 @@ public class PlanwritepageFrame extends JFrame {
         updateButton.setFont(new Font("돋움", Font.BOLD, 18));
         updateButton.setBackground(new Color(255, 255, 255));
         contentPane.add(updateButton);
+        updateButton.addActionListener(e -> {
+            enableEditing(); // 특정 영역 클릭 차단 비활성화
+        });
 
         JButton deleteButton = new JButton("삭제하기");
         deleteButton.setBounds(735, 100, 130, 20);
@@ -109,6 +116,15 @@ public class PlanwritepageFrame extends JFrame {
         contentPane.add(myplan);
         contentPane.add(login);
         contentPane.add(join);
+
+        // Blocking panel 설정
+        blockingPanel = new JPanel();
+        blockingPanel.setBounds(138, 200, 420, 80); // 차단 영역 크기와 위치
+        blockingPanel.setBackground(new Color(0, 0, 0, 0)); // 완전 투명
+        blockingPanel.setOpaque(false); // 투명하게 설정
+        blockingPanel.addMouseListener(new MouseAdapter() {}); // 클릭 방지
+        blockingPanel.setVisible(false); // 초기에는 보이지 않음
+        contentPane.add(blockingPanel);
 
         JLabel title = new JLabel("제목 : ");
         title.setBounds(138, 220, 210, 20);
@@ -208,6 +224,20 @@ public class PlanwritepageFrame extends JFrame {
         setVisible(true);
     }
 
+    // 특정 영역 클릭 차단 활성화
+    public void disableEditing() {
+        blockingPanel.setVisible(true);
+        getGlassPane().setVisible(true); // GlassPane 표시
+    }
+
+    // 특정 영역 클릭 차단 비활성화
+    public void enableEditing() {
+        blockingPanel.setVisible(false);
+        getGlassPane().setVisible(false); // GlassPane 숨김
+    }
+
+
+
     private void onRegisterButtonClick() {
         try {
             // 현재 Plan 데이터가 존재하는지 확인
@@ -276,16 +306,45 @@ public class PlanwritepageFrame extends JFrame {
                     if (places != null) {
                         for (String place : places) {
                             JLabel placeLabel = new JLabel("- " + place);
+
+                            // **마우스 클릭 이벤트 추가**
+                            placeLabel.addMouseListener(new MouseAdapter() {
+                                @Override
+                                public void mouseClicked(MouseEvent e) {
+                                    // 장소 좌표 검색 및 지도 업데이트
+                                    JSONObject placeInfo = searchPlaceByKeyword(PlanwritepageFrame.this, place);
+                                    if (placeInfo != null) {
+                                        double latitude = placeInfo.getDouble("mapy");
+                                        double longitude = placeInfo.getDouble("mapx");
+                                        myPanel.updateMapMarker(latitude, longitude); // 지도 업데이트
+                                    } else {
+                                        JOptionPane.showMessageDialog(null, "장소 정보를 찾을 수 없습니다.");
+                                    }
+                                }
+                            });
                             planPanel.add(placeLabel);
                         }
                     }
-
 
                     // 날짜별 숙소 데이터 설정
                     String accommodation = accommodationsPerDayFromDTO.get(day);
                     if (accommodation != null) {
                         JLabel accommodationLabel = new JLabel("[숙소] " + accommodation);
                         accommodationLabel.setFont(new Font("돋움", Font.BOLD, 12));
+                        accommodationLabel.addMouseListener(new MouseAdapter() {
+                            @Override
+                            public void mouseClicked(MouseEvent e) {
+                                // 숙소 정보 검색 및 지도 업데이트
+                                JSONObject placeInfo = searchPlaceByKeyword(PlanwritepageFrame.this, accommodation);
+                                if (placeInfo != null) {
+                                    double latitude = placeInfo.getDouble("mapy");
+                                    double longitude = placeInfo.getDouble("mapx");
+                                    myPanel.updateMapMarker(latitude, longitude); // 지도 업데이트
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "숙소 정보를 찾을 수 없습니다.");
+                                }
+                            }
+                        });
                         planPanel.add(accommodationLabel);
 
                         accommodationsPerDay.put(day, accommodation); // 맵에 추가
@@ -495,18 +554,13 @@ public class PlanwritepageFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "경로에 추가된 장소가 없습니다. 장소를 추가해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        if (accommodationName != null && accommodationLat != 0 && accommodationLon != 0) {
+        if (accommodationName != null && !accommodationName.equals("숙소 미지정") && accommodationLat != 0 && accommodationLon != 0) {
             locationCoordinates.add(new double[]{accommodationLon, accommodationLat});
             placeNames.add(accommodationName);
         }
 
         locationCoordinates.addAll(dayCoordinates);
         placeNames.addAll(dayPlaceNames);
-
-        if (accommodationName != null && accommodationLat != 0 && accommodationLon != 0) {
-            locationCoordinates.add(new double[]{accommodationLon, accommodationLat});
-            placeNames.add(accommodationName);
-        }
 
         if (accommodationName != null && !accommodationName.equals("숙소 미지정") && accommodationLat != 0 && accommodationLon != 0) {
             locationCoordinates.add(new double[]{accommodationLon, accommodationLat});

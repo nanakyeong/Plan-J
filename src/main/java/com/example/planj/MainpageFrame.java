@@ -111,6 +111,7 @@ public class MainpageFrame extends JFrame {
     private void openPlan(PlanDTO planDTO) {
         SwingUtilities.invokeLater(() -> {
             PlanwritepageFrame planFrame = ApplicationContextProvider.getContext().getBean(PlanwritepageFrame.class);
+            planFrame.disableEditing(); // UI 비활성화
             planFrame.setPlanDTO(planDTO);
             planFrame.setVisible(true);
             dispose();
