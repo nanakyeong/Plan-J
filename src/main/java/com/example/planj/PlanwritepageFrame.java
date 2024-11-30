@@ -236,8 +236,6 @@ public class PlanwritepageFrame extends JFrame {
         getGlassPane().setVisible(false); // GlassPane 숨김
     }
 
-
-
     private void onRegisterButtonClick() {
         try {
             // 현재 Plan 데이터가 존재하는지 확인
