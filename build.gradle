@@ -37,6 +37,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.json:json:20210307'
     implementation 'org.openjfx:javafx-web:20' // 나경 - fx 안 다운 받아져서 넣었다 죄송하다
+    implementation 'org.mindrot:jbcrypt:0.4'
 
 }
 

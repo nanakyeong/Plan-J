@@ -68,6 +68,7 @@ public class UploadpageFrame extends JFrame {
         newPlanButton.addActionListener(e -> {
             SwingUtilities.invokeLater(() -> {
                 PlanwritepageFrame planFrame = new PlanwritepageFrame(planService);
+                planFrame.setVisible(true);
                 dispose();
             });
         });
@@ -114,7 +115,7 @@ public class UploadpageFrame extends JFrame {
                 }
             }
         });
-        setVisible(true);
+        //setVisible(true);
     }
 
     private List<String> getPlanTitlesFromDatabase() {

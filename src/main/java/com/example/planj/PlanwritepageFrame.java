@@ -221,7 +221,7 @@ public class PlanwritepageFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, "저장 중 오류가 발생했습니다: " + ex.getMessage(), "오류", JOptionPane.ERROR_MESSAGE);
             }
         });
-        setVisible(true);
+        //setVisible(true);
     }
 
     // 특정 영역 클릭 차단 활성화

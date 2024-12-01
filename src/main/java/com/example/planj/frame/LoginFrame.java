@@ -23,7 +23,6 @@ import org.mindrot.jbcrypt.BCrypt;
 
 
 
-
 public class LoginFrame extends JFrame {
     private JLabel loginLabel;
     private BufferedImage backgroundImage;

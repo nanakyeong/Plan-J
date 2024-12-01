@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import javax.swing.*;
 
 @SpringBootApplication
-@EnableJpaRepositories(basePackages = "com.example.planj.db")
+@EnableJpaRepositories(basePackages = "com.example.planj")
 public class PlanJApplication {
 
     public static void main(String[] args) {
