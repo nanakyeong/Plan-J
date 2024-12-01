@@ -109,7 +109,7 @@ public class PlanwritepageFrame extends JFrame {
 
         JLabel myplan = new JLabel("myplan");
         myplan.setBounds(700, 55, 100, 20);
-        JLabel login = new JLabel("로그인");
+        JLabel login = new JLabel("로그아웃");
         login.setBounds(762, 55, 100, 20);
         JLabel join = new JLabel("회원가입");
         join.setBounds(814, 55, 100, 20);
