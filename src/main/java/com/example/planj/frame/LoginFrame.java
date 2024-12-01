@@ -19,10 +19,14 @@ import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.awt.Font;
+
+import com.example.planj.ApplicationContextProvider;
+import com.example.planj.MainpageFrame;
+import com.example.planj.UploadpageFrame;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.stereotype.Component;
 
-
-
+@Component
 public class LoginFrame extends JFrame {
     private JLabel loginLabel;
     private BufferedImage backgroundImage;
@@ -55,7 +59,6 @@ public class LoginFrame extends JFrame {
             return new Font("Default", style, Math.round(size)); // 대체 폰트 반환
         }
     }
-
 
     public LoginFrame() {
 
@@ -203,8 +206,6 @@ public class LoginFrame extends JFrame {
             }
         });
 
-
-
         JLabel join = new JLabel("회원가입");
         join.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
         join.setForeground(Color.BLACK);
@@ -242,6 +243,16 @@ public class LoginFrame extends JFrame {
         setVisible(true);
     }
 
+    private void openMyPlan() {
+        SwingUtilities.invokeLater(() -> {
+            // UploadpageFrame Spring 빈 가져오기
+            UploadpageFrame uploadFrame = ApplicationContextProvider.getContext().getBean(UploadpageFrame.class);
+            uploadFrame.setVisible(true);
+            dispose(); // 현재 프레임 닫기
+        });
+    }
+
+
     private void openFindUsername() {
         String email = JOptionPane.showInputDialog(this, "등록된 이메일을 입력하세요:", "아이디 찾기", JOptionPane.PLAIN_MESSAGE);
         if (email == null || email.trim().isEmpty()) {
@@ -278,6 +289,7 @@ public class LoginFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "데이터베이스 연결 중 오류가 발생했습니다.");
         }
     }
+
 
     private void openFindPassword() {
         JTextField usernameField = new JTextField();
@@ -388,7 +400,7 @@ public class LoginFrame extends JFrame {
 
     private void login(String username, String password) {
         try {
-            URL url = new URL("http://localhost:8080/api/users/login");
+            URL url = new URL("http://localhost:8080/api/users/login"); // API 엔드포인트
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/json; utf-8");
@@ -404,7 +416,13 @@ public class LoginFrame extends JFrame {
             int responseCode = connection.getResponseCode();
             if (responseCode == 200) {
                 JOptionPane.showMessageDialog(this, "로그인 성공!");
-                updateLoginLabel();
+
+                // 메인 페이지로 이동
+                SwingUtilities.invokeLater(() -> {
+                    UploadpageFrame uploadpageFrame = ApplicationContextProvider.getContext().getBean(UploadpageFrame.class);
+                    uploadpageFrame.setVisible(true);
+                    dispose(); // 현재 프레임 닫기
+                });
             } else {
                 JOptionPane.showMessageDialog(this, "로그인 실패! 아이디나 비밀번호를 확인하세요.");
             }
@@ -436,9 +454,6 @@ public class LoginFrame extends JFrame {
                 openJoin();
             }
         });
-    }
-
-    private void openMyPlan() {
     }
 
     private void openJoin() {
