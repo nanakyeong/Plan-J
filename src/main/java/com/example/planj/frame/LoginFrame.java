@@ -419,8 +419,8 @@ public class LoginFrame extends JFrame {
 
                 // 메인 페이지로 이동
                 SwingUtilities.invokeLater(() -> {
-                    UploadpageFrame uploadpageFrame = ApplicationContextProvider.getContext().getBean(UploadpageFrame.class);
-                    uploadpageFrame.setVisible(true);
+                    MainpageFrame mainpageFrame = ApplicationContextProvider.getContext().getBean(MainpageFrame.class);
+                    mainpageFrame.setVisible(true);
                     dispose(); // 현재 프레임 닫기
                 });
             } else {

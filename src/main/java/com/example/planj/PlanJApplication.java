@@ -17,8 +17,8 @@ public class PlanJApplication {
         ApplicationContext context = SpringApplication.run(PlanJApplication.class, args);
 
         SwingUtilities.invokeLater(() -> {
-            LoginFrame loginFrame = context.getBean(LoginFrame.class); // LoginFrame 로드
-            loginFrame.setVisible(true);
+            MainpageFrame mainpageFrame = context.getBean(MainpageFrame.class); // LoginFrame 로드
+            mainpageFrame.setVisible(true);
         });
     }
 }

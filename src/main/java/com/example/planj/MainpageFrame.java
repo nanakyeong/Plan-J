@@ -2,6 +2,7 @@ package com.example.planj;
 
 import com.example.planj.db.PlanDTO;
 import com.example.planj.db.PlanService;
+import com.example.planj.frame.LoginFrame;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,8 +42,16 @@ public class MainpageFrame extends JFrame {
 
         JLabel myplan = new JLabel("myplan");
         myplan.setBounds(700, 55, 100, 20);
-        JLabel login = new JLabel("로그아웃");
+        JLabel login = new JLabel("로그인");
         login.setBounds(762, 55, 100, 20);
+        login.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                openLoginPage(); // LoginFrame으로 이동
+            }
+        });
+        contentPane.add(login);
+
         JLabel join = new JLabel("회원가입");
         join.setBounds(814, 55, 100, 20);
         contentPane.add(myplan);
@@ -138,6 +147,16 @@ public class MainpageFrame extends JFrame {
         contentPane.add(panel1);
 
         setVisible(true);
+    }
+
+
+    private void openLoginPage() {
+        SwingUtilities.invokeLater(() -> {
+            // Spring 컨텍스트에서 LoginFrame 가져오기
+            LoginFrame loginFrame = ApplicationContextProvider.getContext().getBean(LoginFrame.class);
+            loginFrame.setVisible(true);
+            dispose(); // 현재 프레임 닫기
+        });
     }
 
     private void createPlanButtons(Container contentPane) {
