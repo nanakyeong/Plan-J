@@ -18,8 +18,8 @@ public class PlanService {
         planDTO.setRegion(plan.getRegion());
         planDTO.setAreaCode(plan.getAreaCode());
         planDTO.setDistrict(plan.getDistrict());
-        createPlan(planDTO);
-        planRepository.save(plan);
+        createPlan(planDTO); // 계획 한번 이미 저장됨
+        planRepository.save(plan); // 여기서도 저장이 되어버림
     }
 
     public List<PlanDTO> getAllPlans() {
@@ -28,6 +28,11 @@ public class PlanService {
 
     public List<PlanDTO> getIsRegisteredTrue() {
         return planRepository.findByIsRegistered(true).stream().map(this::convertToDTO).toList();
+    }
+
+    public Plan getPlanByTitle(String title) {
+        return planRepository.findByTitle(title)
+                .orElseThrow(() -> new IllegalArgumentException("Not Found By Title"));
     }
 
     public PlanDTO getPlanById(Long id) {
@@ -126,5 +131,9 @@ public class PlanService {
         return plan;
     }
 
+    public void modifyRegistered(Plan currentPlan) {
+        currentPlan.RegisteredTrue();
+        planRepository.save(currentPlan);
+    }
 }
 

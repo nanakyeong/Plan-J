@@ -11,4 +11,6 @@ public interface PlanRepository extends JpaRepository<Plan, Long> {
     Optional<Plan> findById(Long id);
 
     List<Plan> findByIsRegistered(boolean isRegistered);
+
+    Optional<Plan> findByTitle(String title);
 }

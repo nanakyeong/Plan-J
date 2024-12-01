@@ -236,7 +236,7 @@ public class PlanwritepageFrame extends JFrame {
         getGlassPane().setVisible(false); // GlassPane 숨김
     }
 
-    private void onRegisterButtonClick() {
+    private void onRegisterButtonClick() {;
         try {
             // 현재 Plan 데이터가 존재하는지 확인
             if (currentPlan == null) {
@@ -244,24 +244,8 @@ public class PlanwritepageFrame extends JFrame {
                 return;
             }
 
-            String selectedArea = (String) areaCodeComboBox.getSelectedItem();
-            String selectedSigungu = (String) sigunguComboBox.getSelectedItem();
-
-            if (selectedArea == null || selectedArea.equals("지역 선택")) {
-                JOptionPane.showMessageDialog(this, "지역을 선택해주세요.", "오류", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            if (selectedSigungu == null || selectedSigungu.equals("시군구 선택")) {
-                JOptionPane.showMessageDialog(this, "시군구를 선택해주세요.", "오류", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            currentPlan.setRegion(selectedArea); // 지역
-            currentPlan.setDistrict(selectedSigungu);
-
-            planService.createPlan(currentPlan); // 등록 메서드 호출
-
+            Plan findPlan = planService.getPlanByTitle(currentPlan.getTitle());
+            planService.modifyRegistered(findPlan);
             JOptionPane.showMessageDialog(this, "계획 공유가 완료되었습니다.", "알림", JOptionPane.INFORMATION_MESSAGE);
 
             // 메인 페이지로 이동
@@ -510,9 +494,9 @@ public class PlanwritepageFrame extends JFrame {
         topAccommodationLabel.setBorder(BorderFactory.createEmptyBorder(10, 15, 0, 0));
         dayPanel.add(topAccommodationLabel);
 
-        topAccommodationLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+        topAccommodationLabel.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
+            public void mouseClicked(MouseEvent evt) {
                 if (accommodationLat != 0 && accommodationLon != 0) {
                     myPanel.updateMapMarker(accommodationLat, accommodationLon);
                 } else {
@@ -629,8 +613,8 @@ public class PlanwritepageFrame extends JFrame {
 
         placeLabel.setText(placeName.length() > 15 ? placeName.substring(0, 15) + "..." : placeName);
         placePanel.add(placeLabel);
-        placeLabel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
+        placeLabel.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
                 updateMapWithPlace(placeName);
             }
         });

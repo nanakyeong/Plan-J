@@ -37,6 +37,10 @@ public class Plan {
         isRegistered = registered;
     }
 
+    public void RegisteredTrue() {
+        isRegistered = true;
+    }
+
     @Column(nullable = false)
     private String district;
 
