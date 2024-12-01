@@ -16,6 +16,7 @@ import java.util.List;
 public class MainpageFrame extends JFrame {
     private final PlanService planService;
     private final JButton[] planButtons = new JButton[7];
+    private final JLabel[] planLabels = new JLabel[7];
 
     @Autowired private UploadpageFrame uploadFrame;
 
@@ -166,6 +167,12 @@ public class MainpageFrame extends JFrame {
             planButton.setVisible(false);
             contentPane.add(planButton);
             planButtons[i] = planButton;
+
+            JLabel planLabel = new JLabel();
+            planLabel.setBounds(143 + (((i+1) % 4) * 210), 350 + (((i+1) / 4) * 170), 100, 20);
+            planLabel.setVisible(false);
+            contentPane.add(planLabel);
+            planLabels[i] = planLabel;
         }
     }
 
@@ -177,8 +184,12 @@ public class MainpageFrame extends JFrame {
         for (int i = 0; i < maxButtons; i++) {
             PlanDTO plan = plans.get(i);
             JButton planButton = planButtons[i];
-            planButton.setText(plan.getTitle());
+            JLabel planLabel = planLabels[i];
+            //planLabel.setText("[" + plan.getRegion() + "] " + plan.getTitle());
+            planButton.setText(plan.getRegion());
+            planLabel.setText(plan.getTitle());
             planButton.setVisible(true);
+            planLabel.setVisible(true);
 
             // 버튼 클릭 시 계획 열기
             planButton.addActionListener(e -> openPlan(plan));
