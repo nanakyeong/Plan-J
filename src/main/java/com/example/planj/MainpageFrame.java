@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 @Component
@@ -15,6 +17,8 @@ public class MainpageFrame extends JFrame {
     private final JButton[] planButtons = new JButton[7];
 
     @Autowired private UploadpageFrame uploadFrame;
+
+    private JTextField search_plan; // 검색 텍스트 필드
 
     @Autowired
     public MainpageFrame(PlanService planService) {
@@ -45,9 +49,69 @@ public class MainpageFrame extends JFrame {
         contentPane.add(login);
         contentPane.add(join);
 
-        JTextField search = new JTextField();
-        search.setBounds(653, 142, 210, 23);
-        contentPane.add(search);
+        // 검색 패널
+        JPanel searchPanel = new JPanel();
+        searchPanel.setBounds(500, 142, 380, 23); // 크기를 늘려서 라디오 버튼 추가 가능
+        searchPanel.setLayout(null);
+        contentPane.add(searchPanel);
+
+        // 라디오 버튼 그룹 생성
+        ButtonGroup radioGroup = new ButtonGroup();
+        JRadioButton regionRadioButton = new JRadioButton("지역");
+        regionRadioButton.setBounds(0, 0, 60, 23);
+        regionRadioButton.setSelected(true); // 기본 선택
+        searchPanel.add(regionRadioButton);
+
+        JRadioButton placeRadioButton = new JRadioButton("장소");
+        placeRadioButton.setBounds(60, 0, 60, 23);
+        searchPanel.add(placeRadioButton);
+
+        // 라디오 버튼 그룹에 추가
+        radioGroup.add(regionRadioButton);
+        radioGroup.add(placeRadioButton);
+
+        // 검색 텍스트 필드
+        search_plan = new JTextField();
+        search_plan.setBounds(120, 0, 210, 23);
+        searchPanel.add(search_plan);
+
+        // 검색 아이콘
+        JLabel searchIcon = new JLabel("🔍");
+        searchIcon.setBounds(330, 0, 30, 22);
+        searchIcon.setHorizontalAlignment(SwingConstants.CENTER);
+        searchPanel.add(searchIcon);
+
+        // 검색 결과 라벨
+        JLabel searchResultLabel = new JLabel(); // 검색 결과 라벨 초기화
+        searchResultLabel.setFont(new Font("돋움", Font.BOLD, 18));
+        searchResultLabel.setBounds(123, 190, 500, 30); // 위치 지정
+        contentPane.add(searchResultLabel);
+
+            // 검색 아이콘 동작
+        searchIcon.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                String searchText = search_plan.getText().trim(); // 입력된 검색어 가져오기
+                if (searchText.isEmpty()) {
+                    JOptionPane.showMessageDialog(contentPane, "검색어를 입력하세요!", "오류", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    // 라벨에 검색 결과 업데이트
+                    searchResultLabel.setText("\"" + searchText + "\"에 대한 검색 결과입니다.");
+                }
+            }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                searchIcon.setOpaque(true);
+                searchIcon.setBackground(Color.LIGHT_GRAY);
+                searchIcon.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                searchIcon.setOpaque(false);
+                searchIcon.setBackground(null);
+            }
+        });
 
         JButton btn_newplan = new JButton("+");
         btn_newplan.setBounds(123, 230, 120, 120);
