@@ -26,6 +26,10 @@ public class PlanService {
         return planRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    public List<PlanDTO> getIsRegisteredTrue() {
+        return planRepository.findByIsRegistered(true).stream().map(this::convertToDTO).toList();
+    }
+
     public PlanDTO getPlanById(Long id) {
         Optional<Plan> plan = planRepository.findById(id);
         return plan.map(this::convertToDTO).orElse(null);

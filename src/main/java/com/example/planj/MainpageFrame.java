@@ -2,7 +2,6 @@ package com.example.planj;
 
 import com.example.planj.db.PlanDTO;
 import com.example.planj.db.PlanService;
-import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -88,7 +87,7 @@ public class MainpageFrame extends JFrame {
     }
 
     private void updatePlanButtons() {
-        List<PlanDTO> plans = planService.getAllPlans();
+        List<PlanDTO> plans = planService.getIsRegisteredTrue();
 
         // 반복문에서 유효한 버튼 수를 초과하지 않도록 설정
         int maxButtons = Math.min(plans.size(), planButtons.length);
