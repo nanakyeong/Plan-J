@@ -75,7 +75,6 @@ public class LoginFrame extends JFrame {
         layeredPane.setBounds(0, 0, getWidth(), getHeight());
         setContentPane(layeredPane);
 
-        // 배경 이미지 로드
         try {
             backgroundImage = ImageIO.read(new File("C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\img\\배경.png"));
         } catch (Exception e) {
@@ -83,7 +82,6 @@ public class LoginFrame extends JFrame {
             System.out.println("배경 이미지를 로드할 수 없습니다.");
         }
 
-        // 배경 이미지를 설정하는 커스텀 패널
         JPanel backgroundPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -96,6 +94,7 @@ public class LoginFrame extends JFrame {
                 }
             }
         };
+
         backgroundPanel.setBounds(0, 0, getWidth(), getHeight());
         layeredPane.add(backgroundPanel, Integer.valueOf(0)); // 배경 패널을 가장 아래로 추가
 
@@ -184,7 +183,7 @@ public class LoginFrame extends JFrame {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                openMyPlan(); // 클릭 시 실행할 액션
+                openMyPlan();
             }
         });
 
@@ -199,12 +198,6 @@ public class LoginFrame extends JFrame {
         login.setHorizontalAlignment(SwingConstants.CENTER); // 수평 중앙 정렬
         login.setVerticalAlignment(SwingConstants.CENTER);   // 수직 중앙 정렬
 
-        login.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-
-            }
-        });
 
         JLabel join = new JLabel("회원가입");
         join.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
@@ -248,10 +241,9 @@ public class LoginFrame extends JFrame {
         SwingUtilities.invokeLater(() -> {
             MainpageFrame mainpageFrame = ApplicationContextProvider.getContext().getBean(MainpageFrame.class);
             mainpageFrame.setVisible(true);
-            dispose(); // 현재 프레임 닫기
+            dispose();
         });
     }
-
 
     private void openFindUsername() {
         String email = JOptionPane.showInputDialog(this, "등록된 이메일을 입력하세요:", "아이디 찾기", JOptionPane.PLAIN_MESSAGE);
@@ -417,11 +409,14 @@ public class LoginFrame extends JFrame {
             if (responseCode == 200) {
                 JOptionPane.showMessageDialog(this, "로그인 성공!");
 
-                // 메인 페이지로 이동
+                // 사용자 이름 가져오기 (API 응답 처리)
+                String loggedInUsername = "용강천사"; // 실제 API 응답에 따라 수정
+
                 SwingUtilities.invokeLater(() -> {
                     MainpageFrame mainpageFrame = ApplicationContextProvider.getContext().getBean(MainpageFrame.class);
+                    mainpageFrame.updateUsername(loggedInUsername); // 사용자 이름 업데이트
                     mainpageFrame.setVisible(true);
-                    dispose(); // 현재 프레임 닫기
+                    dispose(); // 로그인 프레임 닫기
                 });
             } else {
                 JOptionPane.showMessageDialog(this, "로그인 실패! 아이디나 비밀번호를 확인하세요.");
@@ -431,6 +426,7 @@ public class LoginFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "로그인 중 오류 발생!");
         }
     }
+
 
     private void updateLoginLabel() {
         loginLabel.setText("로그아웃");
@@ -512,4 +508,3 @@ public class LoginFrame extends JFrame {
         });
     }
 }
-

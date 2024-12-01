@@ -2,6 +2,7 @@ package com.example.planj;
 
 import com.example.planj.db.PlanDTO;
 import com.example.planj.db.PlanService;
+import com.example.planj.frame.JoinFrame;
 import com.example.planj.frame.LoginFrame;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,13 +11,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.List;
 
 @Component
 public class MainpageFrame extends JFrame {
     private final PlanService planService;
     private final JButton[] planButtons = new JButton[7];
-    private final JLabel[] planLabels = new JLabel[7];
+    private JLabel usernameLabel; // 사용자 이름을 표시할 라벨
 
     @Autowired private UploadpageFrame uploadFrame;
 
@@ -36,6 +38,20 @@ public class MainpageFrame extends JFrame {
         Container contentPane = getContentPane();
         contentPane.setLayout(null);
 
+        usernameLabel = new JLabel("로그인 해주세요.");
+        usernameLabel.setFont(new Font("돋움", Font.BOLD, 14));
+        usernameLabel.setBounds(870, 55, 100, 20);
+        usernameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        usernameLabel.setForeground(Color.BLACK);
+        usernameLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        usernameLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                openLoginPage();
+            }
+        });
+        getContentPane().add(usernameLabel);
+
         JLabel logo1 = new JLabel("Plan J");
         logo1.setFont(new Font("돋움", Font.BOLD, 35));
         logo1.setBounds(123, 135, 150, 30);
@@ -48,7 +64,7 @@ public class MainpageFrame extends JFrame {
         login.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                openLoginPage(); // LoginFrame으로 이동
+                openLoginPage();
             }
         });
         contentPane.add(login);
@@ -68,7 +84,7 @@ public class MainpageFrame extends JFrame {
 
         // 검색 패널
         JPanel searchPanel = new JPanel();
-        searchPanel.setBounds(500, 142, 380, 23); // 크기를 늘려서 라디오 버튼 추가 가능
+        searchPanel.setBounds(500, 142, 380, 23);
         searchPanel.setLayout(null);
         contentPane.add(searchPanel);
 
@@ -157,22 +173,39 @@ public class MainpageFrame extends JFrame {
         setVisible(true);
     }
 
+    public void updateUsername(String username) {
+        if (username == null || username.isEmpty()) {
+            usernameLabel.setText("로그인 해주세요.");
+            usernameLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            usernameLabel.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    openLoginPage();
+                }
+            });
+        } else {
+            usernameLabel.setText(username + "님");
+            usernameLabel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            for (MouseListener listener : usernameLabel.getMouseListeners()) {
+                usernameLabel.removeMouseListener(listener);
+            }
+        }
+    }
+
 
     private void openLoginPage() {
         SwingUtilities.invokeLater(() -> {
-            // Spring 컨텍스트에서 LoginFrame 가져오기
             LoginFrame loginFrame = ApplicationContextProvider.getContext().getBean(LoginFrame.class);
             loginFrame.setVisible(true);
-            dispose(); // 현재 프레임 닫기
+            dispose();
         });
     }
 
     private void openJoinPage() {
         SwingUtilities.invokeLater(() -> {
-            // Spring 컨텍스트에서 LoginFrame 가져오기
-            LoginFrame loginFrame = ApplicationContextProvider.getContext().getBean(LoginFrame.class);
-            loginFrame.setVisible(true);
-            dispose(); // 현재 프레임 닫기
+            JoinFrame joinFrame = ApplicationContextProvider.getContext().getBean(JoinFrame.class);
+            joinFrame.setVisible(true);
+            dispose();
         });
     }
 
@@ -183,12 +216,6 @@ public class MainpageFrame extends JFrame {
             planButton.setVisible(false);
             contentPane.add(planButton);
             planButtons[i] = planButton;
-
-            JLabel planLabel = new JLabel();
-            planLabel.setBounds(143 + (((i+1) % 4) * 210), 350 + (((i+1) / 4) * 170), 100, 20);
-            planLabel.setVisible(false);
-            contentPane.add(planLabel);
-            planLabels[i] = planLabel;
         }
     }
 
@@ -200,12 +227,8 @@ public class MainpageFrame extends JFrame {
         for (int i = 0; i < maxButtons; i++) {
             PlanDTO plan = plans.get(i);
             JButton planButton = planButtons[i];
-            JLabel planLabel = planLabels[i];
-            //planLabel.setText("[" + plan.getRegion() + "] " + plan.getTitle());
-            planButton.setText(plan.getRegion());
-            planLabel.setText(plan.getTitle());
+            planButton.setText(plan.getTitle());
             planButton.setVisible(true);
-            planLabel.setVisible(true);
 
             // 버튼 클릭 시 계획 열기
             planButton.addActionListener(e -> openPlan(plan));

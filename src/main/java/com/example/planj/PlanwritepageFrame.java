@@ -75,6 +75,14 @@ public class PlanwritepageFrame extends JFrame {
         Container contentPane = getContentPane();
         contentPane.setLayout(null);
 
+        JLabel name = new JLabel("용강천사님");
+        name.setFont(new Font("돋움", Font.BOLD, 14));
+        name.setBounds(870,55,100,20);
+        name.setHorizontalAlignment(SwingConstants.RIGHT);
+        name.setForeground(Color.BLACK);
+        name.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        contentPane.add(name);
+
         JLabel logo1 = new JLabel("Plan J");
         logo1.setFont(new Font("돋움", Font.BOLD, 35));
         logo1.setBounds(123, 135, 150, 30);
@@ -99,7 +107,7 @@ public class PlanwritepageFrame extends JFrame {
         updateButton.setBackground(new Color(255, 255, 255));
         contentPane.add(updateButton);
         updateButton.addActionListener(e -> {
-            enableEditing(); // 특정 영역 클릭 차단 비활성화
+            enableEditing();
         });
 
         JButton deleteButton = new JButton("삭제하기");
@@ -114,7 +122,7 @@ public class PlanwritepageFrame extends JFrame {
         myplan.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                openMyplanPage(); // LoginFrame으로 이동
+                openMyplanPage();
             }
         });
         JLabel login = new JLabel("로그아웃");
@@ -246,28 +254,25 @@ public class PlanwritepageFrame extends JFrame {
 
     private void openMyplanPage() {
         SwingUtilities.invokeLater(() -> {
-            // Spring 컨텍스트에서 LoginFrame 가져오기
             MainpageFrame mainpageFrame = ApplicationContextProvider.getContext().getBean(MainpageFrame.class);
             mainpageFrame.setVisible(true);
-            dispose(); // 현재 프레임 닫기
+            dispose();
         });
     }
 
     private void openLoginPage() {
         SwingUtilities.invokeLater(() -> {
-            // Spring 컨텍스트에서 LoginFrame 가져오기
             LoginFrame loginFrame = ApplicationContextProvider.getContext().getBean(LoginFrame.class);
             loginFrame.setVisible(true);
-            dispose(); // 현재 프레임 닫기
+            dispose();
         });
     }
 
     private void openJoinPage() {
         SwingUtilities.invokeLater(() -> {
-            // Spring 컨텍스트에서 LoginFrame 가져오기
             JoinFrame joinFrame = ApplicationContextProvider.getContext().getBean(JoinFrame.class);
             joinFrame.setVisible(true);
-            dispose(); // 현재 프레임 닫기
+            dispose();
         });
     }
 
