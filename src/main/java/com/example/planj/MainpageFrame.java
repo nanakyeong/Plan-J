@@ -15,6 +15,8 @@ public class MainpageFrame extends JFrame {
     private final PlanService planService;
     private final JButton[] planButtons = new JButton[7];
 
+    @Autowired private UploadpageFrame uploadFrame;
+
     @Autowired
     public MainpageFrame(PlanService planService) {
         this.planService = planService;
@@ -57,8 +59,8 @@ public class MainpageFrame extends JFrame {
 
         btn_newplan.addActionListener(e -> {
             SwingUtilities.invokeLater(() -> {
-                UploadpageFrame uploadFrame = ApplicationContextProvider.getContext().getBean(UploadpageFrame.class);
-                uploadFrame.setVisible(true);
+                //UploadpageFrame uploadFrame = ApplicationContextProvider.getContext().getBean(UploadpageFrame.class);
+                this.uploadFrame.setVisible(true);
                 dispose();
             });
         });
