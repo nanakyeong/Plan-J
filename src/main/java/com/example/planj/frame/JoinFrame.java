@@ -1,6 +1,7 @@
 package com.example.planj.frame;
 
 import com.example.planj.ApplicationContextProvider;
+import com.example.planj.MainpageFrame;
 import com.example.planj.UploadpageFrame;
 
 import javax.swing.*;
@@ -379,8 +380,6 @@ public class JoinFrame extends JFrame {
 
     private JLabel link(String text, int x, int y, Runnable action) {
         JLabel label = new JLabel(text);
-        label.setFont(FontLoader.getFont("Rix X Lady Watermelon", 18f, Font.PLAIN));
-
         // 텍스트 길이에 따라 너비를 자동으로 계산
         FontMetrics metrics = label.getFontMetrics(label.getFont());
         int textWidth = metrics.stringWidth(text); // 텍스트의 너비 계산
@@ -415,29 +414,19 @@ public class JoinFrame extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            // 폰트 로드
-            FontLoader.loadCustomFont(
-                    "C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\font\\Gumi Romance.ttf",
-                    "낭만있구미체"
-            );
-            FontLoader.loadCustomFont(
-                    "C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\font\\Rix X ladywatermelon OTF Regular.otf",
-                    "Rix X Lady Watermelon"
-            );
-            FontLoader.loadCustomFont(
-                    "C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\font\\SejongGeulggot.otf",
-                    "세종글꽃체"
-            );
-
-            UIManager.put("OptionPane.background", Color.WHITE); // OptionPane 자체 배경색
-            UIManager.put("Panel.background", Color.WHITE);
-
-            // JoinFrame 실행
-            new JoinFrame();
-        });
+        FontLoader.loadCustomFont(
+                "C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\font\\Gumi Romance.ttf",
+                "낭만있구미체"
+        );
+        FontLoader.loadCustomFont(
+                "C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\font\\SejongGeulggot.otf",
+                "세종글꽃체"
+        );
+        // 그 후에 JoinFrame을 띄운다
+        UIManager.put("OptionPane.background", Color.WHITE); // OptionPane 자체 배경색
+        UIManager.put("Panel.background", Color.WHITE);
+        SwingUtilities.invokeLater(() -> new JoinFrame());
     }
-
 }
 
 

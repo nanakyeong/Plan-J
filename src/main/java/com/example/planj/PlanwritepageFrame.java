@@ -16,6 +16,7 @@ import javafx.scene.web.WebView;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -62,6 +63,35 @@ public class PlanwritepageFrame extends JFrame {
     public PlanwritepageFrame(PlanService planService) {
         this.planService = planService;
         initialize();
+    }
+
+    public class FontLoader {
+        private static final Map<String, Font> fontRegistry = new HashMap<>();
+
+        // 폰트를 로드하여 등록하는 메서드
+        public static void loadCustomFont(String fontPath, String fontName) {
+            try {
+                File fontFile = new File(fontPath);
+                Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontFile);
+                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                ge.registerFont(customFont); // 시스템에 등록
+                fontRegistry.put(fontName, customFont); // 폰트를 Map에 저장
+                System.out.println("폰트 로드 성공: " + fontName + " (" + fontPath + ")");
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("폰트 로드 실패: " + fontName + " (" + fontPath + ")");
+            }
+        }
+
+        // 저장된 폰트를 가져오는 메서드
+        public static Font getFont(String fontName, float size, int style) {
+            Font font = fontRegistry.get(fontName);
+            if (font != null) {
+                return font.deriveFont(style, size);
+            }
+            System.out.println("등록되지 않은 폰트: " + fontName);
+            return new Font("Default", style, Math.round(size)); // 대체 폰트 반환
+        }
     }
 
     public void setCurrentPlan(Plan plan) {
