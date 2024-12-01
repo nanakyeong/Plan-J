@@ -33,36 +33,6 @@ public class MainpageFrame extends JFrame {
         initialize();
 
     }
-
-    public class FontLoader {
-        private static final Map<String, Font> fontRegistry = new HashMap<>();
-
-        // 폰트를 로드하여 등록하는 메서드
-        public static void loadCustomFont(String fontPath, String fontName) {
-            try {
-                File fontFile = new File(fontPath);
-                Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontFile);
-                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-                ge.registerFont(customFont); // 시스템에 등록
-                fontRegistry.put(fontName, customFont); // 폰트를 Map에 저장
-                System.out.println("폰트 로드 성공: " + fontName + " (" + fontPath + ")");
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("폰트 로드 실패: " + fontName + " (" + fontPath + ")");
-            }
-        }
-
-        // 저장된 폰트를 가져오는 메서드
-        public static Font getFont(String fontName, float size, int style) {
-            Font font = fontRegistry.get(fontName);
-            if (font != null) {
-                return font.deriveFont(style, size);
-            }
-            System.out.println("등록되지 않은 폰트: " + fontName);
-            return new Font("Default", style, Math.round(size)); // 대체 폰트 반환
-        }
-    }
-
     private void initialize() {
 
         setTitle("Plan J");
@@ -74,8 +44,8 @@ public class MainpageFrame extends JFrame {
         contentPane.setBackground(Color.WHITE);
 
         usernameLabel = new JLabel("로그인 해주세요.");
-        usernameLabel.setFont(new Font("돋움", Font.BOLD, 14));
-        usernameLabel.setBounds(870, 55, 100, 20);
+        usernameLabel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",18f,Font.PLAIN));
+        usernameLabel.setBounds(670, 55, 200, 20);
         usernameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         usernameLabel.setForeground(Color.BLACK);
         usernameLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -199,9 +169,9 @@ public class MainpageFrame extends JFrame {
                 openJoinPage();
             }
         });
-        contentPane.add(myplan);
-        contentPane.add(login);
-        contentPane.add(join);
+//        contentPane.add(myplan);
+//        contentPane.add(login);
+//        contentPane.add(join);
 
         // 검색 패널
         JPanel searchPanel = new JPanel();
@@ -231,6 +201,7 @@ public class MainpageFrame extends JFrame {
         // 검색 텍스트 필드
         search_plan = new RoundTextField("");
         search_plan.setBounds(120, 0, 210, 23);
+        search_plan.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",15f,Font.PLAIN));
         searchPanel.add(search_plan);
         searchPanel.setBackground(Color.WHITE);
 
@@ -257,6 +228,8 @@ public class MainpageFrame extends JFrame {
                 } else {
                     // 라벨에 검색 결과 업데이트
                     searchResultLabel.setText("\"" + searchText + "\"에 대한 검색 결과입니다.");
+                    searchResultLabel.setFont(JoinFrame.FontLoader.getFont("세종글꼴체",16f,Font.BOLD));
+                    searchResultLabel.setForeground(Color.decode("#436698"));
                 }
             }
             @Override
@@ -275,10 +248,11 @@ public class MainpageFrame extends JFrame {
 
         RoundButton btn_newplan = new RoundButton("+");
         btn_newplan.setBounds(123, 230, 120, 120);
+        btn_newplan.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",20f,Font.BOLD));
         JLabel newplan = new JLabel("plan 업로드");
         newplan.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",15f,Font.PLAIN));
         newplan.setBounds(143, 350, 100, 20);
-        btn_newplan.setBackground(Color.lightGray);
+        btn_newplan.setBackground(Color.decode("#e7e7e7"));
         btn_newplan.setForeground(Color.BLACK);
         contentPane.add(btn_newplan);
         contentPane.add(newplan);
@@ -297,13 +271,14 @@ public class MainpageFrame extends JFrame {
         updatePlanButtons();
 
         MyPanel panel1 = new MyPanel();
-        panel1.setBounds(0, 0, 1000, 600);
+        panel1.setBounds(100, 60, 800, 50);
         contentPane.add(panel1);
 
         setVisible(true);
     }
 
     public void updateUsername(String username) {
+        usernameLabel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",15f,Font.PLAIN));
         if (username == null || username.isEmpty()) {
             usernameLabel.setText("로그인 해주세요.");
             usernameLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -341,8 +316,11 @@ public class MainpageFrame extends JFrame {
 
     private void createPlanButtons(Container contentPane) {
         for (int i = 0; i < planButtons.length; i++) {
-            JButton planButton = new JButton();
+            RoundButton planButton = new RoundButton("");
             planButton.setBounds(123 + (((i+1) % 4) * 210), 230 + (((i+1) / 4) * 170), 120, 120);
+            planButton.setBackground(Color.WHITE);
+            planButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",15f,Font.PLAIN));
+            planButton.setForeground(Color.BLACK);
             planButton.setVisible(false);
             contentPane.add(planButton);
             planButtons[i] = planButton;
@@ -382,6 +360,7 @@ public class MainpageFrame extends JFrame {
     }
 
     class MyPanel extends JPanel {
+
         public MyPanel() {
             setOpaque(true); // 패널을 불투명하게 설정
             setBackground(Color.WHITE); // 배경색을 명시적으로 설정
@@ -389,9 +368,9 @@ public class MainpageFrame extends JFrame {
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
-            g2.setStroke(new BasicStroke(2));
-            g2.setColor(Color.black);
-            g2.drawLine(123, 85, 740, 85);
+            g2.setColor(Color.BLACK);
+            g2.setStroke(new BasicStroke(4));
+            g2.drawLine(20, 20, 780, 20);
         }
     }
 

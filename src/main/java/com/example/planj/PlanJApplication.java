@@ -51,22 +51,7 @@ public class PlanJApplication {
                 "C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\font\\SejongGeulggot.otf",
                 "세종글꽃체"
         );
-        LoginFrame.FontLoader.loadCustomFont(
-                "C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\font\\Gumi Romance.ttf",
-                "낭만있구미체"
-        );
-        LoginFrame.FontLoader.loadCustomFont(
-                "C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\font\\SejongGeulggot.otf",
-                "세종글꽃체"
-        );
-        PlanJApplication.FontLoader.loadCustomFont(
-                "C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\font\\Gumi Romance.ttf",
-                "낭만있구미체"
-        );
-        PlanJApplication.FontLoader.loadCustomFont(
-                "C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\font\\SejongGeulggot.otf",
-                "세종글꽃체"
-        );
+
 
 
 

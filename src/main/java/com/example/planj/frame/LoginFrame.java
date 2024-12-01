@@ -31,37 +31,6 @@ public class LoginFrame extends JFrame {
     private JLabel loginLabel;
     private BufferedImage backgroundImage;
 
-    public class FontLoader {
-        private static final Map<String, Font> fontRegistry = new HashMap<>();
-
-        // 폰트를 로드하여 등록하는 메서드
-        public static void loadCustomFont(String fontPath, String fontName) {
-            try {
-                File fontFile = new File(fontPath);
-                System.out.println("폰트 파일: " + fontFile.getAbsolutePath()); // 경로 출력
-                Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontFile);
-                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-                ge.registerFont(customFont); // 시스템에 등록
-                fontRegistry.put(fontName, customFont); // 폰트를 Map에 저장
-                System.out.println("폰트 로드 성공: " + fontName + " (" + fontPath + ")");
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("폰트 로드 실패: " + fontName + " (" + fontPath + ")");
-            }
-
-        }
-
-        // 저장된 폰트를 가져오는 메서드
-        public static Font getFont(String fontName, float size, int style) {
-            Font font = fontRegistry.get(fontName);
-            if (font != null) {
-                return font.deriveFont(style, size);
-            }
-            System.out.println("등록되지 않은 폰트: " + fontName);
-            return new Font("Default", style, Math.round(size)); // 대체 폰트 반환
-        }
-    }
-
     public LoginFrame() {
 
         Container contentPane = getContentPane();
@@ -494,15 +463,6 @@ public class LoginFrame extends JFrame {
 
 
     public static void main(String[] args) {
-        FontLoader.loadCustomFont(
-                "C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\font\\Gumi Romance.ttf",
-                "낭만있구미체"
-        );
-        FontLoader.loadCustomFont(
-                "C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\font\\SejongGeulggot.otf",
-                "세종글꽃체"
-        );
-        // 그 후에 JoinFrame을 띄운다
         UIManager.put("OptionPane.background", Color.WHITE); // OptionPane 자체 배경색
         UIManager.put("Panel.background", Color.WHITE);
         SwingUtilities.invokeLater(() -> new LoginFrame());
