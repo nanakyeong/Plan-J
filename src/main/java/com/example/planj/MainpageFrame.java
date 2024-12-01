@@ -9,15 +9,16 @@ import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class MainpageFrame extends JFrame {
@@ -29,10 +30,10 @@ public class MainpageFrame extends JFrame {
     private JTextField search_plan; // 검색 텍스트 필드
 
     // 지역 및 시군구 드롭박스 선언
-    private JComboBox<String> areaCodeComboBox;
-    private JComboBox<String> sigunguComboBox;
-    private Map<String, Integer> areaCodeMap = new HashMap<>();
-    private Map<String, Integer> sigunguCodeMap = new HashMap<>();
+    private JComboBox<String> areaCodeComboBoxMain;
+    private JComboBox<String> sigunguComboBoxMain;
+    private Map<String, Integer> areaCodeMapMain = new HashMap<>();
+    private Map<String, Integer> sigunguCodeMapMain = new HashMap<>();
     private static final String SERVICE_KEY = "pRHMKrAJfJJZTC104XWkGvOIvKtKcO6zFysOGGDrH3Bo%2FktklWp6urJAiA5DoWSY3rf7LEKeb2NU5aDiAfDhlw%3D%3D";
 
 
@@ -72,16 +73,16 @@ public class MainpageFrame extends JFrame {
         contentPane.add(searchPanel);
 
         // 지역 드롭박스
-        areaCodeComboBox = new JComboBox<>();
-        areaCodeComboBox.setBounds(0, 0, 120, 22);
-        areaCodeComboBox.addActionListener(e -> updateSigunguComboBox());
-        searchPanel.add(areaCodeComboBox);
-        populateAreaCodeComboBox();
+        areaCodeComboBoxMain = new JComboBox<>();
+        areaCodeComboBoxMain.setBounds(0, 0, 120, 22);
+        areaCodeComboBoxMain.addActionListener(e -> updateSigunguComboBoxMain());
+        searchPanel.add(areaCodeComboBoxMain);
+        populateAreaCodeComboBoxMain();
 
         // 시군구 드롭박스
-        sigunguComboBox = new JComboBox<>();
-        sigunguComboBox.setBounds(125, 0, 120, 22);
-        searchPanel.add(sigunguComboBox);
+        sigunguComboBoxMain = new JComboBox<>();
+        sigunguComboBoxMain.setBounds(125, 0, 120, 22);
+        searchPanel.add(sigunguComboBoxMain);
 
         // 검색 텍스트 필드
         search_plan = new JTextField();
@@ -98,8 +99,14 @@ public class MainpageFrame extends JFrame {
         searchIcon.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                String region = (String) areaCodeComboBoxMain.getSelectedItem();
+                String district = (String) sigunguComboBoxMain.getSelectedItem();
+                String placeKeyword = search_plan.getText().trim();
 
+                // 검색 조건에 따라 필터링
+                updatePlanButtonsForSearch(region, district, placeKeyword);
             }
+
             @Override
             public void mouseEntered(MouseEvent e) {
                 searchIcon.setOpaque(true);
@@ -182,20 +189,20 @@ public class MainpageFrame extends JFrame {
         });
     }
 
-    private void populateAreaCodeComboBox() {
+    private void populateAreaCodeComboBoxMain() {
         String urlString = "https://apis.data.go.kr/B551011/KorService1/areaCode1?serviceKey=" + SERVICE_KEY +
                 "&numOfRows=100&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json";
         try {
-            JSONObject areaData = fetchData(urlString);
-            if (areaData != null) {
-                JSONArray areaArray = areaData.getJSONArray("item");
-                areaCodeComboBox.addItem("지역 선택"); // 기본 항목
-                for (int i = 0; i < areaArray.length(); i++) {
-                    JSONObject area = areaArray.getJSONObject(i);
-                    String areaName = area.getString("name");
-                    int areaCode = area.getInt("code");
-                    areaCodeComboBox.addItem(areaName);
-                    areaCodeMap.put(areaName, areaCode);
+            JSONObject areaDataMain = fetchDataMain(urlString);
+            if (areaDataMain != null) {
+                JSONArray areaArrayMain = areaDataMain.getJSONArray("item");
+                areaCodeComboBoxMain.addItem("지역 선택"); // 기본 항목
+                for (int i = 0; i < areaArrayMain.length(); i++) {
+                    JSONObject areaMain = areaArrayMain.getJSONObject(i);
+                    String areaNameMain = areaMain.getString("name");
+                    int areaCodeMain = areaMain.getInt("code");
+                    areaCodeComboBoxMain.addItem(areaNameMain);
+                    areaCodeMapMain.put(areaNameMain, areaCodeMain);
                 }
             }
         } catch (Exception e) {
@@ -203,26 +210,26 @@ public class MainpageFrame extends JFrame {
         }
     }
 
-    private void updateSigunguComboBox() {
-        String selectedArea = (String) areaCodeComboBox.getSelectedItem();
-        if (selectedArea == null || selectedArea.equals("지역 선택")) return;
+    private void updateSigunguComboBoxMain() {
+        String selectedAreaMain = (String) areaCodeComboBoxMain.getSelectedItem();
+        if (selectedAreaMain == null || selectedAreaMain.equals("지역 선택")) return;
 
-        int selectedAreaCode = areaCodeMap.getOrDefault(selectedArea, 0);
+        int selectedAreaCodeMain = areaCodeMapMain.getOrDefault(selectedAreaMain, 0);
         String urlString = "https://apis.data.go.kr/B551011/KorService1/areaCode1?serviceKey=" + SERVICE_KEY +
-                "&numOfRows=100&pageNo=1&MobileOS=ETC&MobileApp=AppTest&areaCode=" + selectedAreaCode + "&_type=json";
+                "&numOfRows=100&pageNo=1&MobileOS=ETC&MobileApp=AppTest&areaCode=" + selectedAreaCodeMain + "&_type=json";
         try {
-            JSONObject sigunguData = fetchData(urlString);
-            if (sigunguData != null) {
-                JSONArray sigunguArray = sigunguData.getJSONArray("item");
-                sigunguComboBox.removeAllItems();
-                sigunguComboBox.addItem("시군구 선택");
-                sigunguCodeMap.clear();
-                for (int i = 0; i < sigunguArray.length(); i++) {
-                    JSONObject sigungu = sigunguArray.getJSONObject(i);
-                    String sigunguName = sigungu.getString("name");
-                    int sigunguCode = sigungu.getInt("code");
-                    sigunguComboBox.addItem(sigunguName);
-                    sigunguCodeMap.put(sigunguName, sigunguCode);
+            JSONObject sigunguDataMain = fetchDataMain(urlString);
+            if (sigunguDataMain != null) {
+                JSONArray sigunguArrayMain = sigunguDataMain.getJSONArray("item");
+                sigunguComboBoxMain.removeAllItems();
+                sigunguComboBoxMain.addItem("시군구 선택");
+                sigunguCodeMapMain.clear();
+                for (int i = 0; i < sigunguArrayMain.length(); i++) {
+                    JSONObject sigunguMain = sigunguArrayMain.getJSONObject(i);
+                    String sigunguNameMain = sigunguMain.getString("name");
+                    int sigunguCodeMain = sigunguMain.getInt("code");
+                    sigunguComboBoxMain.addItem(sigunguNameMain);
+                    sigunguCodeMapMain.put(sigunguNameMain, sigunguCodeMain);
                 }
             }
         } catch (Exception e) {
@@ -230,28 +237,126 @@ public class MainpageFrame extends JFrame {
         }
     }
 
-    private JSONObject fetchData(String urlString) {
+    private JSONObject fetchDataMain(String urlString) {
         try {
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder response = new StringBuilder();
+            StringBuilder responseMain = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
-                response.append(line);
+                responseMain.append(line);
             }
             reader.close();
 
-            return new JSONObject(response.toString()).getJSONObject("response").getJSONObject("body").getJSONObject("items");
+            return new JSONObject(responseMain.toString()).getJSONObject("response").getJSONObject("body").getJSONObject("items");
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
+    private void updatePlanButtonsForSearch(String region, String district, String placeKeyword) {
+        List<PlanDTO> plans = planService.getIsRegisteredTrue();
 
+        // 결과를 담을 리스트
+        List<PlanDTO> searchResults = new ArrayList<>();
+
+        // 1순위: 검색한 장소가 포함된 계획 (코사인 유사도 적용)
+        if (placeKeyword != null) {
+            for (PlanDTO plan : plans) {
+                double maxSimilarity = plan.getPlacesPerDay().values().stream()
+                        .flatMap(List::stream)
+                        .mapToDouble(place -> calculateCosineSimilarity(placeKeyword, place))
+                        .max().orElse(0.0);
+
+                // 임계값(예: 0.5) 이상의 유사도를 가진 계획만 추가
+                if (maxSimilarity >= 0.5) {
+                    searchResults.add(plan);
+                }
+            }
+        }
+
+        // 2순위: 검색한 장소 근처에 있는 같은 지역 내 계획
+        if (district != null) {
+            for (PlanDTO plan : plans) {
+                if (district.equals(plan.getDistrict()) && !searchResults.contains(plan)) {
+                    searchResults.add(plan);
+                }
+            }
+        }
+
+        // 3순위: 같은 지역의 계획
+        if (region != null) {
+            for (PlanDTO plan : plans) {
+                if (region.equals(plan.getRegion()) && !searchResults.contains(plan)) {
+                    searchResults.add(plan);
+                }
+            }
+        }
+
+        // 1순위 결과를 유사도 기준으로 정렬
+        if (placeKeyword != null) {
+            searchResults.sort((plan1, plan2) -> {
+                double maxSim1 = plan1.getPlacesPerDay().values().stream()
+                        .flatMap(List::stream)
+                        .mapToDouble(place -> calculateCosineSimilarity(placeKeyword, place))
+                        .max().orElse(0.0);
+
+                double maxSim2 = plan2.getPlacesPerDay().values().stream()
+                        .flatMap(List::stream)
+                        .mapToDouble(place -> calculateCosineSimilarity(placeKeyword, place))
+                        .max().orElse(0.0);
+
+                return Double.compare(maxSim2, maxSim1); // 높은 유사도 우선
+            });
+        }
+
+        // 최대 8개만 버튼에 표시
+        int maxButtons = Math.min(searchResults.size(), planButtons.length);
+        for (int i = 0; i < maxButtons; i++) {
+            PlanDTO plan = searchResults.get(i);
+            JButton planButton = planButtons[i];
+            planButton.setText(plan.getTitle());
+            planButton.setVisible(true);
+
+            // 버튼 클릭 시 계획 열기
+            planButton.addActionListener(e -> openPlan(plan));
+        }
+
+        // 나머지 버튼 숨기기
+        for (int i = searchResults.size(); i < planButtons.length; i++) {
+            planButtons[i].setVisible(false);
+        }
+    }
+
+    private double calculateCosineSimilarity(String text1, String text2) {
+        Map<Character, Integer> freqMap1 = getFrequencyMap(text1);
+        Map<Character, Integer> freqMap2 = getFrequencyMap(text2);
+
+        // 벡터 내적
+        double dotProduct = freqMap1.keySet().stream()
+                .filter(freqMap2::containsKey)
+                .mapToDouble(c -> freqMap1.get(c) * freqMap2.get(c))
+                .sum();
+
+        // 벡터 크기 계산
+        double magnitude1 = Math.sqrt(freqMap1.values().stream().mapToDouble(v -> v * v).sum());
+        double magnitude2 = Math.sqrt(freqMap2.values().stream().mapToDouble(v -> v * v).sum());
+
+        // 코사인 유사도 계산
+        return (magnitude1 > 0 && magnitude2 > 0) ? (dotProduct / (magnitude1 * magnitude2)) : 0.0;
+    }
+
+    private Map<Character, Integer> getFrequencyMap(String text) {
+        Map<Character, Integer> freqMap = new HashMap<>();
+        for (char c : text.toCharArray()) {
+            freqMap.put(c, freqMap.getOrDefault(c, 0) + 1);
+        }
+        return freqMap;
+    }
 
     class MyPanel extends JPanel {
         public void paintComponent(Graphics g) {
