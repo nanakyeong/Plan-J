@@ -2,6 +2,8 @@ package com.example.planj;
 
 import com.example.planj.db.PlanDTO;
 import com.example.planj.db.PlanService;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -9,7 +11,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class MainpageFrame extends JFrame {
@@ -19,6 +27,14 @@ public class MainpageFrame extends JFrame {
     @Autowired private UploadpageFrame uploadFrame;
 
     private JTextField search_plan; // 검색 텍스트 필드
+
+    // 지역 및 시군구 드롭박스 선언
+    private JComboBox<String> areaCodeComboBox;
+    private JComboBox<String> sigunguComboBox;
+    private Map<String, Integer> areaCodeMap = new HashMap<>();
+    private Map<String, Integer> sigunguCodeMap = new HashMap<>();
+    private static final String SERVICE_KEY = "pRHMKrAJfJJZTC104XWkGvOIvKtKcO6zFysOGGDrH3Bo%2FktklWp6urJAiA5DoWSY3rf7LEKeb2NU5aDiAfDhlw%3D%3D";
+
 
     @Autowired
     public MainpageFrame(PlanService planService) {
@@ -51,53 +67,38 @@ public class MainpageFrame extends JFrame {
 
         // 검색 패널
         JPanel searchPanel = new JPanel();
-        searchPanel.setBounds(500, 142, 380, 23); // 크기를 늘려서 라디오 버튼 추가 가능
+        searchPanel.setBounds(420, 142, 460, 22);
         searchPanel.setLayout(null);
         contentPane.add(searchPanel);
 
-        // 라디오 버튼 그룹 생성
-        ButtonGroup radioGroup = new ButtonGroup();
-        JRadioButton regionRadioButton = new JRadioButton("지역");
-        regionRadioButton.setBounds(0, 0, 60, 23);
-        regionRadioButton.setSelected(true); // 기본 선택
-        searchPanel.add(regionRadioButton);
+        // 지역 드롭박스
+        areaCodeComboBox = new JComboBox<>();
+        areaCodeComboBox.setBounds(0, 0, 120, 22);
+        areaCodeComboBox.addActionListener(e -> updateSigunguComboBox());
+        searchPanel.add(areaCodeComboBox);
+        populateAreaCodeComboBox();
 
-        JRadioButton placeRadioButton = new JRadioButton("장소");
-        placeRadioButton.setBounds(60, 0, 60, 23);
-        searchPanel.add(placeRadioButton);
-
-        // 라디오 버튼 그룹에 추가
-        radioGroup.add(regionRadioButton);
-        radioGroup.add(placeRadioButton);
+        // 시군구 드롭박스
+        sigunguComboBox = new JComboBox<>();
+        sigunguComboBox.setBounds(125, 0, 120, 22);
+        searchPanel.add(sigunguComboBox);
 
         // 검색 텍스트 필드
         search_plan = new JTextField();
-        search_plan.setBounds(120, 0, 210, 23);
+        search_plan.setBounds(250, 0, 160, 22);
         searchPanel.add(search_plan);
 
         // 검색 아이콘
         JLabel searchIcon = new JLabel("🔍");
-        searchIcon.setBounds(330, 0, 30, 22);
+        searchIcon.setBounds(415, 0, 30, 22);
         searchIcon.setHorizontalAlignment(SwingConstants.CENTER);
+        searchIcon.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1)); // 회색 1픽셀 테두리
         searchPanel.add(searchIcon);
-
-        // 검색 결과 라벨
-        JLabel searchResultLabel = new JLabel(); // 검색 결과 라벨 초기화
-        searchResultLabel.setFont(new Font("돋움", Font.BOLD, 18));
-        searchResultLabel.setBounds(123, 190, 500, 30); // 위치 지정
-        contentPane.add(searchResultLabel);
-
-            // 검색 아이콘 동작
+        // 검색 아이콘 동작
         searchIcon.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                String searchText = search_plan.getText().trim(); // 입력된 검색어 가져오기
-                if (searchText.isEmpty()) {
-                    JOptionPane.showMessageDialog(contentPane, "검색어를 입력하세요!", "오류", JOptionPane.WARNING_MESSAGE);
-                } else {
-                    // 라벨에 검색 결과 업데이트
-                    searchResultLabel.setText("\"" + searchText + "\"에 대한 검색 결과입니다.");
-                }
+
             }
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -180,6 +181,77 @@ public class MainpageFrame extends JFrame {
             dispose();
         });
     }
+
+    private void populateAreaCodeComboBox() {
+        String urlString = "https://apis.data.go.kr/B551011/KorService1/areaCode1?serviceKey=" + SERVICE_KEY +
+                "&numOfRows=100&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json";
+        try {
+            JSONObject areaData = fetchData(urlString);
+            if (areaData != null) {
+                JSONArray areaArray = areaData.getJSONArray("item");
+                areaCodeComboBox.addItem("지역 선택"); // 기본 항목
+                for (int i = 0; i < areaArray.length(); i++) {
+                    JSONObject area = areaArray.getJSONObject(i);
+                    String areaName = area.getString("name");
+                    int areaCode = area.getInt("code");
+                    areaCodeComboBox.addItem(areaName);
+                    areaCodeMap.put(areaName, areaCode);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateSigunguComboBox() {
+        String selectedArea = (String) areaCodeComboBox.getSelectedItem();
+        if (selectedArea == null || selectedArea.equals("지역 선택")) return;
+
+        int selectedAreaCode = areaCodeMap.getOrDefault(selectedArea, 0);
+        String urlString = "https://apis.data.go.kr/B551011/KorService1/areaCode1?serviceKey=" + SERVICE_KEY +
+                "&numOfRows=100&pageNo=1&MobileOS=ETC&MobileApp=AppTest&areaCode=" + selectedAreaCode + "&_type=json";
+        try {
+            JSONObject sigunguData = fetchData(urlString);
+            if (sigunguData != null) {
+                JSONArray sigunguArray = sigunguData.getJSONArray("item");
+                sigunguComboBox.removeAllItems();
+                sigunguComboBox.addItem("시군구 선택");
+                sigunguCodeMap.clear();
+                for (int i = 0; i < sigunguArray.length(); i++) {
+                    JSONObject sigungu = sigunguArray.getJSONObject(i);
+                    String sigunguName = sigungu.getString("name");
+                    int sigunguCode = sigungu.getInt("code");
+                    sigunguComboBox.addItem(sigunguName);
+                    sigunguCodeMap.put(sigunguName, sigunguCode);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private JSONObject fetchData(String urlString) {
+        try {
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            reader.close();
+
+            return new JSONObject(response.toString()).getJSONObject("response").getJSONObject("body").getJSONObject("items");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
 
     class MyPanel extends JPanel {
         public void paintComponent(Graphics g) {
