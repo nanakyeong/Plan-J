@@ -1,5 +1,8 @@
 package com.example.planj.frame;
 
+import com.example.planj.ApplicationContextProvider;
+import com.example.planj.UploadpageFrame;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -360,7 +363,12 @@ public class JoinFrame extends JFrame {
 
 
     private void openMyPlan() {
-
+        SwingUtilities.invokeLater(() -> {
+            // UploadpageFrame Spring 빈 가져오기
+            UploadpageFrame uploadFrame = ApplicationContextProvider.getContext().getBean(UploadpageFrame.class);
+            uploadFrame.setVisible(true);
+            dispose(); // 현재 프레임 닫기
+        });
     }
 
     private void openLogin() {

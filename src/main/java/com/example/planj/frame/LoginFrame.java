@@ -108,12 +108,12 @@ public class LoginFrame extends JFrame {
         contentPanel.setBackground(Color.WHITE);
 
         JLabel logo1 = new JLabel("<html><span style='color:#89AEBF;'>P</span>lan<span style='color:#436698;'> J</span></html>");
-        logo1.setFont(JoinFrame.FontLoader.getFont("낭만있구미체",35f, Font.BOLD));
+        logo1.setFont(JoinFrame.FontLoader.getFont("낭만있구미체", 35f, Font.BOLD));
         contentPanel.add(logo1);
         logo1.setBounds(440, 120, 150, 40);
 
         JLabel logo2 = new JLabel("로그인");
-        logo2.setFont(JoinFrame.FontLoader.getFont("낭만있구미체",17f,Font.PLAIN));
+        logo2.setFont(JoinFrame.FontLoader.getFont("낭만있구미체", 17f, Font.PLAIN));
         logo2.setBounds(460, 180, 180, 30);
         contentPanel.add(logo2);
 
@@ -122,26 +122,26 @@ public class LoginFrame extends JFrame {
         contentPanel.add(line);
 
         RoundTextField username = new RoundTextField("  아이디");
-        username.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",15f,Font.PLAIN));
+        username.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 15f, Font.PLAIN));
         username.setBounds(400, 250, 180, 20);
         contentPanel.add(username);
 
         PasswordField password = new PasswordField("  비밀번호");
-        password.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",15f,Font.PLAIN));
+        password.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 15f, Font.PLAIN));
         password.setBounds(400, 290, 180, 20);
         contentPanel.add(password);
 
         RoundButton check = new RoundButton("로그인");
-        check.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",20f,Font.PLAIN));
+        check.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 20f, Font.PLAIN));
         check.setBounds(430, 350, 120, 30);
         contentPanel.add(check);
 
         JLabel findPassword = link("비밀번호 변경", 500, 320, () -> openFindPassword());
-        findPassword.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",15f,Font.PLAIN));
+        findPassword.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 15f, Font.PLAIN));
         contentPanel.add(findPassword);
 
         JLabel findUsername = link("아이디 찾기", 400, 320, () -> openFindUsername());
-        findUsername.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",15f,Font.PLAIN));
+        findUsername.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 15f, Font.PLAIN));
         contentPanel.add(findUsername);
 
         loginLabel = link("로그인", 755, 55, () -> openJoin());
@@ -229,7 +229,8 @@ public class LoginFrame extends JFrame {
             }
 
             @Override
-            public void mouseClicked(MouseEvent e) {openJoin();
+            public void mouseClicked(MouseEvent e) {
+                openJoin();
             }
         });
         contentPanel.add(myplan);
@@ -245,9 +246,8 @@ public class LoginFrame extends JFrame {
 
     private void openMyPlan() {
         SwingUtilities.invokeLater(() -> {
-            // UploadpageFrame Spring 빈 가져오기
-            UploadpageFrame uploadFrame = ApplicationContextProvider.getContext().getBean(UploadpageFrame.class);
-            uploadFrame.setVisible(true);
+            MainpageFrame mainpageFrame = ApplicationContextProvider.getContext().getBean(MainpageFrame.class);
+            mainpageFrame.setVisible(true);
             dispose(); // 현재 프레임 닫기
         });
     }
@@ -488,6 +488,7 @@ public class LoginFrame extends JFrame {
         }
     }
 
+
     public static void main(String[] args) {
 
         SwingUtilities.invokeLater(() -> {
@@ -508,6 +509,7 @@ public class LoginFrame extends JFrame {
             UIManager.put("OptionPane.background", Color.WHITE); // OptionPane 자체 배경색
             UIManager.put("Panel.background", Color.WHITE);
             new LoginFrame();
-    });
+        });
     }
 }
+

@@ -54,6 +54,13 @@ public class MainpageFrame extends JFrame {
 
         JLabel join = new JLabel("회원가입");
         join.setBounds(814, 55, 100, 20);
+        join.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                openJoinPage();
+            }
+        });
+
         contentPane.add(myplan);
         contentPane.add(login);
         contentPane.add(join);
@@ -151,6 +158,15 @@ public class MainpageFrame extends JFrame {
 
 
     private void openLoginPage() {
+        SwingUtilities.invokeLater(() -> {
+            // Spring 컨텍스트에서 LoginFrame 가져오기
+            LoginFrame loginFrame = ApplicationContextProvider.getContext().getBean(LoginFrame.class);
+            loginFrame.setVisible(true);
+            dispose(); // 현재 프레임 닫기
+        });
+    }
+
+    private void openJoinPage() {
         SwingUtilities.invokeLater(() -> {
             // Spring 컨텍스트에서 LoginFrame 가져오기
             LoginFrame loginFrame = ApplicationContextProvider.getContext().getBean(LoginFrame.class);
