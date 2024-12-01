@@ -87,8 +87,6 @@ public class MainpageFrame extends JFrame {
         });
         getContentPane().add(usernameLabel);
 
-        JLabel logo1 = new JLabel("Plan J");
-        logo1.setFont(new Font("돋움", Font.BOLD, 35));
         JLabel logo1 = new JLabel("<html><span style='color:#89AEBF;'>P</span>lan<span style='color:#436698;'> J</span></html>");
         logo1.setFont(JoinFrame.FontLoader.getFont("낭만있구미체",35f, Font.BOLD));
         logo1.setBounds(123, 135, 150, 30);

@@ -139,8 +139,8 @@ public class UploadpageFrame extends JFrame {
                 openMyplanPage();
             }
         });
-        JLabel login = new JLabel("로그아웃");
-        login.setBounds(762, 55, 100, 20);
+        JLabel logout = new JLabel("로그아웃");
+        logout.setBounds(762, 55, 100, 20);
         login.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
