@@ -8,10 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.File;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -30,19 +27,23 @@ public class JoinFrame extends JFrame {
         private static final Map<String, Font> fontRegistry = new HashMap<>();
 
         // 폰트를 로드하여 등록하는 메서드
-        public static void loadCustomFont(String fontPath, String fontName) {
+        public static void loadCustomFont(InputStream fontStream, String fontName) {
             try {
-                File fontFile = new File(fontPath);
-                Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontFile);
-                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-                ge.registerFont(customFont); // 시스템에 등록
-                fontRegistry.put(fontName, customFont); // 폰트를 Map에 저장
-                System.out.println("폰트 로드 성공: " + fontName + " (" + fontPath + ")");
+                if (fontStream != null) {
+                    Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontStream);
+                    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                    ge.registerFont(customFont); // 시스템에 등록
+                    fontRegistry.put(fontName, customFont); // 폰트를 Map에 저장
+                    System.out.println("폰트 로드 성공: " + fontName);
+                } else {
+                    throw new FileNotFoundException("폰트 파일을 찾을 수 없습니다: " + fontName);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
-                System.out.println("폰트 로드 실패: " + fontName + " (" + fontPath + ")");
+                System.out.println("폰트 로드 실패: " + fontName);
             }
         }
+
 
         // 저장된 폰트를 가져오는 메서드
         public static Font getFont(String fontName, float size, int style) {
@@ -72,8 +73,15 @@ public class JoinFrame extends JFrame {
         setContentPane(layeredPane);
 
         // 배경 이미지 로드
+        // 배경 이미지 로드
         try {
-            backgroundImage = ImageIO.read(new File("C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\img\\배경.png"));
+            // src/main/resources 기준으로 클래스패스에서 파일 로드
+            InputStream is = getClass().getResourceAsStream("/배경.png");
+            if (is != null) {
+                backgroundImage = ImageIO.read(is);
+            } else {
+                throw new FileNotFoundException("이미지를 찾을 수 없습니다.");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("배경 이미지를 로드할 수 없습니다.");
@@ -94,6 +102,8 @@ public class JoinFrame extends JFrame {
         };
         backgroundPanel.setBounds(0, 0, getWidth(), getHeight());
         layeredPane.add(backgroundPanel, Integer.valueOf(0)); // 배경 패널을 가장 아래로 추가
+
+
 
         // 콘텐츠 패널 생성
         JPanel contentPanel = new JPanel(null);
@@ -426,12 +436,13 @@ public class JoinFrame extends JFrame {
     }
 
     public static void main(String[] args) {
+        // 클래스패스를 통해 폰트 로드
         FontLoader.loadCustomFont(
-                "C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\font\\Gumi Romance.ttf",
+                JoinFrame.class.getResourceAsStream("/Gumi_Romance.otf"),
                 "낭만있구미체"
         );
         FontLoader.loadCustomFont(
-                "C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\font\\SejongGeulggot.otf",
+                JoinFrame.class.getResourceAsStream("/SejongGeulggot.otf"),
                 "세종글꽃체"
         );
         // 그 후에 JoinFrame을 띄운다

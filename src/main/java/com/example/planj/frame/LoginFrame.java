@@ -7,6 +7,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -48,7 +50,13 @@ public class LoginFrame extends JFrame {
 
         // 배경 이미지 로드
         try {
-            backgroundImage = ImageIO.read(new File("C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\img\\배경.png"));
+            // src/main/resources 기준으로 클래스패스에서 파일 로드
+            InputStream is = getClass().getResourceAsStream("/배경.png");
+            if (is != null) {
+                backgroundImage = ImageIO.read(is);
+            } else {
+                throw new FileNotFoundException("이미지를 찾을 수 없습니다.");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("배경 이미지를 로드할 수 없습니다.");
