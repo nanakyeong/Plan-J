@@ -200,6 +200,8 @@ public class PlanwritepageFrame extends JFrame {
         this.planTitle = new RoundTextField("");
         this.planTitle.setBounds(178, 220, 200, 23);
         this.planTitle.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
+        this.planTitle.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10)); // 위, 왼쪽, 아래, 오른쪽 여백 설정
+
         contentPane.add(this.planTitle);
 
         Integer[] choices1 = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
