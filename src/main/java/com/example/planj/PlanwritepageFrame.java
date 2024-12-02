@@ -73,6 +73,10 @@ public class PlanwritepageFrame extends JFrame {
 
 
     private void initialize() {
+
+        Font font = JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN);
+
+
         setTitle("Plan J");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 600);
@@ -163,7 +167,7 @@ public class PlanwritepageFrame extends JFrame {
             }
             @Override
             public void mouseClicked(MouseEvent e) {
-                openLoginPage();
+                openMyplan();
             }
         });
 
@@ -255,7 +259,9 @@ public class PlanwritepageFrame extends JFrame {
         populateAreaCodeComboBox();
 
         this.section1.addActionListener(e -> updateDays(section1, section2));
+        section1.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         this.section2.addActionListener(e -> updatePlanPanel(section2));
+        section2.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
 
 
         RoundButton addAccommodationButton = new RoundButton("숙소 추가");
@@ -281,10 +287,11 @@ public class PlanwritepageFrame extends JFrame {
 
         myPanel = new MyPanel();
         myPanel.setBounds(0, 0, 1000, 600);
+        myPanel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",14f,Font.PLAIN));
         contentPane.add(myPanel);
 
         saveButton.addActionListener(e ->  {
-            setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 12f, Font.PLAIN));
+            this.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
             this.planService = ApplicationContextProvider.getContext().getBean(PlanService.class);
 
             // PlanDTO 객체 생성 및 데이터 설정
@@ -305,6 +312,7 @@ public class PlanwritepageFrame extends JFrame {
             planDTO.setAccommodationsPerDay(new HashMap<>(accommodationsPerDay));
             planDTO.setPlacesPerDay(new HashMap<>(placesPerDay)); // 정확한 장소 데이터 반영
 
+
             // PlanService를 통해 저장
             try {
                 planService.createPlan(planDTO);
@@ -317,10 +325,11 @@ public class PlanwritepageFrame extends JFrame {
         });
         //setVisible(true);
     }
-    private void openMyplanPage() {
+
+    private void openMyplan() {
         SwingUtilities.invokeLater(() -> {
-            MainpageFrame mainpageFrame = ApplicationContextProvider.getContext().getBean(MainpageFrame.class);
-            mainpageFrame.setVisible(true);
+            UploadpageFrame uploadpageFrame = ApplicationContextProvider.getContext().getBean(UploadpageFrame.class);
+            uploadpageFrame.setVisible(true);
             dispose();
         });
     }
@@ -380,6 +389,7 @@ public class PlanwritepageFrame extends JFrame {
 
     public void setPlanDTO(PlanDTO planDTO) {
         this.planDTO = planDTO;
+        this.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
 
         if (planDTO != null) {
             // 제목, 박/일 설정
@@ -402,6 +412,7 @@ public class PlanwritepageFrame extends JFrame {
                     JLabel dayLabel = new JLabel(day);
                     dayLabel.setFont(JoinFrame.FontLoader.getFont("세종들꽃체",14f,Font.PLAIN));
                     planPanel.add(dayLabel);
+                    planPanel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
 
 
                     if (places != null) {
@@ -442,6 +453,7 @@ public class PlanwritepageFrame extends JFrame {
                                     double latitude = placeInfo.getDouble("mapy");
                                     double longitude = placeInfo.getDouble("mapx");
                                     myPanel.updateMapMarker(latitude, longitude); // 지도 업데이트
+                                    myPanel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
                                 } else {
                                     JOptionPane.showMessageDialog(null, "숙소 정보를 찾을 수 없습니다.");
                                 }
@@ -460,9 +472,10 @@ public class PlanwritepageFrame extends JFrame {
     }
 
     private void updatePlan() {
-        setFont(JoinFrame.FontLoader.getFont("세종들꽃체",14f,Font.PLAIN));
+        this.setFont(JoinFrame.FontLoader.getFont("세종들꽃체",14f,Font.PLAIN));
         if (planDTO != null) {
             // 기본 정보 업데이트
+            this.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
             planDTO.setTitle(planTitle.getText());
             planDTO.setNights((Integer) section1.getSelectedItem());
             planDTO.setDays((Integer) section2.getSelectedItem());
@@ -496,6 +509,7 @@ public class PlanwritepageFrame extends JFrame {
     }
 
     private void deletePlan() {
+        this.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         if (planDTO != null) {
             int confirm = JOptionPane.showConfirmDialog(
                     this,
@@ -516,12 +530,13 @@ public class PlanwritepageFrame extends JFrame {
     }
 
     private void openAccommodationPopup() {
+        this.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         AccommodationPopup accommodationPopup = new AccommodationPopup(this);
         accommodationPopup.setVisible(true);
     }
 
     public void addAccommodationToSchedule(String accommodationName, double latitude, double longitude) {
-        setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 13f, Font.PLAIN));
+        this.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         if (accommodationName == null || accommodationName.isEmpty()) {
             accommodationName = "숙소 미지정";
             latitude = 0;
@@ -550,8 +565,10 @@ public class PlanwritepageFrame extends JFrame {
     }
 
     private void updateDays(JComboBox<Integer> section1, JComboBox<Integer> section2) {
+        this.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         int selectedNights = (Integer) section1.getSelectedItem();
         section2.removeAllItems();
+        section2.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
 
         int minDays = selectedNights + 1;
         int maxDays = selectedNights + 2;
@@ -563,11 +580,14 @@ public class PlanwritepageFrame extends JFrame {
 
     private void updatePlanPanel(JComboBox<Integer> section2) {
         planPanel.removeAll();
+        planPanel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
 
         if (section2.getSelectedItem() != null) {
             int days = (Integer) section2.getSelectedItem();
             for (int i = 1; i <= days; i++) {
+                this.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
                 addDayPanel(planPanel, i + "일차");
+
             }
         }
         planPanel.revalidate();
@@ -576,10 +596,12 @@ public class PlanwritepageFrame extends JFrame {
 
     private void addDayPanel(JPanel planPanel, String dayText) {
         setBackground(Color.WHITE);
+        this.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 13f, Font.PLAIN));
         JPanel dayPanel = new JPanel();
         dayPanel.setLayout(new BoxLayout(dayPanel, BoxLayout.Y_AXIS));
         dayPanel.setBackground(Color.WHITE);
         dayPanel.setName(dayText);
+        dayPanel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 13f, Font.PLAIN));
 
         dayPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1),
@@ -589,6 +611,7 @@ public class PlanwritepageFrame extends JFrame {
         JPanel labelPanel = new JPanel();
         labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
         labelPanel.setBackground(Color.WHITE);
+        labelPanel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 13f, Font.PLAIN));
 
         JLabel dayLabel = new JLabel(dayText);
         dayLabel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 17f, Font.BOLD));
@@ -608,6 +631,7 @@ public class PlanwritepageFrame extends JFrame {
         labelPanel.add(Box.createHorizontalGlue());
         labelPanel.add(optimizeButton);
         labelPanel.setAlignmentX(LEFT_ALIGNMENT);
+        labelPanel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 13f, Font.PLAIN));
 
         dayPanel.add(labelPanel);
 
@@ -647,6 +671,7 @@ public class PlanwritepageFrame extends JFrame {
     }
 
     private void openRouteDialog(String dayText) {
+        this.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         Map<String, Object> dayData = getLocationsForDay(dayText);
         List<double[]> locationCoordinates = new ArrayList<>();
         List<String> placeNames = new ArrayList<>();
@@ -677,6 +702,7 @@ public class PlanwritepageFrame extends JFrame {
     }
 
     private Map<String, Object> getLocationsForDay(String dayText) {
+        this.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         List<double[]> locations = new ArrayList<>();
         List<String> placeNames = dayToPlacesMap.getOrDefault(dayText, new ArrayList<>());
 
@@ -695,23 +721,24 @@ public class PlanwritepageFrame extends JFrame {
     }
 
     private void openAddPlaceDialog(JPanel dayPanel) {
+        this.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         PopupDialog dialog = new PopupDialog(this, dayPanel);
         dialog.setVisible(true);
     }
 
     public void addPlaceToSchedule(String placeName, JPanel dayPanel) {
+        this.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         if (dayPanel.getComponentCount() > 0) {
             java.awt.Component lastComponent = dayPanel.getComponent(dayPanel.getComponentCount() - 1);
             if (lastComponent instanceof JButton && ((JButton) lastComponent).getText().equals("장소를 추가하려면 클릭하세요...")) {
                 dayPanel.remove(lastComponent);
-                dayPanel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 12f, Font.PLAIN));
+                dayPanel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 13f, Font.PLAIN));
             }
         }
         String dayText = dayPanel.getName();
 
         placesPerDay.putIfAbsent(dayText, new ArrayList<>());
         placesPerDay.get(dayText).add(placeName);
-
         dayToPlacesMap.putIfAbsent(dayText, new ArrayList<>());
         dayToPlacesMap.get(dayText).add(placeName);
 
@@ -719,6 +746,7 @@ public class PlanwritepageFrame extends JFrame {
         combinedPanel.setLayout(new BoxLayout(combinedPanel, BoxLayout.Y_AXIS));
         combinedPanel.setAlignmentX(LEFT_ALIGNMENT);
         combinedPanel.setBackground(Color.WHITE);
+        combinedPanel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 13f, Font.PLAIN));
 
         java.awt.Component verticalStrut = Box.createVerticalStrut(10);
         combinedPanel.add(verticalStrut);
@@ -728,9 +756,10 @@ public class PlanwritepageFrame extends JFrame {
         placePanel.setAlignmentX(LEFT_ALIGNMENT);
         placePanel.setBackground(Color.WHITE);
         placePanel.setMaximumSize(new Dimension(400, 30));
+        placePanel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 13f, Font.PLAIN));
 
         JLabel placeLabel = new JLabel(placeName);
-        placeLabel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 12f, Font.PLAIN));
+        placeLabel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 13f, Font.PLAIN));
         placeLabel.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 0));
         placeLabel.setAlignmentY(CENTER_ALIGNMENT);
         placeLabel.setPreferredSize(new Dimension(200, 20));
@@ -782,9 +811,12 @@ public class PlanwritepageFrame extends JFrame {
         placePanel.add(upButton);
         placePanel.add(downButton);
         placePanel.add(deleteButton);
+        placePanel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
 
         combinedPanel.add(placePanel);
+        combinedPanel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         dayPanel.add(combinedPanel);
+        dayPanel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
 
         JButton addPlaceButton = new JButton("장소를 추가하려면 클릭하세요...");
         addPlaceButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 13f, Font.PLAIN));
@@ -799,6 +831,7 @@ public class PlanwritepageFrame extends JFrame {
 
         dayPanel.revalidate();
         dayPanel.repaint();
+        dayPanel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
     }
 
     private void openMain() {
@@ -837,6 +870,7 @@ public class PlanwritepageFrame extends JFrame {
 
             setOpaque(true);
             setBackground(Color.WHITE);
+            this.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",14f,Font.PLAIN));
 
             setLayout(null);
 
@@ -860,9 +894,12 @@ public class PlanwritepageFrame extends JFrame {
         }
 
         public void updateMapMarker(double latitude, double longitude) {
+            this.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
             Platform.runLater(() -> {
                 if (webEngine != null) {
+                    this.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 13f, Font.PLAIN));
                     webEngine.executeScript("setMapPosition(" + latitude + ", " + longitude + ");");
+
                 }
             });
         }
@@ -932,17 +969,20 @@ public class PlanwritepageFrame extends JFrame {
     }
 
     private void updateMapWithPlace(String placeName) {
+        this.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         JSONObject placeInfo = searchPlaceByKeyword(this, placeName);
         if (placeInfo != null) {
             double latitude = placeInfo.getDouble("mapy");
             double longitude = placeInfo.getDouble("mapx");
             myPanel.updateMapMarker(latitude, longitude);
+            myPanel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         } else {
             JOptionPane.showMessageDialog(this, "장소 정보를 찾을 수 없습니다.");
         }
     }
 
     private void populateAreaCodeComboBox() {
+        this.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         String urlString = "https://apis.data.go.kr/B551011/KorService1/areaCode1?serviceKey=" + SERVICE_KEY +
                 "&numOfRows=100&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json";
         try {
@@ -968,7 +1008,7 @@ public class PlanwritepageFrame extends JFrame {
     }
 
     private void updateSigunguComboBox() {
-        setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
+        this.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         String selectedArea = (String) areaCodeComboBox.getSelectedItem();
         if (selectedArea == null || selectedArea.equals("지역 선택")) return;
 

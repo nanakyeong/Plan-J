@@ -265,7 +265,7 @@ public class JoinFrame extends JFrame {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                openMyPlan(); // 클릭 시 실행할 액션
+                openLogin(); // 클릭 시 실행할 액션
             }
         });
 

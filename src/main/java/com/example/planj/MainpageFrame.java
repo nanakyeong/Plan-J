@@ -61,19 +61,19 @@ public class MainpageFrame extends JFrame {
         contentPane.setLayout(null);
         contentPane.setBackground(Color.WHITE);
 
-        usernameLabel = new JLabel("로그인 해주세요.");
-        usernameLabel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",18f,Font.PLAIN));
-        usernameLabel.setBounds(670, 55, 200, 20);
-        usernameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        usernameLabel.setForeground(Color.BLACK);
-        usernameLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        usernameLabel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                openLoginPage();
-            }
-        });
-        getContentPane().add(usernameLabel);
+//        usernameLabel = new JLabel("로그인 해주세요.");
+//        usernameLabel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",18f,Font.PLAIN));
+//        usernameLabel.setBounds(670, 55, 200, 20);
+//        usernameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+//        usernameLabel.setForeground(Color.BLACK);
+//        usernameLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+//        usernameLabel.addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//                openLoginPage();
+//            }
+//        });
+//        getContentPane().add(usernameLabel);
 
         JLabel logoP = new JLabel("P");
         logoP.setFont(JoinFrame.FontLoader.getFont("낭만있구미체", 35f, Font.BOLD));
@@ -92,58 +92,7 @@ public class MainpageFrame extends JFrame {
         logoText.setBounds(151, 135, 70, 40);
         contentPane.add(logoText);
 
-//        JLabel myplan = new JLabel("myplan");
-//        myplan.setBounds(700, 55, 100, 20);
-//        JLabel login = new JLabel("로그인");
-//        login.setBounds(762, 55, 100, 20);
-//        login.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//                openLoginPage(); // LoginFrame으로 이동
-//            }
-//        });
-//        contentPane.add(login);
-//
-//        JLabel join = new JLabel("회원가입");
-//        join.setBounds(814, 55, 100, 20);
-//        join.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//                openJoinPage();
-//            }
-//        });
-//
-//        contentPane.add(myplan);
-//        contentPane.add(login);
-//        contentPane.add(join);
 
-        JLabel myplan = new JLabel("myplan");
-        myplan.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
-        myplan.setForeground(Color.BLACK);
-        myplan.setBackground(Color.WHITE);
-        myplan.setOpaque(true);
-        myplan.setBounds(620, 47, 80, 30); // 크기와 위치 설정
-        myplan.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스를 올리면 커서 변경
-
-        myplan.setHorizontalAlignment(SwingConstants.CENTER); // 수평 중앙 정렬
-        myplan.setVerticalAlignment(SwingConstants.CENTER);   // 수직 중앙 정렬
-
-//        myplan.setBorder(new JoinFrame.RoundRectangleBorder(new Color(0, 0, 0, 0), 20, 20)); // 둥근 테두리 추가
-        myplan.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                myplan.setBackground(Color.LIGHT_GRAY); // 마우스 오버 시 배경색 변경
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                myplan.setBackground(Color.WHITE); // 마우스 나가면 배경색 원래대로
-            }
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                openLoginPage();
-            }
-        });
 
         JLabel login = new JLabel("로그인");
         login.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
@@ -199,9 +148,74 @@ public class MainpageFrame extends JFrame {
                 openJoinPage();
             }
         });
-//        contentPane.add(myplan);
 //        contentPane.add(login);
 //        contentPane.add(join);
+
+        JLabel myplan = new JLabel("myplan");
+        myplan.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
+        myplan.setForeground(Color.BLACK);
+        myplan.setBackground(Color.WHITE);
+        myplan.setOpaque(true);
+        myplan.setBounds(620, 47, 80, 30); // 크기와 위치 설정
+        myplan.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스를 올리면 커서 변경
+
+        myplan.setHorizontalAlignment(SwingConstants.CENTER); // 수평 중앙 정렬
+        myplan.setVerticalAlignment(SwingConstants.CENTER);   // 수직 중앙 정렬
+
+//        myplan.setBorder(new JoinFrame.RoundRectangleBorder(new Color(0, 0, 0, 0), 20, 20)); // 둥근 테두리 추가
+        myplan.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                myplan.setBackground(Color.LIGHT_GRAY); // 마우스 오버 시 배경색 변경
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                myplan.setBackground(Color.WHITE); // 마우스 나가면 배경색 원래대로
+            }
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                openMyplan();
+            }
+        });
+
+
+//        JLabel name = new JLabel("용강천사님");
+//        name.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",18f,Font.PLAIN));
+//        name.setBounds(870,55,100,20);
+//        name.setHorizontalAlignment(SwingConstants.RIGHT);
+//        name.setBackground(Color.WHITE);
+//        name.setForeground(Color.BLACK);
+//        name.setCursor(new Cursor(Cursor.HAND_CURSOR));
+//        contentPane.add(name);
+
+
+        JLabel name = new JLabel("yg1004");
+        name.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
+        name.setForeground(Color.decode("#436698"));
+        name.setBackground(Color.WHITE);
+        name.setOpaque(true); // 배경 색이 보이도록 설정
+        name.setBounds(711, 47, 80, 30); // 크기와 위치 설정
+        name.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스를 올리면 커서 변경
+
+        name.setHorizontalAlignment(SwingConstants.CENTER); // 수평 중앙 정렬
+        name.setVerticalAlignment(SwingConstants.CENTER);   // 수직 중앙 정렬
+
+
+        JLabel logout = new JLabel("로그아웃");
+        logout.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
+        logout.setForeground(Color.WHITE);
+        logout.setBackground(Color.BLACK);
+        logout.setOpaque(true); // 배경 색이 보이도록 설정
+        logout.setBounds(800, 47, 80, 30); // 크기와 위치 설정
+        logout.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스를 올리면 커서 변경
+
+        logout.setHorizontalAlignment(SwingConstants.CENTER);
+        logout.setVerticalAlignment(SwingConstants.CENTER);
+
+        contentPane.add(myplan);
+        contentPane.add(name);
+        contentPane.add(logout);
 
         // 검색 패널
         JPanel searchPanel = new JPanel();
@@ -329,6 +343,13 @@ public class MainpageFrame extends JFrame {
         SwingUtilities.invokeLater(() -> {
             JoinFrame joinFrame = ApplicationContextProvider.getContext().getBean(JoinFrame.class);
             joinFrame.setVisible(true);
+            dispose();
+        });
+    }
+    private void openMyplan() {
+        SwingUtilities.invokeLater(() -> {
+            UploadpageFrame uploadpageFrame = ApplicationContextProvider.getContext().getBean(UploadpageFrame.class);
+            uploadpageFrame.setVisible(true);
             dispose();
         });
     }

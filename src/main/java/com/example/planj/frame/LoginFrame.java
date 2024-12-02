@@ -176,8 +176,9 @@ public class LoginFrame extends JFrame {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                openMyPlan();
+                JOptionPane.showMessageDialog(null, "로그인하세요!", "알림", JOptionPane.INFORMATION_MESSAGE);
             }
+
         });
 
         JLabel login = new JLabel("로그인");

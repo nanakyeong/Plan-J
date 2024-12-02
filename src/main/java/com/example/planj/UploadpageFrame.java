@@ -119,10 +119,6 @@ public class UploadpageFrame extends JFrame {
             public void mouseExited(MouseEvent e) {
                 myplan.setBackground(Color.WHITE); // 마우스 나가면 배경색 원래대로
             }
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                openLoginPage();
-            }
         });
 
 
