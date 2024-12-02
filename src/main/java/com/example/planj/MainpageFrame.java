@@ -396,6 +396,7 @@ public class MainpageFrame extends JFrame {
         }
     }
 
+
     private void updateSigunguComboBoxMain() {
         String selectedAreaMain = (String) areaCodeComboBoxMain.getSelectedItem();
         if (selectedAreaMain == null || selectedAreaMain.equals("지역 선택")) return;
