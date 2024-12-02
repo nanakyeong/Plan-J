@@ -16,6 +16,7 @@ import javafx.scene.web.WebView;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -61,12 +62,16 @@ public class PlanwritepageFrame extends JFrame {
 
     public PlanwritepageFrame(PlanService planService) {
         this.planService = planService;
+        setBackground(Color.WHITE);
         initialize();
     }
+
 
     public void setCurrentPlan(Plan plan) {
         this.currentPlan = plan;
     }
+
+
     private void initialize() {
         setTitle("Plan J");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -74,76 +79,108 @@ public class PlanwritepageFrame extends JFrame {
 
         Container contentPane = getContentPane();
         contentPane.setLayout(null);
+        contentPane.setBackground(Color.WHITE);
 
-        JLabel name = new JLabel("용강천사님");
-        name.setFont(new Font("돋움", Font.BOLD, 14));
-        name.setBounds(870,55,100,20);
-        name.setHorizontalAlignment(SwingConstants.RIGHT);
-        name.setForeground(Color.BLACK);
-        name.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        contentPane.add(name);
 
-        JLabel logo1 = new JLabel("Plan J");
-        logo1.setFont(new Font("돋움", Font.BOLD, 35));
+        JLabel logo1 = new JLabel("<html><span style='color:#89AEBF;'>P</span>lan<span style='color:#436698;'> J</span></html>");
+        logo1.setFont(JoinFrame.FontLoader.getFont("낭만있구미체", 35f, Font.BOLD));
         logo1.setBounds(123, 135, 150, 30);
         contentPane.add(logo1);
 
-        JButton registerButton = new JButton("공유하기");
-        registerButton.setBounds(600, 160, 130, 20);
-        registerButton.setFont(new Font("돋움", Font.BOLD, 18));
+        logo1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                openMain();
+            }
+        });
+
+        RoundButton registerButton = new RoundButton("공유하기");
+        registerButton.setBounds(600, 160, 130, 30);
+        registerButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
         registerButton.setBackground(new Color(255, 255, 255));
+        registerButton.setForeground(Color.BLACK);
         registerButton.addActionListener(e -> onRegisterButtonClick());
         contentPane.add(registerButton);
 
-        JButton saveButton = new JButton("저장하기");
-        saveButton.setBounds(735, 160, 130, 20);
-        saveButton.setFont(new Font("돋움", Font.BOLD, 18));
+        RoundButton saveButton = new RoundButton("저장하기");
+        saveButton.setBounds(735, 160, 130, 30);
+        saveButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
         saveButton.setBackground(new Color(255, 255, 255));
+        saveButton.setForeground(Color.BLACK);
         contentPane.add(saveButton);
 
-        JButton updateButton = new JButton("수정하기");
-        updateButton.setBounds(600, 100, 130, 20);
-        updateButton.setFont(new Font("돋움", Font.BOLD, 18));
+        RoundButton updateButton = new RoundButton("수정하기");
+        updateButton.setBounds(600, 100, 130, 30);
+        updateButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
         updateButton.setBackground(new Color(255, 255, 255));
+        updateButton.setForeground(Color.BLACK);
         contentPane.add(updateButton);
         updateButton.addActionListener(e -> {
             enableEditing();
         });
 
-        JButton deleteButton = new JButton("삭제하기");
-        deleteButton.setBounds(735, 100, 130, 20);
-        deleteButton.setFont(new Font("돋움", Font.BOLD, 18));
+        RoundButton deleteButton = new RoundButton("삭제하기");
+        deleteButton.setBounds(735, 100, 130, 30);
+        deleteButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
         deleteButton.setBackground(new Color(255, 255, 255));
+        deleteButton.setForeground(Color.BLACK);
         contentPane.add(deleteButton);
         deleteButton.addActionListener(e -> deletePlan());
 
         JLabel myplan = new JLabel("myplan");
-        myplan.setBounds(700, 55, 100, 20);
+        myplan.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
+        myplan.setForeground(Color.BLACK);
+        myplan.setBackground(Color.WHITE);
+        myplan.setOpaque(true);
+        myplan.setBounds(620, 47, 80, 30); // 크기와 위치 설정
+        myplan.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스를 올리면 커서 변경
+
+        myplan.setHorizontalAlignment(SwingConstants.CENTER); // 수평 중앙 정렬
+        myplan.setVerticalAlignment(SwingConstants.CENTER);   // 수직 중앙 정렬
+
+//        myplan.setBorder(new JoinFrame.RoundRectangleBorder(new Color(0, 0, 0, 0), 20, 20)); // 둥근 테두리 추가
         myplan.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                openMyplanPage();
+            public void mouseEntered(MouseEvent e) {
+                myplan.setBackground(Color.LIGHT_GRAY); // 마우스 오버 시 배경색 변경
             }
-        });
-        JLabel login = new JLabel("로그아웃");
-        login.setBounds(762, 55, 100, 20);
-        login.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                myplan.setBackground(Color.WHITE); // 마우스 나가면 배경색 원래대로
+            }
             @Override
             public void mouseClicked(MouseEvent e) {
                 openLoginPage();
             }
         });
-        JLabel join = new JLabel("회원가입");
-        join.setBounds(814, 55, 100, 20);
-        join.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                openJoinPage();
-            }
-        });
+
+        JLabel name = new JLabel("yg1004");
+        name.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
+        name.setForeground(Color.decode("#436698"));
+        name.setBackground(Color.WHITE);
+        name.setOpaque(true); // 배경 색이 보이도록 설정
+        name.setBounds(711, 47, 80, 30); // 크기와 위치 설정
+        name.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스를 올리면 커서 변경
+
+        name.setHorizontalAlignment(SwingConstants.CENTER); // 수평 중앙 정렬
+        name.setVerticalAlignment(SwingConstants.CENTER);   // 수직 중앙 정렬
+
+
+        JLabel logout = new JLabel("로그아웃");
+        logout.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
+        logout.setForeground(Color.WHITE);
+        logout.setBackground(Color.BLACK);
+        logout.setOpaque(true); // 배경 색이 보이도록 설정
+        logout.setBounds(800, 47, 80, 30); // 크기와 위치 설정
+        logout.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스를 올리면 커서 변경
+
+        logout.setHorizontalAlignment(SwingConstants.CENTER);
+        logout.setVerticalAlignment(SwingConstants.CENTER);
+
         contentPane.add(myplan);
-        contentPane.add(login);
-        contentPane.add(join);
+        contentPane.add(name);
+        contentPane.add(logout);
 
         // Blocking panel 설정
         blockingPanel = new JPanel();
@@ -155,29 +192,36 @@ public class PlanwritepageFrame extends JFrame {
         contentPane.add(blockingPanel);
 
         JLabel title = new JLabel("제목 : ");
+        title.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 15f, Font.PLAIN));
         title.setBounds(138, 220, 210, 20);
+        title.setForeground(Color.BLACK);
         contentPane.add(title);
 
-        this.planTitle = new JTextField();
+        this.planTitle = new RoundTextField("");
         this.planTitle.setBounds(178, 220, 200, 23);
+        this.planTitle.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         contentPane.add(this.planTitle);
 
         Integer[] choices1 = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
         this.section1 = new JComboBox<>(choices1);
         this.section1.setBounds(395, 220, 50, 23);
         this.section1.setBackground(new Color(255, 255, 255));
+        this.section1.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         contentPane.add(this.section1);
 
         JLabel day1 = new JLabel("박");
+        day1.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         day1.setBounds(450, 220, 30, 20);
         contentPane.add(day1);
 
         this.section2 = new JComboBox<>();
         this.section2.setBounds(475, 220, 50, 23);
         this.section2.setBackground(new Color(255, 255, 255));
+        this.section2.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         contentPane.add(this.section2);
 
         JLabel day2 = new JLabel("일");
+        day2.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         day2.setBounds(530, 220, 30, 20);
         contentPane.add(day2);
 
@@ -186,10 +230,12 @@ public class PlanwritepageFrame extends JFrame {
         areaCodeComboBox.addActionListener(e -> updateSigunguComboBox());
         areaCodeComboBox.setBackground(new Color(255, 255, 255));
         contentPane.add(areaCodeComboBox);
+        areaCodeComboBox.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
 
         sigunguComboBox = new JComboBox<>();
         sigunguComboBox.setBounds(268, 250, 120, 23);
         sigunguComboBox.setBackground(new Color(255, 255, 255));
+        sigunguComboBox.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         contentPane.add(sigunguComboBox);
 
         populateAreaCodeComboBox();
@@ -197,20 +243,25 @@ public class PlanwritepageFrame extends JFrame {
         this.section1.addActionListener(e -> updateDays(section1, section2));
         this.section2.addActionListener(e -> updatePlanPanel(section2));
 
-        JButton addAccommodationButton = new JButton("숙소 추가");
+
+        RoundButton addAccommodationButton = new RoundButton("숙소 추가");
+        addAccommodationButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         addAccommodationButton.setBounds(425, 250, 100, 23);
         addAccommodationButton.setBackground(new Color(255, 255, 255));
+        addAccommodationButton.setForeground(Color.BLACK);
         addAccommodationButton.addActionListener(e -> openAccommodationPopup());
         contentPane.add(addAccommodationButton);
 
         this.planPanel = new JPanel();
         this.planPanel.setLayout(new BoxLayout(planPanel, BoxLayout.Y_AXIS));
         this.planPanel.setBackground(Color.WHITE);
+        this.planPanel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 13f, Font.PLAIN));
 
         JScrollPane scrollPane = new JScrollPane(planPanel);
         scrollPane.setBounds(138, 280, 408, 228);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         contentPane.add(scrollPane);
+        scrollPane.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 13f, Font.PLAIN));
 
         this.section1.setSelectedIndex(0);
 
@@ -219,6 +270,7 @@ public class PlanwritepageFrame extends JFrame {
         contentPane.add(myPanel);
 
         saveButton.addActionListener(e ->  {
+            setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 12f, Font.PLAIN));
             this.planService = ApplicationContextProvider.getContext().getBean(PlanService.class);
 
             // PlanDTO 객체 생성 및 데이터 설정
@@ -251,7 +303,6 @@ public class PlanwritepageFrame extends JFrame {
         });
         //setVisible(true);
     }
-
     private void openMyplanPage() {
         SwingUtilities.invokeLater(() -> {
             MainpageFrame mainpageFrame = ApplicationContextProvider.getContext().getBean(MainpageFrame.class);
@@ -364,7 +415,7 @@ public class PlanwritepageFrame extends JFrame {
                     String accommodation = accommodationsPerDayFromDTO.get(day);
                     if (accommodation != null) {
                         JLabel accommodationLabel = new JLabel("[숙소] " + accommodation);
-                        accommodationLabel.setFont(new Font("돋움", Font.BOLD, 12));
+                        accommodationLabel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.BOLD));
                         accommodationLabel.addMouseListener(new MouseAdapter() {
                             @Override
                             public void mouseClicked(MouseEvent e) {
@@ -392,6 +443,7 @@ public class PlanwritepageFrame extends JFrame {
     }
 
     private void updatePlan() {
+        setFont(JoinFrame.FontLoader.getFont("세종들꽃체",14f,Font.PLAIN));
         if (planDTO != null) {
             // 기본 정보 업데이트
             planDTO.setTitle(planTitle.getText());
@@ -452,6 +504,7 @@ public class PlanwritepageFrame extends JFrame {
     }
 
     public void addAccommodationToSchedule(String accommodationName, double latitude, double longitude) {
+        setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 13f, Font.PLAIN));
         if (accommodationName == null || accommodationName.isEmpty()) {
             accommodationName = "숙소 미지정";
             latitude = 0;
@@ -505,6 +558,7 @@ public class PlanwritepageFrame extends JFrame {
     }
 
     private void addDayPanel(JPanel planPanel, String dayText) {
+        setBackground(Color.WHITE);
         JPanel dayPanel = new JPanel();
         dayPanel.setLayout(new BoxLayout(dayPanel, BoxLayout.Y_AXIS));
         dayPanel.setBackground(Color.WHITE);
@@ -520,12 +574,13 @@ public class PlanwritepageFrame extends JFrame {
         labelPanel.setBackground(Color.WHITE);
 
         JLabel dayLabel = new JLabel(dayText);
-        dayLabel.setFont(new Font("돋움", Font.BOLD, 17));
+        dayLabel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 17f, Font.BOLD));
         dayLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
-        JButton optimizeButton = new JButton("경로최적화");
-        optimizeButton.setFont(new Font("돋움", Font.PLAIN, 12));
+        RoundButton optimizeButton = new RoundButton("경로최적화");
+        optimizeButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 13f, Font.PLAIN));
         optimizeButton.setForeground(Color.BLUE);
+        optimizeButton.setBackground(Color.WHITE);
         optimizeButton.setFocusPainted(false);
         optimizeButton.setContentAreaFilled(false);
         optimizeButton.setBorderPainted(false);
@@ -540,7 +595,7 @@ public class PlanwritepageFrame extends JFrame {
         dayPanel.add(labelPanel);
 
         JLabel topAccommodationLabel = new JLabel(accommodationName != null ? accommodationName : "숙소 미지정");
-        topAccommodationLabel.setFont(new Font("돋움", Font.PLAIN, 12));
+        topAccommodationLabel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 13f, Font.PLAIN));
         topAccommodationLabel.setForeground(Color.BLUE);
         topAccommodationLabel.setAlignmentX(LEFT_ALIGNMENT);
         topAccommodationLabel.setBorder(BorderFactory.createEmptyBorder(10, 15, 0, 0));
@@ -558,7 +613,7 @@ public class PlanwritepageFrame extends JFrame {
         });
 
         JButton addPlaceButton = new JButton("장소를 추가하려면 클릭하세요...");
-        addPlaceButton.setFont(new Font("돋움", Font.PLAIN, 12));
+        addPlaceButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 13f, Font.PLAIN));
         addPlaceButton.setForeground(Color.GRAY);
         addPlaceButton.setFocusPainted(false);
         addPlaceButton.setContentAreaFilled(false);
@@ -632,6 +687,7 @@ public class PlanwritepageFrame extends JFrame {
             java.awt.Component lastComponent = dayPanel.getComponent(dayPanel.getComponentCount() - 1);
             if (lastComponent instanceof JButton && ((JButton) lastComponent).getText().equals("장소를 추가하려면 클릭하세요...")) {
                 dayPanel.remove(lastComponent);
+                dayPanel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 12f, Font.PLAIN));
             }
         }
         String dayText = dayPanel.getName();
@@ -657,7 +713,7 @@ public class PlanwritepageFrame extends JFrame {
         placePanel.setMaximumSize(new Dimension(400, 30));
 
         JLabel placeLabel = new JLabel(placeName);
-        placeLabel.setFont(new Font("돋움", Font.PLAIN, 12));
+        placeLabel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 12f, Font.PLAIN));
         placeLabel.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 0));
         placeLabel.setAlignmentY(CENTER_ALIGNMENT);
         placeLabel.setPreferredSize(new Dimension(200, 20));
@@ -672,7 +728,7 @@ public class PlanwritepageFrame extends JFrame {
         });
 
         JButton upButton = new JButton("▲");
-        upButton.setFont(new Font("돋움", Font.PLAIN, 13));
+        upButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 13f, Font.PLAIN));
         upButton.setFocusPainted(false);
         upButton.setContentAreaFilled(false);
         upButton.setBorderPainted(false);
@@ -681,7 +737,7 @@ public class PlanwritepageFrame extends JFrame {
         upButton.addActionListener(e -> movePlaceContainerUp(dayPanel, combinedPanel));
 
         JButton downButton = new JButton("▼");
-        downButton.setFont(new Font("돋움", Font.PLAIN, 13));
+        downButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 13f, Font.PLAIN));
         downButton.setFocusPainted(false);
         downButton.setContentAreaFilled(false);
         downButton.setBorderPainted(false);
@@ -690,7 +746,7 @@ public class PlanwritepageFrame extends JFrame {
         downButton.addActionListener(e -> movePlaceContainerDown(dayPanel, combinedPanel));
 
         JButton deleteButton = new JButton("×");
-        deleteButton.setFont(new Font("돋움", Font.BOLD, 14));
+        deleteButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         deleteButton.setForeground(Color.RED);
         deleteButton.setFocusPainted(false);
         deleteButton.setContentAreaFilled(false);
@@ -714,7 +770,7 @@ public class PlanwritepageFrame extends JFrame {
         dayPanel.add(combinedPanel);
 
         JButton addPlaceButton = new JButton("장소를 추가하려면 클릭하세요...");
-        addPlaceButton.setFont(new Font("돋움", Font.PLAIN, 12));
+        addPlaceButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 13f, Font.PLAIN));
         addPlaceButton.setForeground(Color.GRAY);
         addPlaceButton.setFocusPainted(false);
         addPlaceButton.setContentAreaFilled(false);
@@ -726,6 +782,14 @@ public class PlanwritepageFrame extends JFrame {
 
         dayPanel.revalidate();
         dayPanel.repaint();
+    }
+
+    private void openMain() {
+        SwingUtilities.invokeLater(() -> {
+            MainpageFrame mainpageFrame = ApplicationContextProvider.getContext().getBean(MainpageFrame.class);
+            mainpageFrame.setVisible(true);
+            dispose();
+        });
     }
 
     private void movePlaceContainerUp(JPanel dayPanel, JPanel placeContainerPanel) {
@@ -753,6 +817,10 @@ public class PlanwritepageFrame extends JFrame {
         private WebEngine webEngine;
 
         public MyPanel() {
+
+            setOpaque(true);
+            setBackground(Color.WHITE);
+
             setLayout(null);
 
             jfxPanel = new JFXPanel();
@@ -781,22 +849,22 @@ public class PlanwritepageFrame extends JFrame {
                 }
             });
         }
-
         @Override
         protected void paintComponent(Graphics g) {
+
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
 
-            g2.setStroke(new BasicStroke(2));
-            g2.setColor(Color.black);
-            g2.drawLine(123, 85, 866, 85);
+            g2.setColor(Color.BLACK);
+            g2.setStroke(new BasicStroke(4));
+            g2.drawLine(120, 80, 880, 80);
 
             g2.setStroke(new BasicStroke(1));
             g2.setColor(Color.gray);
+            g2.setBackground(Color.WHITE);
             g2.drawRect(123, 200, 743, 330);
             g2.drawRect(565, 220, 285, 290);
         }
-
     }
 
     private JSONObject searchPlaceByKeyword(PlanwritepageFrame parentFrame, String keyword) {
@@ -883,6 +951,7 @@ public class PlanwritepageFrame extends JFrame {
     }
 
     private void updateSigunguComboBox() {
+        setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
         String selectedArea = (String) areaCodeComboBox.getSelectedItem();
         if (selectedArea == null || selectedArea.equals("지역 선택")) return;
 
@@ -943,5 +1012,12 @@ public class PlanwritepageFrame extends JFrame {
         }
         String sigunguCode = String.valueOf(sigunguCodeMap.getOrDefault(selectedSigungu, 0));
         return sigunguCode;
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            UIManager.put("OptionPane.background", Color.WHITE); // OptionPane 자체 배경색
+            UIManager.put("Panel.background", Color.WHITE);
+        });
     }
 }

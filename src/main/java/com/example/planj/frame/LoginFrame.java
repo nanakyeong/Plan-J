@@ -31,35 +31,6 @@ public class LoginFrame extends JFrame {
     private JLabel loginLabel;
     private BufferedImage backgroundImage;
 
-    public class FontLoader {
-        private static final Map<String, Font> fontRegistry = new HashMap<>();
-
-        // 폰트를 로드하여 등록하는 메서드
-        public static void loadCustomFont(String fontPath, String fontName) {
-            try {
-                File fontFile = new File(fontPath);
-                Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontFile);
-                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-                ge.registerFont(customFont); // 시스템에 등록
-                fontRegistry.put(fontName, customFont); // 폰트를 Map에 저장
-                System.out.println("폰트 로드 성공: " + fontName + " (" + fontPath + ")");
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("폰트 로드 실패: " + fontName + " (" + fontPath + ")");
-            }
-        }
-
-        // 저장된 폰트를 가져오는 메서드
-        public static Font getFont(String fontName, float size, int style) {
-            Font font = fontRegistry.get(fontName);
-            if (font != null) {
-                return font.deriveFont(style, size);
-            }
-            System.out.println("등록되지 않은 폰트: " + fontName);
-            return new Font("Default", style, Math.round(size)); // 대체 폰트 반환
-        }
-    }
-
     public LoginFrame() {
 
         Container contentPane = getContentPane();
@@ -75,6 +46,7 @@ public class LoginFrame extends JFrame {
         layeredPane.setBounds(0, 0, getWidth(), getHeight());
         setContentPane(layeredPane);
 
+        // 배경 이미지 로드
         try {
             backgroundImage = ImageIO.read(new File("C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\img\\배경.png"));
         } catch (Exception e) {
@@ -82,6 +54,7 @@ public class LoginFrame extends JFrame {
             System.out.println("배경 이미지를 로드할 수 없습니다.");
         }
 
+        // 배경 이미지를 설정하는 커스텀 패널
         JPanel backgroundPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -473,6 +446,10 @@ public class LoginFrame extends JFrame {
     }
 
     class MyPanel extends JPanel {
+        public MyPanel() {
+            setOpaque(true); // 패널을 불투명하게 설정
+            setBackground(Color.WHITE); // 배경색을 명시적으로 설정
+        }
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
@@ -486,25 +463,10 @@ public class LoginFrame extends JFrame {
 
 
     public static void main(String[] args) {
-
-        SwingUtilities.invokeLater(() -> {
-            // 폰트 로드
-            JoinFrame.FontLoader.loadCustomFont(
-                    "C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\font\\Gumi Romance.ttf",
-                    "낭만있구미체"
-            );
-            JoinFrame.FontLoader.loadCustomFont(
-                    "C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\font\\Rix X ladywatermelon OTF Regular.otf",
-                    "Rix X Lady Watermelon"
-            );
-            JoinFrame.FontLoader.loadCustomFont(
-                    "C:\\Users\\Owner\\Desktop\\workspace\\java\\Plan-J\\src\\main\\java\\com\\example\\planj\\font\\SejongGeulggot.otf",
-                    "세종글꽃체"
-            );
-
-            UIManager.put("OptionPane.background", Color.WHITE); // OptionPane 자체 배경색
-            UIManager.put("Panel.background", Color.WHITE);
-            new LoginFrame();
-        });
+        UIManager.put("OptionPane.background", Color.WHITE); // OptionPane 자체 배경색
+        UIManager.put("Panel.background", Color.WHITE);
+        SwingUtilities.invokeLater(() -> new LoginFrame());
     }
 }
+
+
