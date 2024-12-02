@@ -480,33 +480,32 @@ public class MainpageFrame extends JFrame {
     private void updatePlanButtonsForSearch(String region, String district, String placeKeyword) {
         List<PlanDTO> plans = planService.getIsRegisteredTrue();
 
-        // 아무 검색 조건도 입력되지 않은 경우
+        // 검색 조건이 없는 경우 전체 버튼 초기화
         if ((region == null || region.equals("지역 선택")) &&
                 (district == null || district.equals("시군구 선택")) &&
                 (placeKeyword == null || placeKeyword.isEmpty())) {
             updatePlanButtons(); // 기존 모든 계획 표시
             return;
         }
-        // 결과를 담을 리스트
+
+        // 검색 결과 저장
         List<PlanDTO> searchResults = new ArrayList<>();
 
-        // 1순위: 검색한 장소가 포함된 계획 (코사인 유사도 적용)
-        if (placeKeyword != null) {
+        // 검색 키워드로 필터링
+        if (placeKeyword != null && !placeKeyword.isEmpty()) {
             for (PlanDTO plan : plans) {
                 double maxSimilarity = plan.getPlacesPerDay().values().stream()
                         .flatMap(List::stream)
                         .mapToDouble(place -> calculateCosineSimilarity(placeKeyword, place))
                         .max().orElse(0.0);
-
-                // 임계값(예: 0.5) 이상의 유사도를 가진 계획만 추가
                 if (maxSimilarity >= 0.5) {
                     searchResults.add(plan);
                 }
             }
         }
 
-        // 2순위: 검색한 장소 근처에 있는 같은 지역 내 계획
-        if (district != null) {
+        // 시군구 조건으로 필터링
+        if (district != null && !district.equals("시군구 선택")) {
             for (PlanDTO plan : plans) {
                 if (district.equals(plan.getDistrict()) && !searchResults.contains(plan)) {
                     searchResults.add(plan);
@@ -514,8 +513,8 @@ public class MainpageFrame extends JFrame {
             }
         }
 
-        // 3순위: 같은 지역의 계획
-        if (region != null) {
+        // 지역 조건으로 필터링
+        if (region != null && !region.equals("지역 선택")) {
             for (PlanDTO plan : plans) {
                 if (region.equals(plan.getRegion()) && !searchResults.contains(plan)) {
                     searchResults.add(plan);
@@ -523,56 +522,62 @@ public class MainpageFrame extends JFrame {
             }
         }
 
-        // 1순위 결과를 유사도 기준으로 정렬
-        if (placeKeyword != null) {
+        // 검색 결과를 정렬
+        if (placeKeyword != null && !placeKeyword.isEmpty()) {
             searchResults.sort((plan1, plan2) -> {
                 double maxSim1 = plan1.getPlacesPerDay().values().stream()
                         .flatMap(List::stream)
                         .mapToDouble(place -> calculateCosineSimilarity(placeKeyword, place))
                         .max().orElse(0.0);
-
                 double maxSim2 = plan2.getPlacesPerDay().values().stream()
                         .flatMap(List::stream)
                         .mapToDouble(place -> calculateCosineSimilarity(placeKeyword, place))
                         .max().orElse(0.0);
-
-                return Double.compare(maxSim2, maxSim1); // 높은 유사도 우선
+                return Double.compare(maxSim2, maxSim1); // 유사도 높은 순
             });
         }
 
-        // 최대 8개만 버튼에 표시
-        int maxButtons = Math.min(searchResults.size(), planButtons.length);
-        for (int i = 0; i < maxButtons; i++) {
+        // 기존 버튼 및 라벨 초기화
+        for (int i = 0; i < planButtons.length; i++) {
+            planButtons[i].setVisible(false);
+            planLabels[i].setVisible(false);
+        }
+
+        // 검색 결과에 따라 버튼 및 라벨 업데이트
+        for (int i = 0; i < searchResults.size(); i++) {
             PlanDTO plan = searchResults.get(i);
             JButton planButton = planButtons[i];
-            planButton.setText(plan.getTitle());
+            JLabel planLabel = planLabels[i];
+
+            // 버튼 업데이트
+            planButton.setText(plan.getRegion());
             planButton.setVisible(true);
+            planButton.removeActionListener(planButton.getActionListeners()[0]); // 기존 액션 리스너 제거
+            planButton.addActionListener(e -> openPlan(plan)); // 새 액션 리스너 추가
 
-            // 버튼 클릭 시 계획 열기
-            planButton.addActionListener(e -> openPlan(plan));
+            // 라벨 업데이트
+            planLabel.setText(plan.getTitle());
+            planLabel.setVisible(true);
         }
 
-        // 나머지 버튼 숨기기
-        for (int i = searchResults.size(); i < planButtons.length; i++) {
-            planButtons[i].setVisible(false);
-        }
+        // 패널 다시 그리기
+        revalidate();
+        repaint();
     }
+
 
     private double calculateCosineSimilarity(String text1, String text2) {
         Map<Character, Integer> freqMap1 = getFrequencyMap(text1);
         Map<Character, Integer> freqMap2 = getFrequencyMap(text2);
 
-        // 벡터 내적
         double dotProduct = freqMap1.keySet().stream()
                 .filter(freqMap2::containsKey)
                 .mapToDouble(c -> freqMap1.get(c) * freqMap2.get(c))
                 .sum();
 
-        // 벡터 크기 계산
         double magnitude1 = Math.sqrt(freqMap1.values().stream().mapToDouble(v -> v * v).sum());
         double magnitude2 = Math.sqrt(freqMap2.values().stream().mapToDouble(v -> v * v).sum());
 
-        // 코사인 유사도 계산
         return (magnitude1 > 0 && magnitude2 > 0) ? (dotProduct / (magnitude1 * magnitude2)) : 0.0;
     }
 
