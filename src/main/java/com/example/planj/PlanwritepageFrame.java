@@ -400,11 +400,14 @@ public class PlanwritepageFrame extends JFrame {
             if (placesPerDay != null) {
                 placesPerDay.forEach((day, places) -> {
                     JLabel dayLabel = new JLabel(day);
+                    dayLabel.setFont(JoinFrame.FontLoader.getFont("세종들꽃체",14f,Font.PLAIN));
                     planPanel.add(dayLabel);
+
 
                     if (places != null) {
                         for (String place : places) {
                             JLabel placeLabel = new JLabel("- " + place);
+                            placeLabel.setFont(JoinFrame.FontLoader.getFont("세종들꽃체",14f,Font.PLAIN));
 
                             // **마우스 클릭 이벤트 추가**
                             placeLabel.addMouseListener(new MouseAdapter() {
@@ -429,7 +432,7 @@ public class PlanwritepageFrame extends JFrame {
                     String accommodation = accommodationsPerDayFromDTO.get(day);
                     if (accommodation != null) {
                         JLabel accommodationLabel = new JLabel("[숙소] " + accommodation);
-                        accommodationLabel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.BOLD));
+                        accommodationLabel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 14f, Font.PLAIN));
                         accommodationLabel.addMouseListener(new MouseAdapter() {
                             @Override
                             public void mouseClicked(MouseEvent e) {
