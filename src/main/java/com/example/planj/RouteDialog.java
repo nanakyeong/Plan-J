@@ -175,19 +175,14 @@ public class RouteDialog extends JFrame {
     private List<LocationData> optimizeRoute(List<LocationData> locations) {
         List<LocationData> optimizedOrder = new ArrayList<>();
         boolean[] visited = new boolean[locations.size()];
-
         LocationData startAccommodation = locations.get(0);
         LocationData endAccommodation = locations.get(locations.size() - 1);
-
         optimizedOrder.add(startAccommodation);
         visited[0] = true;
-
         LocationData currentLocation = startAccommodation;
-
         for (int i = 1; i < locations.size() - 1; i++) {
             double minDistance = Double.MAX_VALUE;
             int nextIndex = -1;
-
             for (int j = 1; j < locations.size() - 1; j++) {
                 if (!visited[j]) {
                     double distance = calculateDistance(currentLocation.coordinates, locations.get(j).coordinates);
@@ -197,16 +192,13 @@ public class RouteDialog extends JFrame {
                     }
                 }
             }
-
             if (nextIndex != -1) {
                 visited[nextIndex] = true;
                 optimizedOrder.add(locations.get(nextIndex));
                 currentLocation = locations.get(nextIndex);
             }
         }
-
         optimizedOrder.add(endAccommodation);
-
         return optimizedOrder;
     }
 

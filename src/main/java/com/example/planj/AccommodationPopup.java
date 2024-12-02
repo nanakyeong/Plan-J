@@ -6,6 +6,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import com.example.planj.frame.JoinFrame;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import javafx.application.Platform;
@@ -53,8 +55,16 @@ public class AccommodationPopup extends JDialog {
         add(mainPanel, BorderLayout.CENTER);
 
         JPanel bottomPanel = new JPanel();
+        bottomPanel.setBackground(new Color(255, 255, 255));
         JButton addButton = new JButton("추가");
+        addButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
+        addButton.setBackground(new Color(255, 255, 255));
+        addButton.setForeground(Color.BLACK);
+
         JButton closeButton = new JButton("닫기");
+        closeButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
+        closeButton.setBackground(new Color(255, 255, 255));
+        closeButton.setForeground(Color.BLACK);
 
         addButton.addActionListener(e -> {
             selectedAccommodation = getSelectedAccommodation();

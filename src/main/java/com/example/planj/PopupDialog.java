@@ -8,6 +8,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.example.planj.frame.JoinFrame;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import javafx.application.Platform;
@@ -47,9 +49,21 @@ public class PopupDialog extends JDialog {
         add(rightPanel, BorderLayout.EAST);
 
         JPanel topPanel = new JPanel(new GridLayout(1, 3));
+
         JButton sightseeingButton = new JButton("관광지");
+        sightseeingButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
+        sightseeingButton.setBackground(new Color(255, 255, 255));
+        sightseeingButton.setForeground(Color.BLACK);
+
         JButton foodButton = new JButton("음식점");
+        foodButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
+        foodButton.setBackground(new Color(255, 255, 255));
+        foodButton.setForeground(Color.BLACK);
+
         JButton cafeButton = new JButton("카페");
+        cafeButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
+        cafeButton.setBackground(new Color(255, 255, 255));
+        cafeButton.setForeground(Color.BLACK);
 
         topPanel.add(sightseeingButton);
         topPanel.add(foodButton);
@@ -72,8 +86,17 @@ public class PopupDialog extends JDialog {
         cafeButton.addActionListener(e -> loadCategoryData(mainPanel, "카페", cafePanel, "39", "A05", "A0502", "A05020900"));
 
         JPanel bottomPanel = new JPanel();
+        bottomPanel.setBackground(new Color(255, 255, 255));
+
         JButton addButton = new JButton("추가");
+        addButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
+        addButton.setBackground(new Color(255, 255, 255));
+        addButton.setForeground(Color.BLACK);
+
         JButton closeButton = new JButton("닫기");
+        closeButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
+        closeButton.setBackground(new Color(255, 255, 255));
+        closeButton.setForeground(Color.BLACK);
 
         addButton.addActionListener(e -> {
             selectedPlace = getSelectedPlace();
@@ -99,9 +122,24 @@ public class PopupDialog extends JDialog {
         foodDialog.setLayout(new GridLayout(4, 1));
 
         JButton koreanFoodButton = new JButton("한식");
+        koreanFoodButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
+        koreanFoodButton.setBackground(new Color(255, 255, 255));
+        koreanFoodButton.setForeground(Color.BLACK);
+
         JButton westernFoodButton = new JButton("서양식");
+        westernFoodButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
+        westernFoodButton.setBackground(new Color(255, 255, 255));
+        westernFoodButton.setForeground(Color.BLACK);
+
         JButton japaneseFoodButton = new JButton("일식");
+        japaneseFoodButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
+        japaneseFoodButton.setBackground(new Color(255, 255, 255));
+        japaneseFoodButton.setForeground(Color.BLACK);
+
         JButton chineseFoodButton = new JButton("중식");
+        chineseFoodButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
+        chineseFoodButton.setBackground(new Color(255, 255, 255));
+        chineseFoodButton.setForeground(Color.BLACK);
 
         koreanFoodButton.addActionListener(e -> {
             loadCategoryData(mainPanel, "음식점", foodPanel, "39", "A05", "A0502", "A05020100");
