@@ -79,10 +79,22 @@ public class LoginFrame extends JFrame {
 
         contentPanel.setBackground(Color.WHITE);
 
-        JLabel logo1 = new JLabel("<html><span style='color:#89AEBF;'>P</span>lan<span style='color:#436698;'> J</span></html>");
-        logo1.setFont(JoinFrame.FontLoader.getFont("낭만있구미체", 35f, Font.BOLD));
-        contentPanel.add(logo1);
-        logo1.setBounds(440, 120, 150, 40);
+        JLabel logoP = new JLabel("P");
+        logoP.setFont(JoinFrame.FontLoader.getFont("낭만있구미체", 35f, Font.BOLD));
+        logoP.setForeground(new Color(0x89AEBF));
+        logoP.setBounds(440, 120, 30, 40);
+        contentPanel.add(logoP);
+
+        JLabel logoJ = new JLabel("J");
+        logoJ.setFont(JoinFrame.FontLoader.getFont("낭만있구미체", 35f, Font.BOLD));
+        logoJ.setForeground(new Color(0x436698));
+        logoJ.setBounds(540, 120, 30, 40);
+        contentPanel.add(logoJ);
+
+        JLabel logoText = new JLabel("lan");
+        logoText.setFont(JoinFrame.FontLoader.getFont("낭만있구미체", 35f, Font.BOLD));
+        logoText.setBounds(468, 120, 70, 40);
+        contentPanel.add(logoText);
 
         JLabel logo2 = new JLabel("로그인");
         logo2.setFont(JoinFrame.FontLoader.getFont("낭만있구미체", 17f, Font.PLAIN));

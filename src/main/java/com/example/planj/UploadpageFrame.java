@@ -49,12 +49,24 @@ public class UploadpageFrame extends JFrame {
         contentPane.setBackground(Color.WHITE);
 
 
-        JLabel logo1 = new JLabel("<html><span style='color:#89AEBF;'>P</span>lan<span style='color:#436698;'> J</span></html>");
-        logo1.setFont(JoinFrame.FontLoader.getFont("낭만있구미체", 35f, Font.BOLD));
-        logo1.setBounds(123, 135, 150, 30);
-        contentPane.add(logo1);
+        JLabel logoP = new JLabel("P");
+        logoP.setFont(JoinFrame.FontLoader.getFont("낭만있구미체", 35f, Font.BOLD));
+        logoP.setForeground(new Color(0x89AEBF));
+        logoP.setBounds(123, 135, 30, 40);
+        contentPane.add(logoP);
 
-        logo1.addMouseListener(new MouseAdapter() {
+        JLabel logoJ = new JLabel("J");
+        logoJ.setFont(JoinFrame.FontLoader.getFont("낭만있구미체", 35f, Font.BOLD));
+        logoJ.setForeground(new Color(0x436698));
+        logoJ.setBounds(217, 135, 30, 40);
+        contentPane.add(logoJ);
+
+        JLabel logoText = new JLabel("lan");
+        logoText.setFont(JoinFrame.FontLoader.getFont("낭만있구미체", 35f, Font.BOLD));
+        logoText.setBounds(151, 135, 70, 40);
+        contentPane.add(logoText);
+
+        logoText.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 openMain();
