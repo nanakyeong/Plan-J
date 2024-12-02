@@ -1,4 +1,3 @@
-
 package com.example.planj;
 
 import javafx.application.Platform;
@@ -21,6 +20,7 @@ import java.util.List;
 public class RouteDialog extends JFrame {
     private static final String API_KEY = "74c57db65fbd1377d25b3f8093772aaa";
     private List<LocationData> locations;
+    private String currentPriority = "RECOMMEND"; // 기본 경로 옵션
 
     public RouteDialog(List<double[]> coords, List<String> names) {
         this.locations = createLocationDataList(coords, names);
@@ -30,6 +30,18 @@ public class RouteDialog extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
+        // 경로 옵션 드롭다운 추가
+        JPanel controlPanel = new JPanel(new BorderLayout());
+        controlPanel.setBackground(new Color(255, 255, 255));
+        String[] options = {"추천 경로 (RECOMMEND)", "최단 시간 (TIME)", "최단 거리 (DISTANCE)"};
+        JComboBox<String> priorityDropdown = new JComboBox<>(options);
+        priorityDropdown.setBackground(new Color(255, 255, 255));
+        priorityDropdown.setSelectedIndex(0); // 기본값: 최단 시간
+        controlPanel.add(new JLabel("경로 옵션: "), BorderLayout.WEST);
+        controlPanel.add(priorityDropdown, BorderLayout.CENTER);
+        add(controlPanel, BorderLayout.NORTH);
+
+        // 장소 리스트 표시 패널
         JPanel placeListPanel = new JPanel(new BorderLayout());
         placeListPanel.setPreferredSize(new Dimension(200, 600));
         placeListPanel.setBackground(Color.WHITE);
@@ -42,6 +54,7 @@ public class RouteDialog extends JFrame {
         JScrollPane scrollPane = new JScrollPane(placeListTextArea);
         placeListPanel.add(scrollPane, BorderLayout.CENTER);
 
+        // 요약 정보 패널
         JPanel summaryPanel = new JPanel(new GridLayout(2, 1));
         summaryPanel.setPreferredSize(new Dimension(800, 50));
         summaryPanel.setBackground(Color.WHITE);
@@ -52,6 +65,7 @@ public class RouteDialog extends JFrame {
         summaryPanel.add(timeLabel);
         add(summaryPanel, BorderLayout.SOUTH);
 
+        // 최적화된 경로 계산 및 UI 업데이트
         List<LocationData> optimizedOrder = optimizeRoute(locations);
 
         placeListTextArea.setText("");
@@ -61,15 +75,36 @@ public class RouteDialog extends JFrame {
 
         add(placeListPanel, BorderLayout.WEST);
 
+        // JavaFX WebView 패널
         JFXPanel fxPanel = new JFXPanel();
         add(fxPanel, BorderLayout.CENTER);
 
+        // 경로 옵션 변경 이벤트 처리
+        priorityDropdown.addActionListener(e -> {
+            String selectedOption = (String) priorityDropdown.getSelectedItem();
+            if (selectedOption.contains("RECOMMEND")) {
+                currentPriority = "RECOMMEND";
+            } else if (selectedOption.contains("DISTANCE")) {
+                currentPriority = "DISTANCE";
+            } else {
+                currentPriority = "TIME";
+            }
+            // 새로운 경로 계산 및 업데이트
+            updateRoute(fxPanel, optimizedOrder, placeListTextArea, distanceLabel, timeLabel);
+        });
+
+        // 초기 경로 로드
+        updateRoute(fxPanel, optimizedOrder, placeListTextArea, distanceLabel, timeLabel);
+    }
+
+    private void updateRoute(JFXPanel fxPanel, List<LocationData> optimizedOrder,
+                             JTextArea placeListTextArea, JLabel distanceLabel, JLabel timeLabel) {
         Platform.runLater(() -> {
             WebView webView = new WebView();
             WebEngine webEngine = webView.getEngine();
             webEngine.load(getClass().getResource("/Routemap.html").toExternalForm());
 
-            JSONArray optimizedPaths = getOptimizedRoute(optimizedOrder);
+            JSONArray optimizedPaths = getOptimizedRoute(optimizedOrder, currentPriority);
             JSONArray markers = new JSONArray();
             double[] centerCoordinates = calculateCenter(optimizedOrder);
 
@@ -120,7 +155,7 @@ public class RouteDialog extends JFrame {
         return new double[]{centerX, centerY};
     }
 
-    private JSONArray getOptimizedRoute(List<LocationData> optimizedOrder) {
+    private JSONArray getOptimizedRoute(List<LocationData> optimizedOrder, String priority) {
         JSONArray pathSegments = new JSONArray();
 
         for (int i = 0; i < optimizedOrder.size() - 1; i++) {
@@ -129,8 +164,8 @@ public class RouteDialog extends JFrame {
 
             try {
                 String urlString = String.format(
-                        "https://apis-navi.kakaomobility.com/v1/directions?origin=%f,%f&destination=%f,%f&priority=RECOMMEND",
-                        start[0], start[1], end[0], end[1]
+                        "https://apis-navi.kakaomobility.com/v1/directions?origin=%f,%f&destination=%f,%f&priority=%s",
+                        start[0], start[1], end[0], end[1], priority
                 );
 
                 URL url = new URL(urlString);

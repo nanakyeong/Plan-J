@@ -30,6 +30,9 @@
     };
     var map = new kakao.maps.Map(mapContainer, mapOption);
 
+    // 항상 교통량 정보 표시
+    map.addOverlayMapTypeId(kakao.maps.MapTypeId.TRAFFIC);
+
     function addMarker(position, title, index) {
         var imageSrc = `https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png`;
         var imageSize = new kakao.maps.Size(36, 37);
