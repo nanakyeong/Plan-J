@@ -213,21 +213,33 @@ public class MainpageFrame extends JFrame {
         areaCodeComboBoxMain = new JComboBox<>();
         areaCodeComboBoxMain.setBounds(0, 0, 120, 22);
         areaCodeComboBoxMain.addActionListener(e -> updateSigunguComboBoxMain());
+        areaCodeComboBoxMain.setBackground(Color.WHITE);
+        areaCodeComboBoxMain.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",14f,Font.PLAIN));
         searchPanel.add(areaCodeComboBoxMain);
         populateAreaCodeComboBoxMain();
 
         // 시군구 드롭박스
         sigunguComboBoxMain = new JComboBox<>();
         sigunguComboBoxMain.setBounds(125, 0, 120, 22);
+        sigunguComboBoxMain.setBackground(Color.WHITE);
+        sigunguComboBoxMain.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",14f,Font.PLAIN));
+
         searchPanel.add(sigunguComboBoxMain);
 
         // 검색 텍스트 필드
-        search_plan = new JTextField();
+        search_plan = new RoundTextField("");
         search_plan.setBounds(250, 0, 160, 22);
+        search_plan.setBackground(Color.WHITE);
+        search_plan.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",14f,Font.PLAIN));
+        search_plan.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10)); // 위, 왼쪽, 아래, 오른쪽 여백 설정
+
         searchPanel.add(search_plan);
+
+        searchPanel.setBackground(Color.WHITE);
 
         // 검색 아이콘
         JLabel searchIcon = new JLabel("🔍");
+        searchIcon.setBackground(Color.WHITE);
         searchIcon.setBounds(415, 0, 30, 22);
         searchIcon.setHorizontalAlignment(SwingConstants.CENTER);
         searchIcon.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1)); // 회색 1픽셀 테두리

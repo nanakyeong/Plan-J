@@ -18,6 +18,8 @@ public class RoundTextField extends JTextField {
         setBorder(BorderFactory.createEmptyBorder());
         setForeground(Color.GRAY);
         setText(placeholder);
+        this.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10)); // 위, 왼쪽, 아래, 오른쪽 여백 설정
+
         isPlaceholder = true;
 
         addFocusListener(new FocusAdapter() {
