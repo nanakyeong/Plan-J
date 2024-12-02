@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 @Component
 public class MainpageFrame extends JFrame {
     private final PlanService planService;
-    private final JButton[] planButtons = new JButton[7];
-    private final JLabel[] planLabels = new JLabel[7];
+    private final JButton[] planButtons = new JButton[100];
+    private final JLabel[] planLabels = new JLabel[100];
     private JLabel usernameLabel; // 사용자 이름을 표시할 라벨
 
     @Autowired private UploadpageFrame uploadFrame;
@@ -270,28 +270,23 @@ public class MainpageFrame extends JFrame {
             }
         });
 
-        RoundButton btn_newplan = new RoundButton("+");
-        btn_newplan.setBounds(123, 230, 120, 120);
-        btn_newplan.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",20f,Font.BOLD));
-        JLabel newplan = new JLabel("plan 업로드");
-        newplan.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",15f,Font.PLAIN));
-        newplan.setBounds(143, 350, 100, 20);
-        btn_newplan.setBackground(Color.decode("#e7e7e7"));
-        btn_newplan.setForeground(Color.BLACK);
-        contentPane.add(btn_newplan);
-        contentPane.add(newplan);
+        JPanel planPanel = new JPanel();
+        planPanel.setLayout(null);
+        planPanel.setPreferredSize(new Dimension(1000, 600));
+        planPanel.setBackground(Color.WHITE);
 
-        btn_newplan.addActionListener(e -> {
-            SwingUtilities.invokeLater(() -> {
-                //UploadpageFrame uploadFrame = ApplicationContextProvider.getContext().getBean(UploadpageFrame.class);
-                this.uploadFrame.setVisible(true);
-                dispose();
-            });
-        });
+        JScrollPane scrollPane = new JScrollPane(planPanel);
+        scrollPane.setBounds(10, 230, 970, 320);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setBorder(null);
+        contentPane.add(scrollPane);
 
-        contentPane.add(btn_newplan);
+        createPlanButtons(planPanel);
+        plusButton(planPanel);
+        updatePlanButtons();
 
-        createPlanButtons(contentPane);
+        //createPlanButtons(contentPane);
         updatePlanButtons();
 
         MyPanel panel1 = new MyPanel();
@@ -338,10 +333,31 @@ public class MainpageFrame extends JFrame {
         });
     }
 
+    private void plusButton(Container contentPane) {
+        RoundButton btn_newplan = new RoundButton("+");
+        btn_newplan.setBounds(123, 0, 120, 120);
+        btn_newplan.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",20f,Font.BOLD));
+        JLabel newplan = new JLabel("plan 업로드");
+        newplan.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",15f,Font.PLAIN));
+        newplan.setBounds(143, 120, 100, 20);
+        btn_newplan.setBackground(Color.decode("#e7e7e7"));
+        btn_newplan.setForeground(Color.BLACK);
+        contentPane.add(btn_newplan);
+        contentPane.add(newplan);
+
+        btn_newplan.addActionListener(e -> {
+            SwingUtilities.invokeLater(() -> {
+                //UploadpageFrame uploadFrame = ApplicationContextProvider.getContext().getBean(UploadpageFrame.class);
+                this.uploadFrame.setVisible(true);
+                dispose();
+            });
+        });
+    }
+
     private void createPlanButtons(Container contentPane) {
         for (int i = 0; i < planButtons.length; i++) {
             RoundButton planButton = new RoundButton("");
-            planButton.setBounds(123 + (((i+1) % 4) * 210), 230 + (((i+1) / 4) * 170), 120, 120);
+            planButton.setBounds(123 + (((i+1) % 4) * 210), ((i+1) / 4) * 170, 120, 120);
             planButton.setBackground(Color.WHITE);
             planButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",15f,Font.PLAIN));
             planButton.setForeground(Color.BLACK);
@@ -350,7 +366,7 @@ public class MainpageFrame extends JFrame {
             planButtons[i] = planButton;
 
             JLabel planLabel = new JLabel();
-            planLabel.setBounds(123 + (((i+1) % 4) * 210), 350 + (((i+1) / 4) * 170), 120, 20);
+            planLabel.setBounds(123 + (((i+1) % 4) * 210), 120 + (((i+1) / 4) * 170), 120, 20);
             planLabel.setHorizontalAlignment(SwingConstants.CENTER);
             planButton.setBackground(Color.WHITE);
             planButton.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",15f,Font.PLAIN));
@@ -365,7 +381,6 @@ public class MainpageFrame extends JFrame {
     private void updatePlanButtons() {
         List<PlanDTO> plans = planService.getIsRegisteredTrue();
 
-        // 반복문에서 유효한 버튼 수를 초과하지 않도록 설정
         int maxButtons = Math.min(plans.size(), planButtons.length);
         for (int i = 0; i < maxButtons; i++) {
             PlanDTO plan = plans.get(i);
@@ -378,13 +393,7 @@ public class MainpageFrame extends JFrame {
             planButton.setVisible(true);
             planLabel.setVisible(true);
 
-            // 버튼 클릭 시 계획 열기
             planButton.addActionListener(e -> openPlan(plan));
-        }
-
-        // 남아 있는 버튼은 숨기기
-        for (int i = plans.size(); i < planButtons.length; i++) {
-            planButtons[i].setVisible(false);
         }
     }
     private void openPlan(PlanDTO planDTO) {
