@@ -448,6 +448,13 @@ public class MainpageFrame extends JFrame {
     private void updatePlanButtonsForSearch(String region, String district, String placeKeyword) {
         List<PlanDTO> plans = planService.getIsRegisteredTrue();
 
+        // 아무 검색 조건도 입력되지 않은 경우
+        if ((region == null || region.equals("지역 선택")) &&
+                (district == null || district.equals("시군구 선택")) &&
+                (placeKeyword == null || placeKeyword.isEmpty())) {
+            updatePlanButtons(); // 기존 모든 계획 표시
+            return;
+        }
         // 결과를 담을 리스트
         List<PlanDTO> searchResults = new ArrayList<>();
 
