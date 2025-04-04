@@ -1,5 +1,8 @@
 package com.example.planj.db;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -8,6 +11,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Getter
+@Setter
 @Entity
 public class Plan {
 
@@ -28,10 +33,6 @@ public class Plan {
     private String region;
 
     private boolean isRegistered;
-
-    public boolean isRegistered() {
-        return isRegistered;
-    }
 
     public void setRegistered(boolean registered) {
         isRegistered = registered;
@@ -87,78 +88,6 @@ public class Plan {
         }
     }
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public int getNights() {
-        return nights;
-    }
-
-    public void setNights(int nights) {
-        this.nights = nights;
-    }
-
-    public int getDays() {
-        return days;
-    }
-
-    public void setDays(int days) {
-        this.days = days;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public Map<String, String> getAccommodationsPerDay() {
-        return accommodationsPerDay;
-    }
-
-    public void setAccommodationsPerDay(Map<String, String> accommodationsPerDay) {
-        this.accommodationsPerDay = accommodationsPerDay;
-    }
-
-    public List<PlacePerDay> getPlacesPerDay() {
-        return placesPerDay;
-    }
-
-    public void setPlacesPerDay(List<PlacePerDay> placesPerDay) {
-        this.placesPerDay = placesPerDay;
-    }
-
-    public String getRegion() {
-        return region;
-    }
-
-    public void setRegion(String region) {
-        this.region = region;
-    }
-
-    public String getDistrict() {
-        return district;
-    }
-
-    public void setDistrict(String district) {
-        this.district = district;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -173,11 +102,4 @@ public class Plan {
         return Objects.hash(id, title);
     }
 
-    public int getAreaCode() {
-        return areaCode;
-    }
-
-    public void setAreaCode(int areaCode) {
-        this.areaCode = areaCode;
-    }
 }

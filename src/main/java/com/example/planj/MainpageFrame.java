@@ -5,18 +5,15 @@ import com.example.planj.db.PlanService;
 import com.example.planj.frame.JoinFrame;
 import com.example.planj.frame.LoginFrame;
 import com.example.planj.frame.RoundButton;
+import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.io.File;
 import java.util.HashMap;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -25,16 +22,16 @@ import java.net.URL;
 import java.util.*;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Component
 public class MainpageFrame extends JFrame {
+    private JLabel loginLabel;
     private final PlanService planService;
     private final JButton[] planButtons = new JButton[100];
     private final JLabel[] planLabels = new JLabel[100];
-    private JLabel usernameLabel; // 사용자 이름을 표시할 라벨
 
-    @Autowired private UploadpageFrame uploadFrame;
+    private final UploadpageFrame uploadpageFrame;
 
     private JTextField search_plan; // 검색 텍스트 필드
 
@@ -45,12 +42,10 @@ public class MainpageFrame extends JFrame {
     private Map<String, Integer> sigunguCodeMapMain = new HashMap<>();
     private static final String SERVICE_KEY = "pRHMKrAJfJJZTC104XWkGvOIvKtKcO6zFysOGGDrH3Bo%2FktklWp6urJAiA5DoWSY3rf7LEKeb2NU5aDiAfDhlw%3D%3D";
 
-    @Autowired
-    public MainpageFrame(PlanService planService) {
-        this.planService = planService;
+    public void setup() {
         initialize();
-
     }
+
     private void initialize() {
 
         setTitle("Plan J");
@@ -60,20 +55,6 @@ public class MainpageFrame extends JFrame {
         Container contentPane = getContentPane();
         contentPane.setLayout(null);
         contentPane.setBackground(Color.WHITE);
-
-//        usernameLabel = new JLabel("로그인 해주세요.");
-//        usernameLabel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",18f,Font.PLAIN));
-//        usernameLabel.setBounds(670, 55, 200, 20);
-//        usernameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-//        usernameLabel.setForeground(Color.BLACK);
-//        usernameLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-//        usernameLabel.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//                openLoginPage();
-//            }
-//        });
-//        getContentPane().add(usernameLabel);
 
         JLabel logoP = new JLabel("P");
         logoP.setFont(JoinFrame.FontLoader.getFont("낭만있구미체", 35f, Font.BOLD));
@@ -91,8 +72,6 @@ public class MainpageFrame extends JFrame {
         logoText.setFont(JoinFrame.FontLoader.getFont("낭만있구미체", 35f, Font.BOLD));
         logoText.setBounds(151, 135, 70, 40);
         contentPane.add(logoText);
-
-
 
         JLabel login = new JLabel("로그인");
         login.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
@@ -148,15 +127,14 @@ public class MainpageFrame extends JFrame {
                 openJoinPage();
             }
         });
-//        contentPane.add(login);
-//        contentPane.add(join);
 
         JLabel myplan = new JLabel("myplan");
         myplan.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
+        myplan.setBounds(711, 47, 80, 30); // 크기와 위치 설정
         myplan.setForeground(Color.BLACK);
         myplan.setBackground(Color.WHITE);
         myplan.setOpaque(true);
-        myplan.setBounds(620, 47, 80, 30); // 크기와 위치 설정
+        myplan.setBounds(711, 47, 80, 30); // 크기와 위치 설정
         myplan.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스를 올리면 커서 변경
 
         myplan.setHorizontalAlignment(SwingConstants.CENTER); // 수평 중앙 정렬
@@ -179,29 +157,6 @@ public class MainpageFrame extends JFrame {
             }
         });
 
-
-//        JLabel name = new JLabel("용강천사님");
-//        name.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",18f,Font.PLAIN));
-//        name.setBounds(870,55,100,20);
-//        name.setHorizontalAlignment(SwingConstants.RIGHT);
-//        name.setBackground(Color.WHITE);
-//        name.setForeground(Color.BLACK);
-//        name.setCursor(new Cursor(Cursor.HAND_CURSOR));
-//        contentPane.add(name);
-
-
-        JLabel name = new JLabel("yg1004");
-        name.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
-        name.setForeground(Color.decode("#436698"));
-        name.setBackground(Color.WHITE);
-        name.setOpaque(true); // 배경 색이 보이도록 설정
-        name.setBounds(711, 47, 80, 30); // 크기와 위치 설정
-        name.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스를 올리면 커서 변경
-
-        name.setHorizontalAlignment(SwingConstants.CENTER); // 수평 중앙 정렬
-        name.setVerticalAlignment(SwingConstants.CENTER);   // 수직 중앙 정렬
-
-
         JLabel logout = new JLabel("로그아웃");
         logout.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
         logout.setForeground(Color.WHITE);
@@ -214,8 +169,14 @@ public class MainpageFrame extends JFrame {
         logout.setVerticalAlignment(SwingConstants.CENTER);
 
         contentPane.add(myplan);
-        contentPane.add(name);
         contentPane.add(logout);
+
+        logout.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                logout();
+            }
+        });
 
         // 검색 패널
         JPanel searchPanel = new JPanel();
@@ -310,26 +271,14 @@ public class MainpageFrame extends JFrame {
         setVisible(true);
     }
 
-    public void updateUsername(String username) {
-        usernameLabel.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",15f,Font.PLAIN));
-        if (username == null || username.isEmpty()) {
-            usernameLabel.setText("로그인 해주세요.");
-            usernameLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            usernameLabel.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    openLoginPage();
-                }
-            });
-        } else {
-            usernameLabel.setText(username + "님");
-            usernameLabel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-            for (MouseListener listener : usernameLabel.getMouseListeners()) {
-                usernameLabel.removeMouseListener(listener);
-            }
-        }
+    private void logout() {
+        JOptionPane.showMessageDialog(this, "로그아웃 되었습니다.");
+        SwingUtilities.invokeLater(() -> {
+            LoginFrame loginFrame = ApplicationContextProvider.getContext().getBean(LoginFrame.class);
+            loginFrame.setVisible(true);
+            dispose();
+        });
     }
-
 
     private void openLoginPage() {
         SwingUtilities.invokeLater(() -> {
@@ -369,7 +318,7 @@ public class MainpageFrame extends JFrame {
         btn_newplan.addActionListener(e -> {
             SwingUtilities.invokeLater(() -> {
                 //UploadpageFrame uploadFrame = ApplicationContextProvider.getContext().getBean(UploadpageFrame.class);
-                this.uploadFrame.setVisible(true);
+                this.uploadpageFrame.setVisible(true);
                 dispose();
             });
         });
@@ -448,7 +397,6 @@ public class MainpageFrame extends JFrame {
             e.printStackTrace();
         }
     }
-
 
     private void updateSigunguComboBoxMain() {
         String selectedAreaMain = (String) areaCodeComboBoxMain.getSelectedItem();
@@ -628,7 +576,7 @@ public class MainpageFrame extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            UIManager.put("OptionPane.background", Color.WHITE); // OptionPane 자체 배경색
+            UIManager.put("OptionPane.background", Color.WHITE);
             UIManager.put("Panel.background", Color.WHITE);
             ApplicationContextProvider.getContext().getBean(MainpageFrame.class).setVisible(true);
 

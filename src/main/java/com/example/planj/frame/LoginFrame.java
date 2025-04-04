@@ -6,7 +6,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -18,13 +17,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.HashMap;
-import java.util.Map;
 import java.awt.Font;
 
 import com.example.planj.ApplicationContextProvider;
 import com.example.planj.MainpageFrame;
-import com.example.planj.UploadpageFrame;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
@@ -231,14 +227,6 @@ public class LoginFrame extends JFrame {
         setVisible(true);
     }
 
-    private void openMyPlan() {
-        SwingUtilities.invokeLater(() -> {
-            MainpageFrame mainpageFrame = ApplicationContextProvider.getContext().getBean(MainpageFrame.class);
-            mainpageFrame.setVisible(true);
-            dispose();
-        });
-    }
-
     private void openFindUsername() {
         String email = JOptionPane.showInputDialog(this, "등록된 이메일을 입력하세요:", "아이디 찾기", JOptionPane.PLAIN_MESSAGE);
         if (email == null || email.trim().isEmpty()) {
@@ -250,7 +238,7 @@ public class LoginFrame extends JFrame {
         // DB 연결 정보
         String url = "jdbc:mysql://localhost:3306/planj_db"; // 데이터베이스 이름으로 수정
         String username = "root"; // MySQL 사용자 이름
-        String password = "0000"; // MySQL 비밀번호
+        String password = "skrud468@@"; // MySQL 비밀번호
 
         // SQL 쿼리
         String query = "SELECT username FROM site_user WHERE email = ?";
@@ -298,7 +286,7 @@ public class LoginFrame extends JFrame {
             // DB 연결 정보
             String url = "jdbc:mysql://localhost:3306/planj_db"; // 데이터베이스 이름
             String dbUsername = "root"; // MySQL 사용자 이름
-            String dbPassword = "0000"; // MySQL 비밀번호
+            String dbPassword = "skrud468@@"; // MySQL 비밀번호
 
             // SQL 쿼리
             String query = "SELECT password FROM site_user WHERE username = ? AND email = ?";
@@ -402,13 +390,9 @@ public class LoginFrame extends JFrame {
             int responseCode = connection.getResponseCode();
             if (responseCode == 200) {
                 JOptionPane.showMessageDialog(this, "로그인 성공!");
-
-                // 사용자 이름 가져오기 (API 응답 처리)
-                String loggedInUsername = "용강천사"; // 실제 API 응답에 따라 수정
-
                 SwingUtilities.invokeLater(() -> {
                     MainpageFrame mainpageFrame = ApplicationContextProvider.getContext().getBean(MainpageFrame.class);
-                    mainpageFrame.updateUsername(loggedInUsername); // 사용자 이름 업데이트
+                    mainpageFrame.setup();
                     mainpageFrame.setVisible(true);
                     dispose(); // 로그인 프레임 닫기
                 });
@@ -419,19 +403,6 @@ public class LoginFrame extends JFrame {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "로그인 중 오류 발생!");
         }
-    }
-
-
-    private void updateLoginLabel() {
-        loginLabel.setText("로그아웃");
-        loginLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        loginLabel.removeMouseListener(loginLabel.getMouseListeners()[0]);
-        loginLabel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                logout();
-            }
-        });
     }
 
     private void logout() {
@@ -471,6 +442,7 @@ public class LoginFrame extends JFrame {
             setOpaque(true); // 패널을 불투명하게 설정
             setBackground(Color.WHITE); // 배경색을 명시적으로 설정
         }
+
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
@@ -488,6 +460,7 @@ public class LoginFrame extends JFrame {
         UIManager.put("Panel.background", Color.WHITE);
         SwingUtilities.invokeLater(() -> new LoginFrame());
     }
+
 }
 
 

@@ -1,26 +1,18 @@
 package com.example.planj.db;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class PlanService {
 
-    @Autowired
-    private PlanRepository planRepository;
-
-    public void createPlan(Plan plan) {
-        PlanDTO planDTO = new PlanDTO();
-        planDTO.setTitle(plan.getTitle());
-        planDTO.setRegion(plan.getRegion());
-        planDTO.setAreaCode(plan.getAreaCode());
-        planDTO.setDistrict(plan.getDistrict());
-        createPlan(planDTO); // 계획 한번 이미 저장됨
-        planRepository.save(plan); // 여기서도 저장이 되어버림
-    }
+    private final PlanRepository planRepository;
 
     public List<PlanDTO> getAllPlans() {
         return planRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());

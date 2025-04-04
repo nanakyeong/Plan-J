@@ -1,8 +1,13 @@
 package com.example.planj.db;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.List;
 
+@Getter
+@Setter
 @Entity
 public class PlacePerDay {
 
@@ -27,30 +32,6 @@ public class PlacePerDay {
     public PlacePerDay(String day, List<String> places, String accommodation) {
         this.day = day;
         this.places = places;
-        this.accommodation = accommodation;
-    }
-
-    public String getDay() {
-        return day;
-    }
-
-    public void setDay(String day) {
-        this.day = day;
-    }
-
-    public List<String> getPlaces() {
-        return places;
-    }
-
-    public void setPlaces(List<String> places) {
-        this.places = places;
-    }
-
-    public String getAccommodation() {
-        return accommodation;
-    }
-
-    public void setAccommodation(String accommodation) {
         this.accommodation = accommodation;
     }
 }

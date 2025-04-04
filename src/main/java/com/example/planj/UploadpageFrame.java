@@ -3,6 +3,7 @@ package com.example.planj;
 import com.example.planj.db.PlanDTO;
 import com.example.planj.db.PlanService;
 
+import javax.annotation.PostConstruct;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -16,10 +17,11 @@ import java.util.stream.Collectors;
 
 import com.example.planj.frame.JoinFrame;
 import com.example.planj.frame.LoginFrame;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-
+@RequiredArgsConstructor
 @Component
 public class UploadpageFrame extends JFrame {
 
@@ -29,9 +31,8 @@ public class UploadpageFrame extends JFrame {
     private JScrollPane sp;
     private MyPanel panel1;
 
-    @Autowired
-    public UploadpageFrame(PlanService planService) {
-        this.planService = planService;
+    @PostConstruct
+    private void setup() {
         initialize();
     }
 
@@ -42,9 +43,6 @@ public class UploadpageFrame extends JFrame {
 
         Container contentPane  = getContentPane();
         contentPane.setLayout(null);
-
-//        contentPane.setLayout(new BorderLayout());
-
 
         contentPane.setBackground(Color.WHITE);
 
@@ -73,36 +71,13 @@ public class UploadpageFrame extends JFrame {
             }
         });
 
-
-
-//        JLabel myplan = new JLabel("myplan");
-//        myplan.setBounds(700, 55, 100, 20);
-//        JLabel login = new JLabel("로그아웃");
-//        login.setBounds(762, 55, 100, 20);
-//        login.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//                openLoginPage();
-//            }
-//        });
-//        JLabel join = new JLabel("회원가입");
-//        join.setBounds(814, 55, 100, 20);
-//        join.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//                openJoinPage();
-//            }
-//        });
-//        contentPane.add(myplan);
-//        contentPane.add(login);
-//        contentPane.add(join);
-
         JLabel myplan = new JLabel("myplan");
         myplan.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
+        myplan.setBounds(711, 47, 80, 30); // 크기와 위치 설정
         myplan.setForeground(Color.BLACK);
         myplan.setBackground(Color.WHITE);
         myplan.setOpaque(true);
-        myplan.setBounds(620, 47, 80, 30); // 크기와 위치 설정
+        myplan.setBounds(711, 47, 80, 30); // 크기와 위치 설정
         myplan.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스를 올리면 커서 변경
 
         myplan.setHorizontalAlignment(SwingConstants.CENTER); // 수평 중앙 정렬
@@ -122,28 +97,6 @@ public class UploadpageFrame extends JFrame {
         });
 
 
-//        JLabel name = new JLabel("용강천사님");
-//        name.setFont(JoinFrame.FontLoader.getFont("세종글꽃체",18f,Font.PLAIN));
-//        name.setBounds(870,55,100,20);
-//        name.setHorizontalAlignment(SwingConstants.RIGHT);
-//        name.setBackground(Color.WHITE);
-//        name.setForeground(Color.BLACK);
-//        name.setCursor(new Cursor(Cursor.HAND_CURSOR));
-//        contentPane.add(name);
-
-
-        JLabel name = new JLabel("yg1004");
-        name.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
-        name.setForeground(Color.decode("#436698"));
-        name.setBackground(Color.WHITE);
-        name.setOpaque(true); // 배경 색이 보이도록 설정
-        name.setBounds(711, 47, 80, 30); // 크기와 위치 설정
-        name.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스를 올리면 커서 변경
-
-        name.setHorizontalAlignment(SwingConstants.CENTER); // 수평 중앙 정렬
-        name.setVerticalAlignment(SwingConstants.CENTER);   // 수직 중앙 정렬
-
-
         JLabel logout = new JLabel("로그아웃");
         logout.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
         logout.setForeground(Color.WHITE);
@@ -156,7 +109,6 @@ public class UploadpageFrame extends JFrame {
         logout.setVerticalAlignment(SwingConstants.CENTER);
 
         contentPane.add(myplan);
-        contentPane.add(name);
         contentPane.add(logout);
 
 
@@ -187,10 +139,6 @@ public class UploadpageFrame extends JFrame {
         sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         sp.setBounds(123, 270, 738, 200); // 크기와 위치 설정
         contentPane.add(sp);
-
-//        panel1 = new MyPanel();
-//        panel1.setBounds(0, 0, 1000, 600);
-//        contentPane.add(panel1);
 
         MyPanel panel1 = new MyPanel();
         panel1.setBounds(100, 60, 800, 50);

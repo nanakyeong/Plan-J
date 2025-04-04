@@ -40,7 +40,7 @@ public class PlanwritepageFrame extends JFrame {
     private JPanel planPanel;
     private MyPanel myPanel;
 
-    private static final String SERVICE_KEY = "pRHMKrAJfJJZTC104XWkGvOIvKtKcO6zFysOGGDrH3Bo%2FktklWp6urJAiA5DoWSY3rf7LEKeb2NU5aDiAfDhlw%3D%3D";
+    private static final String SERVICE_KEY = "wLCM9CfrTZohb0ZMEddNB9OIQ6aHIhFncnBnZ6qqYbNWqmvOTlq8OEinlx6SiHTD2+Dg6Cj5VH1bIE9eRZL/DA==";
 
     private JPanel blockingPanel; // 특정 영역 클릭 차단용 패널
     private JTextField planTitle;
@@ -148,7 +148,7 @@ public class PlanwritepageFrame extends JFrame {
         myplan.setForeground(Color.BLACK);
         myplan.setBackground(Color.WHITE);
         myplan.setOpaque(true);
-        myplan.setBounds(620, 47, 80, 30); // 크기와 위치 설정
+        myplan.setBounds(711, 47, 80, 30); // 크기와 위치 설정
         myplan.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스를 올리면 커서 변경
 
         myplan.setHorizontalAlignment(SwingConstants.CENTER); // 수평 중앙 정렬
@@ -171,18 +171,6 @@ public class PlanwritepageFrame extends JFrame {
             }
         });
 
-        JLabel name = new JLabel("yg1004");
-        name.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
-        name.setForeground(Color.decode("#436698"));
-        name.setBackground(Color.WHITE);
-        name.setOpaque(true); // 배경 색이 보이도록 설정
-        name.setBounds(711, 47, 80, 30); // 크기와 위치 설정
-        name.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스를 올리면 커서 변경
-
-        name.setHorizontalAlignment(SwingConstants.CENTER); // 수평 중앙 정렬
-        name.setVerticalAlignment(SwingConstants.CENTER);   // 수직 중앙 정렬
-
-
         JLabel logout = new JLabel("로그아웃");
         logout.setFont(JoinFrame.FontLoader.getFont("세종글꽃체", 18f, Font.PLAIN));
         logout.setForeground(Color.WHITE);
@@ -195,7 +183,6 @@ public class PlanwritepageFrame extends JFrame {
         logout.setVerticalAlignment(SwingConstants.CENTER);
 
         contentPane.add(myplan);
-        contentPane.add(name);
         contentPane.add(logout);
 
         // Blocking panel 설정
@@ -334,22 +321,6 @@ public class PlanwritepageFrame extends JFrame {
         });
     }
 
-    private void openLoginPage() {
-        SwingUtilities.invokeLater(() -> {
-            LoginFrame loginFrame = ApplicationContextProvider.getContext().getBean(LoginFrame.class);
-            loginFrame.setVisible(true);
-            dispose();
-        });
-    }
-
-    private void openJoinPage() {
-        SwingUtilities.invokeLater(() -> {
-            JoinFrame joinFrame = ApplicationContextProvider.getContext().getBean(JoinFrame.class);
-            joinFrame.setVisible(true);
-            dispose();
-        });
-    }
-
     // 특정 영역 클릭 차단 활성화
     public void disableEditing() {
         blockingPanel.setVisible(true);
@@ -385,7 +356,6 @@ public class PlanwritepageFrame extends JFrame {
             e.printStackTrace();
         }
     }
-
 
     public void setPlanDTO(PlanDTO planDTO) {
         this.planDTO = planDTO;

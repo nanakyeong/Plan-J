@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AccommodationPopup extends JDialog {
-    private static final String SERVICE_KEY = "pRHMKrAJfJJZTC104XWkGvOIvKtKcO6zFysOGGDrH3Bo%2FktklWp6urJAiA5DoWSY3rf7LEKeb2NU5aDiAfDhlw%3D%3D";
+    private static final String SERVICE_KEY = "wLCM9CfrTZohb0ZMEddNB9OIQ6aHIhFncnBnZ6qqYbNWqmvOTlq8OEinlx6SiHTD2%2BDg6Cj5VH1bIE9eRZL%2FDA%3D%3D";
     private static final Map<String, String> titleToContentIdMap = new HashMap<>();
     private static final Map<String, double[]> titleToCoordinatesMap = new HashMap<>();
     private JPanel mainPanel;
@@ -168,6 +168,11 @@ public class AccommodationPopup extends JDialog {
 
     private void updateListWithAPIData(DefaultListModel<String> listModel, String jsonResponse) {
         try {
+            if (!jsonResponse.trim().startsWith("{")) {
+                System.err.println("API 응답이 JSON 형식이 아닙니다:\n" + jsonResponse);
+                JOptionPane.showMessageDialog(null, "API 응답 형식이 잘못되었습니다:\n" + jsonResponse, "API 오류", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             JSONObject jsonObject = new JSONObject(jsonResponse);
             JSONObject response = jsonObject.getJSONObject("response");
             JSONObject body = response.getJSONObject("body");
