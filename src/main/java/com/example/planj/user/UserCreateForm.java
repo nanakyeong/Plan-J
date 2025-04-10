@@ -11,8 +11,9 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 public class UserCreateForm {
+
     @Size(min = 2, max = 20)
-    @NotEmpty(message = "아이디는 필수 항목입니다.")
+    @NotEmpty(message = "아이디는 필수 항목입니다.") //Notnull
     private String username;
 
     @NotEmpty(message = "비밀번호는 필수 항목입니다.")
@@ -28,7 +29,9 @@ public class UserCreateForm {
     @NotEmpty(message = "전화번호는 필수 항목입니다.")
     private String phone;
 
-    public @Size(min = 2, max = 20) @NotEmpty(message = "아이디는 필수 항목입니다.") String getUsername() {
+    public @Size(min = 2, max = 20)
+    @NotEmpty(message = "아이디는 필수 항목입니다.")
+    String getUsername() {
         return username;
     }
 
